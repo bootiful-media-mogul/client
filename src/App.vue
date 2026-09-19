@@ -224,7 +224,8 @@ onMounted(async () => {
           </div>
         </div>
 
-        <!-- Tab Bar with Provider/Inject Pattern -->
+        <!-- Tab Bar with Provider/Inject Pattern
+        -->
         <TabBar>
           <!-- Main content tab -->
           <Tab :label="t('app.tabs.main')">
@@ -255,7 +256,7 @@ onMounted(async () => {
           </div>
         </TabBar>
 
-        <!--        <ServerTimeFooter />-->
+<!--        <ServerTimeFooter />-->
 
         <!-- Buffer to prevent content from being hidden by floating toolbar on mobile -->
         <div class="page-content-buffer"></div>
