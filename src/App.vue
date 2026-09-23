@@ -256,7 +256,7 @@ onMounted(async () => {
           </div>
         </TabBar>
 
-<!--        <ServerTimeFooter />-->
+        <!--        <ServerTimeFooter />-->
 
         <!-- Buffer to prevent content from being hidden by floating toolbar on mobile -->
         <div class="page-content-buffer"></div>
