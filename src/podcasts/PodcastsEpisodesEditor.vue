@@ -399,9 +399,6 @@ onMounted(async () => {
             />
           </div>
           <div class="form-section-title">{{ t('podcasts.episodes.publications') }}</div>
-          <div v-if="producing" class="production-status">
-            {{ t('podcasts.episodes.publications.producing') }}
-          </div>
           <div v-if="productionFailed" class="production-status production-status-failed">
             {{ t('podcasts.episodes.publications.production-failed') }}
           </div>
