@@ -395,6 +395,10 @@ This is NOT reversible! `,
     'podcasts.episodes.title': 'Episodes in "{title}"',
     'podcasts.episodes.publications': 'Publications',
     'podcasts.episodes.publications.publishing': 'Publishing...',
+    'podcasts.episodes.publications.producing':
+      'Producing the audio for this episode. Publishing will continue by itself once the render finishes.',
+    'podcasts.episodes.publications.production-failed':
+      "The audio for this episode couldn't be produced. Nothing was published.",
     'podcasts.episodes.basics': 'Basics',
     'podcasts.episodes.segments': 'Segments',
     'podcasts.episodes.segments.prompt':
@@ -448,9 +452,19 @@ const i18n = createI18n({
 
 const app = createApp(App)
 
-// Use plugin with optional defaults
-// app.use(setupCalendar, {})
-app.use(setupCalendar, {})
+// v-calendar opens its date pickers on 'hover-focus' by default, which means a
+// mousemove anywhere over the field is enough to throw the calendar over whatever is
+// below it -- and tabbing past the field does it too. these sit in the middle of long
+// edit forms, so that happens constantly and never on purpose. 'click' is the only
+// visibility that needs to be asked for: click to open, click again (or outside, or
+// escape) to close. typing into the field still works either way.
+app.use(setupCalendar, {
+  datePicker: {
+    popover: {
+      visibility: 'click'
+    }
+  }
+})
 
 // Use the components
 app.component('VCalendar', Calendar)

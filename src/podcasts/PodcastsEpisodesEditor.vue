@@ -53,6 +53,12 @@ const podcast = ref<Podcast>()
 const podcastId = ref<number>(props.podcastId)
 const episodeId = ref<number>(props.episodeId)
 const publicationsDisabled = ref<boolean>(false)
+// the render moved out of the api into the processors module, so publishing an
+// episode whose segments have changed no longer blocks on ffmpeg -- it returns at
+// once and the publication sits in draft until the render comes back. this is what
+// says so, because otherwise those minutes look like nothing happening.
+const producing = ref<boolean>(false)
+const productionFailed = ref<boolean>(false)
 
 onMounted(async () => {
   podcast.value = await podcasts.podcastById(podcastId.value)
@@ -247,6 +253,24 @@ onMounted(async () => {
     draftEpisode.value.duration = segments.value.reduce((total, s) => total + (s.duration || 0), 0)
   })
 
+  // both of these are keyed by episode id, and both arrive for every episode this
+  // mogul has open anywhere, so check before believing them.
+  listenForCategory('podcast-episode-render-started-event', async (evt: Notification) => {
+    if ('' + evt.key !== '' + draftEpisode.value.id) return
+    producing.value = true
+    productionFailed.value = false
+  })
+
+  listenForCategory('podcast-episode-render-finished-event', async (evt: Notification) => {
+    if ('' + evt.key !== '' + draftEpisode.value.id) return
+    producing.value = false
+    productionFailed.value = JSON.parse(evt.context)['success'] === false
+    // the produced audio is a different file now, and the episode records when. reload
+    // rather than patch: the publication that was waiting on this render is running
+    // right now, and its outcome lands in the same view.
+    await loadEpisodeFromDbIntoEditor(draftEpisode.value.id)
+  })
+
   listenForCategory('publication-completed-event', async () => {
     await loadEpisodeFromDbIntoEditor(draftEpisode.value.id)
   })
@@ -286,16 +310,7 @@ onMounted(async () => {
               <InputTools v-model="title" />
             </InputWrapper>
           </div>
-          <div v-if="draftEpisode.id" class="form-row">
-            <label for="episodeCreated">
-              {{ t('podcasts.episodes.episode.created') }}
-            </label>
-            <VDatePicker id="episodeCreated" v-model="createdDate" mode="dateTime" is24hr>
-              <template #default="{ inputValue, inputEvents }">
-                <input :value="inputValue" type="text" v-on="inputEvents" />
-              </template>
-            </VDatePicker>
-          </div>
+
           <div class="form-row">
             <label for="episodeDescription">
               {{ t('podcasts.episodes.episode.description') }}
@@ -309,6 +324,18 @@ onMounted(async () => {
               <InputTools v-model="description" />
             </InputWrapper>
           </div>
+
+          <div v-if="draftEpisode.id" class="form-row">
+            <label for="episodeCreated">
+              {{ t('podcasts.episodes.episode.created') }}
+            </label>
+            <VDatePicker id="episodeCreated" v-model="createdDate" mode="dateTime" is24hr>
+              <template #default="{ inputValue, inputEvents }">
+                <input :value="inputValue" type="text" v-on="inputEvents" />
+              </template>
+            </VDatePicker>
+          </div>
+
           <div>
             <button
               :disabled="buttonsDisabled"
@@ -372,6 +399,12 @@ onMounted(async () => {
             />
           </div>
           <div class="form-section-title">{{ t('podcasts.episodes.publications') }}</div>
+          <div v-if="producing" class="production-status">
+            {{ t('podcasts.episodes.publications.producing') }}
+          </div>
+          <div v-if="productionFailed" class="production-status production-status-failed">
+            {{ t('podcasts.episodes.publications.production-failed') }}
+          </div>
           <div class="publish-menu">
             <PublicationsSectionComponent
               v-if="draftEpisode.id"
@@ -419,5 +452,17 @@ fieldset.episodes-table {
 .episode-duration {
   font-variant-numeric: tabular-nums;
   opacity: 0.7;
+}
+
+.production-status {
+  margin-bottom: var(--gutter-space-half);
+  padding: var(--gutter-space-half);
+  border-radius: var(--radius);
+  background-color: var(--panel-bg-color);
+  font-size: var(--font-size-sm);
+}
+
+.production-status-failed {
+  font-weight: bold;
 }
 </style>
