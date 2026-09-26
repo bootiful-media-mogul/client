@@ -14,7 +14,11 @@
             type="button"
             @click.prevent="publish()"
           >
-            {{ t('publications.plugins.podcastEpisodeToBlogPost.create') }}
+            {{
+              publishing
+                ? t('publications.plugins.podcastEpisodeToBlogPost.creating')
+                : t('publications.plugins.podcastEpisodeToBlogPost.create')
+            }}
           </button>
         </div>
       </div>
@@ -26,7 +30,7 @@ import blogIcon from '@/assets/images/publications/podcasts/publish-as-mogul-blo
 import PublicationPanelComponent from '@/publications/PublicationPanelComponent.vue'
 import BlogsSelect from '@/blogs/BlogsSelect.vue'
 import { computed, inject, ref } from 'vue'
-import type { GetPublicationContextFunction, PublishFunction } from '@/publications/input'
+import type { GetPublicationContextFunction, PublishAndAwaitFunction } from '@/publications/input'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
@@ -34,7 +38,7 @@ const { t } = useI18n()
 // must match the backend PLUGIN_NAME (PodcastEpisodeBlogPostPublisherPlugin.PLUGIN_NAME)
 const pluginName = 'podcastEpisodeToBlogPost'
 
-const publishFunction = inject<PublishFunction>('publish')!
+const publishAndAwaitFunction = inject<PublishAndAwaitFunction>('publishAndAwait')!
 const getPublicationContextFunction =
   inject<GetPublicationContextFunction>('getPublicationContext')!
 
@@ -43,15 +47,21 @@ const blogId = ref<number | null>(null)
 const publishing = ref<boolean>(false)
 const disabled = computed(() => blogId.value === null || publishing.value)
 
-async function publish(): Promise<boolean> {
-  if (blogId.value === null) return false
+/**
+ * the publish mutation returns as soon as the work is queued, so awaiting that alone
+ * cleared `publishing` within milliseconds and the button went live again while the post
+ * was still being written -- two clicks, two posts. wait for the publication itself to
+ * finish instead.
+ */
+async function publish(): Promise<void> {
+  if (blogId.value === null) return
   publishing.value = true
   try {
     const publicationContext = getPublicationContextFunction()
     // the backend plugin reads context.blogId to know which blog to post to; the
     // resulting post's path comes back as a publication outcome (no redirect here).
     const clientContext = { blogId: blogId.value }
-    return await publishFunction(
+    await publishAndAwaitFunction(
       publicationContext.type,
       publicationContext.publishableId,
       clientContext,

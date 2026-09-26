@@ -119,7 +119,10 @@ const translations = {
         },
         blogPostMarkdownFile: {
           title: 'Publish a blog as a Markdown file',
-          description: 'download a Markdown file for your post'
+          description: 'download a Markdown file for your post',
+          download: 'Download',
+          producing: 'Preparing the file…',
+          ready: 'Your download is ready'
         },
         blogPostAyrshare: {
           title: 'Ayrshare (Blog Posts)',
@@ -170,13 +173,16 @@ const translations = {
         podcastEpisodeToBlogPost: {
           blogId: 'Blog ID',
           create: 'Create Post',
+          creating: 'Creating the post…',
           description: 'Publish as a Blog Post',
           title: 'Publish as a Blog Post'
         },
         audioFile: {
           title: 'Download Audio File',
           description: 'Download the finalized (produced) .mp3 file for the episode',
-          download: 'Download'
+          download: 'Download',
+          producing: 'Producing the episode…',
+          ready: 'Your download is ready'
         },
         transcript: {
           title: 'Transcript',

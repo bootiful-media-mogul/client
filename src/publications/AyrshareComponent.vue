@@ -148,7 +148,8 @@ const publishFunction = inject<PublishFunction>('publish')!
 const getPublicationContextFunction =
   inject<GetPublicationContextFunction>('getPublicationContext')!
 
-async function publish(): Promise<boolean> {
+// resolves with the id of the publication that was started, not with its success.
+async function publish(): Promise<number> {
   publishing.value = true
   const publicationContext: PublicationContext = getPublicationContextFunction()
 

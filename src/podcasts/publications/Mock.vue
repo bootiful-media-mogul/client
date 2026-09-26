@@ -47,7 +47,8 @@ listenForCategory('podcast-episode-completed-event', async (evt) => {
   disabled.value = await isPluginDisabled()
 })
 
-async function publish(): Promise<boolean> {
+// resolves with the id of the publication that was started, not with its success.
+async function publish(): Promise<number> {
   const publicationContext: PublicationContext = getPublicationContextFunction()
   const clientContext: any = {}
   return await publishFunction(

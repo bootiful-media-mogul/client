@@ -1466,12 +1466,18 @@ export class Publications {
     return (await result.data['unpublish']) as boolean
   }
 
+  /**
+   * resolves with the id of the publication that was started, not with whether it
+   * succeeded: the server runs the plugin after answering, and for a podcast episode
+   * that means re-rendering the audio first. wait for the publication-completed-event
+   * carrying this id before reading anything the publication produced.
+   */
   async publish(
     publishableType: string,
     id: number,
     contextJson: string,
     plugin: string
-  ): Promise<boolean> {
+  ): Promise<number> {
     const q = `
         mutation ( 
              $publishableId: Int ,
@@ -1493,7 +1499,7 @@ export class Publications {
       contextJson: contextJson,
       plugin: plugin
     })
-    return (await result.data['publish']) as boolean
+    return (await result.data['publish']) as number
   }
 
   async canPublish(
