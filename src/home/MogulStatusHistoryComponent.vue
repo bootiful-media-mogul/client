@@ -3,7 +3,7 @@
     <div class="form-section-title">{{ t('home.history.title') }}</div>
 
     <div class="history-controls">
-      <label for="history-days">{{ t('home.history.days') }}</label>
+      <label for="history-days">{{ t('home.history.events') }}</label>
       <select id="history-days" v-model.number="limit">
         <option v-for="choice in dayChoices" :key="choice" :value="choice">{{ choice }}</option>
       </select>
