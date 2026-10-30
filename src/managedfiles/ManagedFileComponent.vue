@@ -111,7 +111,7 @@
         :class="'mogul-icon preview-icon ' + (written ? '' : ' disabled')"
         :title="t('managedfiles.preview')"
         href="#"
-        @click="preview"
+        @click.prevent="preview"
       >
       </a>
     </div>
