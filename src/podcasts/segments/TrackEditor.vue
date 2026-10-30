@@ -422,6 +422,7 @@ onBeforeUnmount(() => {
     <div class="editor-toolbar">
       <div class="toolbar-group">
         <button
+          type="button"
           class="transport-button"
           @click="goToStart"
           aria-label="Go to start"
@@ -430,6 +431,7 @@ onBeforeUnmount(() => {
           <SkipBack :size="17" />
         </button>
         <button
+          type="button"
           class="play-button"
           @click="togglePlayback"
           :aria-label="isPlaying ? 'Pause' : 'Play'"
@@ -449,6 +451,7 @@ onBeforeUnmount(() => {
       <div class="toolbar-divider" />
       <div class="toolbar-group tool-group" aria-label="Timeline tools">
         <button
+          type="button"
           :class="['tool-button', { active: tool === 'range' }]"
           @click="tool = 'range'"
           title="Range tool (R)"
@@ -456,6 +459,7 @@ onBeforeUnmount(() => {
           <MousePointer2 :size="16" /> <span>Range</span>
         </button>
         <button
+          type="button"
           :class="['tool-button', { active: tool === 'move' }]"
           @click="tool = 'move'"
           title="Move tool (V)"
@@ -466,6 +470,7 @@ onBeforeUnmount(() => {
       <div class="toolbar-spacer" />
       <div class="toolbar-group">
         <button
+          type="button"
           class="icon-button"
           :disabled="!canUndo"
           @click="undo"
@@ -475,6 +480,7 @@ onBeforeUnmount(() => {
           <Undo2 :size="17" />
         </button>
         <button
+          type="button"
           class="icon-button"
           :disabled="!canRedo"
           @click="redo"
@@ -487,6 +493,7 @@ onBeforeUnmount(() => {
       <div class="toolbar-divider" />
       <div class="toolbar-group zoom-group">
         <button
+          type="button"
           class="icon-button"
           @click="zoom = Math.max(2, zoom - 1)"
           :disabled="zoom <= 2"
@@ -496,6 +503,7 @@ onBeforeUnmount(() => {
         </button>
         <span class="zoom-label">{{ Math.round((zoom / 4) * 100) }}%</span>
         <button
+          type="button"
           class="icon-button"
           @click="zoom = Math.min(16, zoom + 1)"
           :disabled="zoom >= 16"
@@ -557,6 +565,7 @@ onBeforeUnmount(() => {
             >
               <div class="segment-top">
                 <button
+                  type="button"
                   class="segment-grip"
                   @pointerdown="startMove($event, segment)"
                   :aria-label="`Move ${clip.name}`"
@@ -578,6 +587,7 @@ onBeforeUnmount(() => {
                 SOURCE {{ formatTime(segment.sourceStart) }} — {{ formatTime(segment.sourceEnd) }}
               </div>
               <button
+                type="button"
                 class="trim-handle"
                 @pointerdown="startTrim($event, segment)"
                 @pointermove="moveGesture"
@@ -617,7 +627,12 @@ onBeforeUnmount(() => {
           ><span>{{ formatTime(selectedDuration, true) }} selected</span></template
         ><span v-else>Drag across the track to select a range</span>
       </div>
-      <button class="delete-button" :disabled="selectedDuration < 0.02" @click="deleteSelection">
+      <button
+        type="button"
+        class="delete-button"
+        :disabled="selectedDuration < 0.02"
+        @click="deleteSelection"
+      >
         <Trash2 :size="15" /> Delete range <kbd>⌫</kbd>
       </button>
     </div>
@@ -631,10 +646,11 @@ onBeforeUnmount(() => {
   --te-ink: black;
   --te-muted: #555;
   --te-faint: #777;
-  --te-line: #c8c8c8;
+  --te-line: #a9a9a9;
   --te-surface: white;
-  --te-chrome: #f2f2f2;
-  --te-hover: #e2e2e2;
+  /* the toolbar, sidebar, ruler and footer show the containing panel through */
+  --te-chrome: transparent;
+  --te-hover: rgba(0, 0, 0, 0.08);
   --te-accent: var(--bg-color, cadetblue);
   --te-accent-light: color-mix(in srgb, var(--te-accent) 22%, white);
   --te-accent-dark: #2f6b6d;
@@ -653,9 +669,6 @@ onBeforeUnmount(() => {
 }
 .editor {
   color: var(--te-ink);
-  border: 1px solid var(--te-ink);
-  border-radius: var(--radius);
-  background: var(--te-surface);
   overflow: hidden;
 }
 .editor-toolbar {
@@ -821,7 +834,7 @@ onBeforeUnmount(() => {
   flex: 1;
   overflow-x: auto;
   overflow-y: hidden;
-  scrollbar-color: #999 var(--te-chrome);
+  scrollbar-color: #888 transparent;
   scrollbar-width: thin;
 }
 .timeline-content {
@@ -840,7 +853,7 @@ onBeforeUnmount(() => {
   position: absolute;
   top: 0;
   height: 36px;
-  border-left: 1px solid #b4b4b4;
+  border-left: 1px solid #8f8f8f;
   pointer-events: none;
 }
 .tick:after {
@@ -849,7 +862,7 @@ onBeforeUnmount(() => {
   left: 29px;
   bottom: 0;
   height: 6px;
-  border-left: 1px solid #d4d4d4;
+  border-left: 1px solid #ababab;
 }
 .tick span {
   position: absolute;
