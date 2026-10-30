@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { managedFiles } from '@/services'
-import { useAudioPeaks } from '@/composables/useAudioPeaks'
+import { type KeptRange, type Notification, podcasts } from '@/services'
+import { loadAudio, loadWaveform, type Waveform } from '@/composables/segmentAudio'
+import { useNotificationListeners } from '@/composables/useNotificationListeners'
 import Icon from '@/ui/Icon.vue'
 import TrackEditor from '@/podcasts/segments/TrackEditor.vue'
 import closeAsset from '@/assets/images/panel-close.png'
@@ -10,52 +11,151 @@ import closeHighlightAsset from '@/assets/images/panel-close-highlight.png'
 import audioEditorAsset from '@/assets/images/audio-editor.svg'
 
 const { t } = useI18n()
-
-const DEV_SAMPLE_AUDIO_URL = '/dev-sample-segment.mp3'
+const { listenForCategory } = useNotificationListeners()
 
 const props = defineProps<{
   readonly label: string
-  readonly managedFileId: number
+  readonly segmentId: number
 }>()
 
 const emit = defineEmits<{
   close: []
 }>()
 
-const filename = ref<string>('')
-const audioUrl = ref<string>('')
-const { peaks, duration, loading, error, load } = useAudioPeaks()
+type Phase = 'loading' | 'no-audio' | 'drawing' | 'ready' | 'error'
+
+const phase = ref<Phase>('loading')
+const error = ref('')
+const filename = ref('')
+const audioUrl = ref('')
+const waveform = ref<Waveform | null>(null)
+const savedKept = ref<Array<KeptRange> | null>(null)
+const editor = ref<InstanceType<typeof TrackEditor> | null>(null)
+// edited since the last save
+const dirty = ref(false)
+const saving = ref(false)
+// the save went through and the processors are rendering the produced audio
+const rendering = ref(false)
+const status = ref('')
+let waveformRequested = false
 
 const clip = computed(() => ({
-  id: props.managedFileId,
+  id: props.segmentId,
   name: filename.value || props.label,
-  duration: duration.value,
+  duration: waveform.value?.durationSeconds ?? 0,
   audioUrl: audioUrl.value,
-  waveform: peaks.value
+  waveform: waveform.value?.peaks ?? [],
+  kept: savedKept.value?.map((range) => ({ start: range.start / 1000, end: range.end / 1000 }))
 }))
-const ready = computed(() => !loading.value && !error.value && duration.value > 0)
 
-onMounted(async () => {
-  loading.value = true
+async function load() {
   try {
-    const managedFile = await managedFiles.managedFileById(props.managedFileId)
-    filename.value = managedFile.filename
-    // todo every segment loads the same local stand-in mp3 for now, so we can workshop
-    //  the UI without worrying about how the real audio gets here. fetch() of the
-    //  real file trips over CORS. download it with:
-    //  curl -o client/public/dev-sample-segment.mp3 <any public mp3 url>
-    audioUrl.value = DEV_SAMPLE_AUDIO_URL
-    await load(DEV_SAMPLE_AUDIO_URL)
+    const segment = await podcasts.podcastEpisodeSegmentById(props.segmentId)
+    filename.value = segment.audio.filename
+    if (!segment.audio.written) {
+      phase.value = 'no-audio'
+      return
+    }
+    if (!segment.waveform?.written) {
+      // uploads draw their own; this is for segments from before they did, or an upload
+      // whose waveform is still being drawn. either way the notification reloads us.
+      phase.value = 'drawing'
+      if (!waveformRequested) {
+        waveformRequested = true
+        await podcasts.requestPodcastEpisodeSegmentWaveform(props.segmentId)
+      }
+      return
+    }
+    const [drawn, audio] = await Promise.all([
+      loadWaveform(segment.waveform.url),
+      loadAudio(segment.audio.url)
+    ])
+    if (audioUrl.value) URL.revokeObjectURL(audioUrl.value)
+    waveform.value = drawn
+    audioUrl.value = audio
+    savedKept.value = segment.edits ?? null
+    phase.value = 'ready'
   } catch (e) {
-    console.error("couldn't open the audio editor for managed file", props.managedFileId, e)
+    console.error("couldn't open the audio editor for podcast episode segment", props.segmentId, e)
     error.value = e instanceof Error ? e.message : String(e)
-    loading.value = false
+    phase.value = 'error'
   }
+}
+
+function isThisSegment(notification: Notification) {
+  return '' + JSON.parse(notification.context)['segmentId'] === '' + props.segmentId
+}
+
+listenForCategory('audio-waveform-computed-event', async (notification: Notification) => {
+  if (!isThisSegment(notification) || phase.value !== 'drawing') return
+  const outcome = JSON.parse(notification.context)
+  if (outcome['success'] === false) {
+    error.value = outcome['error']
+    phase.value = 'error'
+    return
+  }
+  await load()
 })
 
-function onEdit(edit: any) {
-  console.log('audio editor edit for managed file', props.managedFileId, edit)
+listenForCategory('media-normalized-event', async (notification: Notification) => {
+  if (!isThisSegment(notification) || !rendering.value) return
+  rendering.value = false
+  status.value = t('podcasts.episodes.episode.segments.audio-editor.saved')
+})
+
+listenForCategory('media-normalization-failed-event', async (notification: Notification) => {
+  if (!isThisSegment(notification) || !rendering.value) return
+  rendering.value = false
+  status.value = t('podcasts.episodes.episode.segments.audio-editor.render-failed', {
+    error: JSON.parse(notification.context)['error']
+  })
+})
+
+/**
+ * the editor's ranges in whole milliseconds, or null when they amount to the whole file:
+ * an edit that keeps everything is no edit, and the segment should say so.
+ */
+function keptForSaving(): Array<KeptRange> | null {
+  const duration = waveform.value!.durationSeconds
+  const kept = editor.value!.keptRanges().map((range) => ({
+    start: Math.round(range.start * 1000),
+    end: Math.round(range.end * 1000)
+  }))
+  const everything =
+    kept.length === 1 && kept[0].start <= 10 && kept[0].end >= Math.round(duration * 1000) - 10
+  return everything ? null : kept
 }
+
+async function save() {
+  const kept = keptForSaving()
+  saving.value = true
+  status.value = t('podcasts.episodes.episode.segments.audio-editor.saving')
+  try {
+    await podcasts.editPodcastEpisodeSegment(props.segmentId, kept)
+    savedKept.value = kept
+    dirty.value = false
+    rendering.value = true
+    status.value = t('podcasts.episodes.episode.segments.audio-editor.rendering')
+  } catch (e) {
+    console.error("couldn't save the edits to podcast episode segment", props.segmentId, e)
+    status.value = t('podcasts.episodes.episode.segments.audio-editor.save-failed', {
+      error: e instanceof Error ? e.message : String(e)
+    })
+  } finally {
+    saving.value = false
+  }
+}
+
+function onEdit(edit: { operation: string }) {
+  console.log('audio editor edit for podcast episode segment', props.segmentId, edit)
+  dirty.value = true
+  status.value = ''
+}
+
+onMounted(load)
+onBeforeUnmount(() => {
+  if (audioUrl.value) URL.revokeObjectURL(audioUrl.value)
+})
 </script>
 
 <template>
@@ -66,7 +166,17 @@ function onEdit(edit: any) {
       </div>
       <div class="audio-editor-label">{{ label }}</div>
     </div>
-    <div class="close">
+    <div class="actions">
+      <span class="save-status">{{ status }}</span>
+      <button
+        v-if="phase === 'ready'"
+        type="button"
+        class="pure-button pure-button-primary"
+        :disabled="!dirty || saving || rendering"
+        @click="save"
+      >
+        {{ t('podcasts.episodes.episode.segments.audio-editor.save') }}
+      </button>
       <Icon
         :icon="closeAsset"
         :icon-hover="closeHighlightAsset"
@@ -76,9 +186,15 @@ function onEdit(edit: any) {
       />
     </div>
     <div class="editor-body">
-      <TrackEditor v-if="ready" :clip="clip" @edit="onEdit" />
-      <div v-else-if="error" class="status error">
+      <TrackEditor v-if="phase === 'ready'" ref="editor" :clip="clip" @edit="onEdit" />
+      <div v-else-if="phase === 'error'" class="status error">
         {{ t('podcasts.episodes.episode.segments.audio-editor.error', { error }) }}
+      </div>
+      <div v-else-if="phase === 'no-audio'" class="status">
+        {{ t('podcasts.episodes.episode.segments.audio-editor.no-audio') }}
+      </div>
+      <div v-else-if="phase === 'drawing'" class="status">
+        {{ t('podcasts.episodes.episode.segments.audio-editor.drawing') }}
       </div>
       <div v-else class="status">
         {{ t('podcasts.episodes.episode.segments.audio-editor.loading') }}
@@ -97,7 +213,7 @@ function onEdit(edit: any) {
   grid-template-columns: minmax(12vw, 130px) auto;
   overflow: hidden;
   grid-template-areas:
-    'type     close'
+    'type        actions'
     'editor-body editor-body';
   .type {
     position: relative;
@@ -125,10 +241,16 @@ function onEdit(edit: any) {
       }
     }
   }
-  .close {
-    grid-area: close;
+  .actions {
+    grid-area: actions;
     place-self: end;
+    display: flex;
+    align-items: center;
+    gap: var(--gutter-space-half);
     padding: var(--gutter-space-half);
+  }
+  .save-status {
+    font-size: var(--font-size-sm);
   }
   .editor-body {
     grid-area: editor-body;

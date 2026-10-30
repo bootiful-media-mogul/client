@@ -9,6 +9,9 @@ export interface TrackClip {
   duration: number // seconds
   waveform?: number[]
   audioUrl?: string
+  // the parts of the source to start with, in seconds, in the order they play. absent
+  // means all of it
+  kept?: Array<{ start: number; end: number }>
 }
 
 // A segment maps sourceStart..sourceEnd in the original file to timelineStart.
@@ -445,14 +448,20 @@ function resetClip() {
     audio = null
   }
   if (props.clip.audioUrl) audio = new Audio(props.clip.audioUrl)
-  segments.value = [
-    {
+  // saved edits open back to back. a gap left by the move tool isn't kept: the render
+  // closes it up, so the editor shows what the render will sound like.
+  const kept = props.clip.kept?.length ? props.clip.kept : [{ start: 0, end: props.clip.duration }]
+  let timelineStart = 0
+  segments.value = kept.map((range) => {
+    const segment = {
       id: `segment-${++idSequence}`,
-      timelineStart: 0,
-      sourceStart: 0,
-      sourceEnd: round(props.clip.duration)
+      timelineStart: round(timelineStart),
+      sourceStart: round(range.start),
+      sourceEnd: round(Math.min(range.end, props.clip.duration))
     }
-  ]
+    timelineStart += segment.sourceEnd - segment.sourceStart
+    return segment
+  })
   history.length = 0
   future.length = 0
   canUndo.value = false
@@ -464,6 +473,15 @@ function resetClip() {
   })
 }
 watch(() => props.clip.id, resetClip, { immediate: true })
+
+// what to render: the source ranges, in the order they play
+function keptRanges(): Array<{ start: number; end: number }> {
+  return sorted(cloneSegments()).map((segment) => ({
+    start: segment.sourceStart,
+    end: segment.sourceEnd
+  }))
+}
+defineExpose({ keptRanges })
 onBeforeUnmount(() => {
   pause()
   if (audio) audio.src = ''

@@ -411,8 +411,20 @@ This is NOT reversible! `,
     'podcasts.episodes.episode.segments.number': 'Segment {order} ',
     'podcasts.episodes.episode.graphic': 'Graphic',
     'podcasts.episodes.episode.segments.audio-editor.close': 'Close the audio editor',
-    'podcasts.episodes.episode.segments.audio-editor.loading':
-      'Loading the audio and drawing the waveform...',
+    'podcasts.episodes.episode.segments.audio-editor.loading': 'Loading the audio...',
+    'podcasts.episodes.episode.segments.audio-editor.drawing': 'Drawing the waveform...',
+    'podcasts.episodes.episode.segments.audio-editor.no-audio':
+      'Upload audio for this segment first, then you can edit it here.',
+    'podcasts.episodes.episode.segments.audio-editor.save': 'Save',
+    'podcasts.episodes.episode.segments.audio-editor.saving': 'Saving...',
+    'podcasts.episodes.episode.segments.audio-editor.rendering':
+      'Saved. Rendering the edited audio...',
+    'podcasts.episodes.episode.segments.audio-editor.saved':
+      'Saved, and the edited audio is ready.',
+    'podcasts.episodes.episode.segments.audio-editor.save-failed':
+      "Couldn't save the edits: {error}",
+    'podcasts.episodes.episode.segments.audio-editor.render-failed':
+      "The edits were saved, but the audio couldn't be rendered: {error}",
     'podcasts.episodes.episode.segments.audio-editor.error': "Couldn't load the audio: {error}",
     'podcasts.episodes.buttons.add-segment': 'Add a New Segment',
     'podcasts.episodes.episode.reference': 'the episode titled: {title}',

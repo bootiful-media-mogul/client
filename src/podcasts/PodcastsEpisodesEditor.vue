@@ -385,6 +385,7 @@ onMounted(async () => {
               type="audio"
               :label="t('podcasts.episodes.episode.segments.number', { order: segment.order })"
               :managed-file-id="segment.audio.id"
+              :segment-id="segment.id"
               :duration="segment.duration"
               accept=".mp3,audio/mpeg"
               show-reorder

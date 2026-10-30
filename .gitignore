@@ -59,7 +59,3 @@ build/
 
 ### VS Code ###
 .vscode/
-
-
-# local stand-in audio for workshopping the segment audio editor UI
-public/dev-sample-segment.mp3
