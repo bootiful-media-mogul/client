@@ -46,7 +46,7 @@ type Gesture =
 </script>
 
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import {
   ChevronDown,
   GripVertical,
@@ -78,12 +78,26 @@ const zoom = ref(4)
 const tool = ref<'range' | 'move'>('range')
 const scrollArea = ref<HTMLElement | null>(null)
 const ruler = ref<HTMLElement | null>(null)
+const lane = ref<HTMLElement | null>(null)
 const isPlaying = ref(false)
 const canUndo = ref(false)
 const canRedo = ref(false)
 const history: TrackSegment[][] = []
 const future: TrackSegment[][] = []
 let gesture: Gesture | null = null
+// On touch screens a one-finger swipe on the track scrolls (the timeline sideways, the
+// page up and down), so a range selection starts from touch-and-hold instead. The ruler
+// still selects immediately, since nothing there needs to scroll.
+let pendingPress: {
+  pointerId: number
+  x: number
+  y: number
+  target: Element
+  timer: number
+} | null = null
+const LONG_PRESS_MS = 300
+const LONG_PRESS_SLOP = 8
+const coarsePointer = window.matchMedia('(pointer: coarse)').matches
 let audio: HTMLAudioElement | null = null
 let frame: number | null = null
 let playbackStart = 0
@@ -205,24 +219,81 @@ function deleteSelection() {
   publish('ripple-delete', { range: { start, end }, removedDuration: round(removed) })
 }
 
-function timeFromEvent(event: PointerEvent) {
+function timeAt(clientX: number) {
   const rect = ruler.value!.getBoundingClientRect()
-  return Math.max(
-    0,
-    Math.min(timelineWidth.value / zoom.value, (event.clientX - rect.left) / zoom.value)
-  )
+  return Math.max(0, Math.min(timelineWidth.value / zoom.value, (clientX - rect.left) / zoom.value))
+}
+function timeFromEvent(event: PointerEvent) {
+  return timeAt(event.clientX)
 }
 function capturePointer(event: PointerEvent) {
   ;(event.currentTarget as Element).setPointerCapture(event.pointerId)
 }
 function startRange(event: PointerEvent) {
   if (event.button !== 0) return
-  const start = Math.min(timelineDuration.value, timeFromEvent(event))
+  beginRange(event.pointerId, event.currentTarget as Element, timeFromEvent(event))
+}
+function beginRange(pointerId: number, target: Element, time: number) {
+  const start = Math.min(timelineDuration.value, time)
   pause()
-  gesture = { type: 'range', start, moved: false, pointerId: event.pointerId }
-  capturePointer(event)
+  gesture = { type: 'range', start, moved: false, pointerId }
+  target.setPointerCapture(pointerId)
   setSelection(start, start)
 }
+function onLanePointerDown(event: PointerEvent) {
+  if (tool.value !== 'range') return
+  if (event.pointerType !== 'touch') {
+    startRange(event)
+    return
+  }
+  cancelLongPress()
+  const target = event.currentTarget as Element
+  const { pointerId, clientX: x, clientY: y } = event
+  const timer = window.setTimeout(() => {
+    pendingPress = null
+    beginRange(pointerId, target, timeAt(x))
+    navigator.vibrate?.(10)
+  }, LONG_PRESS_MS)
+  pendingPress = { pointerId, x, y, target, timer }
+}
+function cancelLongPress() {
+  if (pendingPress) window.clearTimeout(pendingPress.timer)
+  pendingPress = null
+}
+function onLanePointerMove(event: PointerEvent) {
+  const press = pendingPress
+  if (
+    press &&
+    press.pointerId === event.pointerId &&
+    Math.hypot(event.clientX - press.x, event.clientY - press.y) > LONG_PRESS_SLOP
+  )
+    cancelLongPress() // the finger is swiping, so let the browser scroll
+  moveGesture(event)
+}
+function onLanePointerEnd(event: PointerEvent) {
+  const press = pendingPress
+  if (press && press.pointerId === event.pointerId) {
+    cancelLongPress()
+    // a quick tap moves the playhead, like a click does
+    if (event.type === 'pointerup') {
+      playhead.value = Math.min(timelineDuration.value, timeAt(press.x))
+      clearSelection()
+    }
+  }
+  finishGesture(event)
+}
+// the track allows panning, so once a drag has started the browser would scroll along
+// with it; a non-passive touchmove listener is the only way to stop that.
+function blockScrollWhileDragging(event: TouchEvent) {
+  if (gesture) event.preventDefault()
+}
+onMounted(
+  () => lane.value?.addEventListener('touchmove', blockScrollWhileDragging, { passive: false })
+)
+onBeforeUnmount(() => {
+  cancelLongPress()
+  lane.value?.removeEventListener('touchmove', blockScrollWhileDragging)
+})
 function startMove(event: PointerEvent, segment: TrackSegment) {
   if (event.button !== 0) return
   event.stopPropagation()
@@ -355,6 +426,13 @@ function togglePlayback() {
     return
   }
   if (playhead.value >= timelineDuration.value - EPSILON) playhead.value = 0
+  // start the audio here, inside the tap or click: mobile Safari only lets audio begin
+  // from the user gesture itself, not from a later animation frame.
+  const segment = segmentAt(playhead.value)
+  if (audio && segment) {
+    audio.currentTime = segment.sourceStart + playhead.value - segment.timelineStart
+    audio.play().catch(() => pause())
+  }
   playbackAt = playhead.value
   playbackStart = performance.now()
   isPlaying.value = true
@@ -546,12 +624,13 @@ onBeforeUnmount(() => {
             </div>
           </div>
           <div
+            ref="lane"
             class="track-lane"
             :class="{ 'move-mode': tool === 'move' }"
-            @pointerdown="tool === 'range' && startRange($event)"
-            @pointermove="moveGesture"
-            @pointerup="finishGesture"
-            @pointercancel="finishGesture"
+            @pointerdown="onLanePointerDown"
+            @pointermove="onLanePointerMove"
+            @pointerup="onLanePointerEnd"
+            @pointercancel="onLanePointerEnd"
           >
             <div
               v-for="segment in segments"
@@ -625,7 +704,11 @@ onBeforeUnmount(() => {
           ><strong
             >{{ formatTime(selection.start, true) }} → {{ formatTime(selection.end, true) }}</strong
           ><span>{{ formatTime(selectedDuration, true) }} selected</span></template
-        ><span v-else>Drag across the track to select a range</span>
+        ><span v-else>{{
+          coarsePointer
+            ? 'Touch and hold the track, then drag to select a range'
+            : 'Drag across the track to select a range'
+        }}</span>
       </div>
       <button
         type="button"
@@ -659,6 +742,14 @@ onBeforeUnmount(() => {
 .editor,
 .editor * {
   box-sizing: border-box;
+}
+/* touch-and-hold on the track selects audio; without this, mobile Safari starts a text
+   selection or pops up its callout menu instead. */
+.ruler,
+.track-lane {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 .editor button {
   font: inherit;
@@ -880,7 +971,7 @@ onBeforeUnmount(() => {
   background: repeating-linear-gradient(to right, transparent 0, transparent 74px, #ececec 75px),
     var(--te-surface);
   border-bottom: 1px solid var(--te-line);
-  touch-action: none;
+  touch-action: pan-x pan-y;
   cursor: crosshair;
 }
 .track-lane.move-mode {
@@ -895,9 +986,9 @@ onBeforeUnmount(() => {
   border-radius: 5px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   overflow: hidden;
-  touch-action: none;
 }
 .move-mode .audio-segment {
+  touch-action: none;
   cursor: grab;
 }
 .segment-top {
@@ -920,6 +1011,7 @@ onBeforeUnmount(() => {
   padding: 0;
   cursor: grab;
   flex: none;
+  touch-action: none;
 }
 .segment-name {
   font-size: 10px;
@@ -1143,6 +1235,47 @@ onBeforeUnmount(() => {
   }
   .delete-button kbd {
     font-size: 10px;
+  }
+}
+/* touch screens: fingers need ~44px targets. the grip and trim handle get a bigger
+   invisible hit area without looking any wider. */
+@media (pointer: coarse) {
+  .editor-toolbar {
+    height: auto;
+    min-height: 58px;
+    flex-wrap: wrap;
+    row-gap: 6px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+  .transport-button,
+  .icon-button,
+  .play-button {
+    width: 44px;
+    height: 44px;
+  }
+  .tool-button {
+    min-height: 44px;
+    padding: 5px 10px;
+  }
+  .tool-button span {
+    display: inline;
+  }
+  .delete-button {
+    min-height: 44px;
+  }
+  .segment-grip {
+    position: relative;
+  }
+  .segment-grip::before {
+    content: '';
+    position: absolute;
+    inset: -12px -14px -12px -4px;
+  }
+  .trim-handle::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 0 -26px;
   }
 }
 </style>
