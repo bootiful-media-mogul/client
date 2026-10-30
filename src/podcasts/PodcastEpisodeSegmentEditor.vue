@@ -33,6 +33,8 @@ function fileTypeIconFor(type: string): string {
 interface Props {
   label: string
   managedFileId: number
+  // the segment this row is, for the audio editor. the graphic row has none
+  segmentId?: number
   accept: string
   showReorder?: boolean
   canMoveUp?: boolean
@@ -73,7 +75,7 @@ const emit = defineEmits<{
   <PodcastEpisodeSegmentAudioEditor
     v-if="editingAudio"
     :label="label"
-    :managed-file-id="managedFileId"
+    :segment-id="segmentId!"
     @close="editingAudio = false"
   />
   <div v-else class="row segment-row">

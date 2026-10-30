@@ -264,6 +264,52 @@ export class Podcasts {
     this.client = client
   }
 
+  // what the segment audio editor needs to open: the upload, its waveform, and the edits
+  async podcastEpisodeSegmentById(podcastEpisodeSegmentId: number): Promise<PodcastEpisodeSegment> {
+    const query = `
+      query ($podcastEpisodeSegmentId: Int) {
+        podcastEpisodeSegmentById(podcastEpisodeSegmentId: $podcastEpisodeSegmentId) {
+          id, name, order, duration,
+          audio { id, filename, contentType, written, url },
+          waveform { id, written, url },
+          edits { start, end }
+        }
+      }
+    `
+    const result = await this.client.query(query, { podcastEpisodeSegmentId })
+    if (result.error) throw result.error
+    return result.data['podcastEpisodeSegmentById'] as PodcastEpisodeSegment
+  }
+
+  // keeps only these ranges (milliseconds) of the segment's audio and re-renders it; the
+  // render finishes later, with a media-normalized-event
+  async editPodcastEpisodeSegment(
+    podcastEpisodeSegmentId: number,
+    kept: Array<KeptRange> | null
+  ): Promise<boolean> {
+    const mutation = `
+      mutation ($podcastEpisodeSegmentId: Int, $kept: [KeptRangeInput!]) {
+        editPodcastEpisodeSegment(podcastEpisodeSegmentId: $podcastEpisodeSegmentId, kept: $kept)
+      }
+    `
+    const result = await this.client.mutation(mutation, { podcastEpisodeSegmentId, kept })
+    if (result.error) throw result.error
+    return result.data['editPodcastEpisodeSegment'] as boolean
+  }
+
+  // segments from before waveforms were drawn on upload get one on demand; it arrives
+  // with an audio-waveform-computed-event
+  async requestPodcastEpisodeSegmentWaveform(podcastEpisodeSegmentId: number): Promise<boolean> {
+    const mutation = `
+      mutation ($podcastEpisodeSegmentId: Int) {
+        requestPodcastEpisodeSegmentWaveform(podcastEpisodeSegmentId: $podcastEpisodeSegmentId)
+      }
+    `
+    const result = await this.client.mutation(mutation, { podcastEpisodeSegmentId })
+    if (result.error) throw result.error
+    return result.data['requestPodcastEpisodeSegmentWaveform'] as boolean
+  }
+
   async createPodcastEpisodeSegment(podcastEpisodeId: number) {
     const mutation = ` 
       mutation ($podcastEpisodeId: Int ){ 
@@ -627,6 +673,12 @@ export class Transcript {
   }
 }
 
+// one stretch of a segment's uploaded audio to keep, in milliseconds
+export interface KeptRange {
+  start: number
+  end: number
+}
+
 export class PodcastEpisodeSegment {
   id: number
   name: string
@@ -634,6 +686,10 @@ export class PodcastEpisodeSegment {
   order: number
   transcript: Transcript
   duration: number
+  // null for older segments until one is requested
+  waveform?: ManagedFile | null
+  // null when the segment hasn't been edited
+  edits?: Array<KeptRange> | null
 
   constructor(
     id: number,
