@@ -275,7 +275,7 @@ onMounted(async () => {
     await loadEpisodeFromDbIntoEditor(draftEpisode.value.id)
   })
 
-  listenForCategory('publication-started-event', async (_: Notification) => {
+  listenForCategory('publication-started-event', async () => {
     await loadEpisodeFromDbIntoEditor(draftEpisode.value.id)
   })
 })
@@ -392,6 +392,7 @@ onMounted(async () => {
               :can-move-down="!downArrowDisabled(draftEpisode, segment)"
               show-delete
               show-transcript
+              show-audio-editor
               @move-up="movePodcastEpisodeSegmentUp(draftEpisode, segment)"
               @move-down="movePodcastEpisodeSegmentDown(draftEpisode, segment)"
               @delete="deletePodcastEpisodeSegment(draftEpisode, segment)"

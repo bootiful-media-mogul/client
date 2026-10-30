@@ -24,7 +24,7 @@
               <a
                 class="podcasts-icon"
                 href="#"
-                @click.prevent="navigateToEpisodesPageForPodcast(podcast.id, $event)"
+                @click.prevent="navigateToEpisodesPageForPodcast(podcast.id)"
               >
                 {{ t('podcasts.episodes') }}
               </a>
@@ -166,7 +166,7 @@ async function deletePodcast(podcast: Podcast) {
   await refresh()
 }
 
-async function navigateToEpisodesPageForPodcast(podcastId: number, e: Event) {
+async function navigateToEpisodesPageForPodcast(podcastId: number) {
   await router.push({
     name: 'podcasts/episodes',
     params: { podcastId: podcastId }

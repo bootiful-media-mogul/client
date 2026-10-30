@@ -43,7 +43,7 @@ onMounted(async () => {
   disabled.value = await isPluginDisabled()
 })
 
-listenForCategory('podcast-episode-completed-event', async (evt) => {
+listenForCategory('podcast-episode-completed-event', async () => {
   disabled.value = await isPluginDisabled()
 })
 
