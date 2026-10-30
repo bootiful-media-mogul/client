@@ -45,10 +45,10 @@
 }
 </style>
 <script lang="ts" setup>
-import { mogul, Podcast, podcasts, resetNotesForNotable } from '@/services'
+import { mogul, Podcast, podcasts } from '@/services'
 import InputWrapper from '@/ui/input/InputWrapper.vue'
 import InputTools from '@/ui/InputTools.vue'
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
@@ -71,7 +71,7 @@ const emit = defineEmits<{
   done: []
 }>()
 
-const updatePodcast = async function (e: Event) {
+const updatePodcast = async function () {
   await podcasts.update(props.podcast.id, title.value)
   recompute()
 }

@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import ManagedFileComponent from '@/managedfiles/ManagedFileComponent.vue'
+import PodcastEpisodeSegmentAudioEditor from '@/podcasts/segments/PodcastEpisodeSegmentAudioEditor.vue'
 import Icon from '@/ui/Icon.vue'
 import { durationToString } from '@/dates'
 
@@ -15,6 +16,8 @@ import deleteHighlightAsset from '@/assets/images/delete-highlight.png'
 import deleteAsset from '@/assets/images/delete.png'
 import transcriptHighlightAsset from '@/assets/images/transcript-highlight.png'
 import transcriptAsset from '@/assets/images/transcript.png'
+import audioEditorHighlightAsset from '@/assets/images/audio-editor-highlight.svg'
+import audioEditorAsset from '@/assets/images/audio-editor.svg'
 
 //
 function fileTypeIconFor(type: string): string {
@@ -36,6 +39,7 @@ interface Props {
   canMoveDown?: boolean
   showDelete?: boolean
   showTranscript?: boolean
+  showAudioEditor?: boolean
   order?: number
   type: string
   duration?: number
@@ -47,10 +51,14 @@ const props = withDefaults(defineProps<Props>(), {
   canMoveDown: false,
   showDelete: false,
   showTranscript: false,
+  showAudioEditor: false,
   order: 0,
   type: 'segment',
   duration: undefined
 })
+
+// when true, the audio editor replaces this row entirely
+const editingAudio = ref(false)
 
 const formattedDuration = computed(() => durationToString(props.duration))
 
@@ -62,7 +70,13 @@ const emit = defineEmits<{
 }>()
 </script>
 <template>
-  <div class="row segment-row">
+  <PodcastEpisodeSegmentAudioEditor
+    v-if="editingAudio"
+    :label="label"
+    :managed-file-id="managedFileId"
+    @close="editingAudio = false"
+  />
+  <div v-else class="row segment-row">
     <div class="type">
       <div class="segment-controls-icon">
         <Icon :icon-hover="fileTypeIconFor(props.type)" :icon="fileTypeIconFor(props.type)" />
@@ -102,6 +116,17 @@ const emit = defineEmits<{
           :icon-hover="transcriptAsset"
           class="transcript-icon"
           @click.prevent="emit('editTranscript')"
+        />
+      </div>
+
+      <!-- Audio editor action (if enabled) -->
+      <div class="audio-editor-button">
+        <Icon
+          v-if="showAudioEditor"
+          :icon="audioEditorHighlightAsset"
+          :icon-hover="audioEditorAsset"
+          class="audio-editor-icon"
+          @click.prevent="editingAudio = true"
         />
       </div>
 
@@ -166,11 +191,15 @@ const emit = defineEmits<{
     padding: var(--gutter-space-half);
     grid-area: buttons;
     display: grid;
-    grid-template-areas: 'transcript-button duration delete-button ';
-    grid-template-columns: min-content auto min-content;
+    grid-template-areas: 'transcript-button audio-editor-button duration delete-button ';
+    grid-template-columns: min-content min-content auto min-content;
+    grid-gap: var(--gutter-space-half);
     align-items: center;
     .transcript-button {
       grid-area: transcript-button;
+    }
+    .audio-editor-button {
+      grid-area: audio-editor-button;
     }
     .duration {
       grid-area: duration;
