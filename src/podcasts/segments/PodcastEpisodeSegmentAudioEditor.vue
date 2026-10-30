@@ -133,7 +133,6 @@ function onEdit(edit: any) {
   .editor-body {
     grid-area: editor-body;
     border-top: 1px solid black;
-    padding: var(--gutter-space-half);
     min-width: 0;
   }
   .status {
