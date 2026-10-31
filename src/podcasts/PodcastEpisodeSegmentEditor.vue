@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
+import { podcasts } from '@/services'
 import ManagedFileComponent from '@/managedfiles/ManagedFileComponent.vue'
 import PodcastEpisodeSegmentAudioEditor from '@/podcasts/segments/PodcastEpisodeSegmentAudioEditor.vue'
 import Icon from '@/ui/Icon.vue'
@@ -42,6 +43,14 @@ interface Props {
   showDelete?: boolean
   showTranscript?: boolean
   showAudioEditor?: boolean
+  // being cleaned right now: the editor waits for it
+  cleaning?: boolean
+  // there's a cleaned copy of the audio as it is now
+  cleaned?: boolean
+  // there's audio and a cleanvoice key, and no cleaning running
+  cleanable?: boolean
+  // the last cleaning failed; the editor works on the original
+  cleaningError?: string | null
   order?: number
   type: string
   duration?: number
@@ -54,6 +63,10 @@ const props = withDefaults(defineProps<Props>(), {
   showDelete: false,
   showTranscript: false,
   showAudioEditor: false,
+  cleaning: false,
+  cleaned: false,
+  cleanable: false,
+  cleaningError: null,
   order: 0,
   type: 'segment',
   duration: undefined
@@ -61,6 +74,18 @@ const props = withDefaults(defineProps<Props>(), {
 
 // when true, the audio editor replaces this row entirely
 const editingAudio = ref(false)
+
+// a segment that's never been cleaned, for a mogul with a cleanvoice key, gets cleaned
+// first; the editor opens on the cleaned audio once that's done. otherwise -- no key, or
+// a cleaning that failed -- it opens on the original.
+async function openAudioEditor() {
+  if (props.cleaning) return
+  if (props.cleanable && !props.cleaned && !props.cleaningError) {
+    await podcasts.cleanPodcastEpisodeSegment(props.segmentId!)
+    return
+  }
+  editingAudio.value = true
+}
 
 const formattedDuration = computed(() => durationToString(props.duration))
 
@@ -127,8 +152,9 @@ const emit = defineEmits<{
           v-if="showAudioEditor"
           :icon="audioEditorHighlightAsset"
           :icon-hover="audioEditorAsset"
+          :disabled="cleaning"
           class="audio-editor-icon"
-          @click.prevent="editingAudio = true"
+          @click.prevent="openAudioEditor"
         />
       </div>
 

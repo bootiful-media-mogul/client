@@ -253,7 +253,16 @@ const translations = {
         'The podcast with ID #{key} is completed and ready for production',
       'podcast-created-event': `The podcast "{context}", with ID #{key}, has been created.`.trim(),
       'podcast-updated-event': `The podcast "{context}", with ID #{key}, has been updated.`.trim(),
-      'podcast-deleted-event': `The podcast "{context}", with ID #{key}, has been deleted.`.trim()
+      'podcast-deleted-event': `The podcast "{context}", with ID #{key}, has been deleted.`.trim(),
+      'transcription-failed-event': 'Transcribing #{key} failed.',
+      'podcast-episode-segment-cleaning-started-event':
+        "Cleaning the audio for segment #{key}. It takes a few minutes; you'll hear when it's ready.",
+      'podcast-episode-segment-cleaned-event':
+        'The audio for segment #{key} is clean and ready to edit.',
+      'podcast-episode-segment-cleaning-failed-event':
+        "The audio for segment #{key} couldn't be cleaned ({reason}), so it will use the original audio.",
+      'podcast-episode-publication-waiting-for-cleaning-event':
+        'Episode #{key} will be published as soon as its audio has finished cleaning.'
     },
 
     // managed files
@@ -416,6 +425,20 @@ This is NOT reversible! `,
     'podcasts.episodes.episode.segments.audio-editor.no-audio':
       'Upload audio for this segment first, then you can edit it here.',
     'podcasts.episodes.episode.segments.audio-editor.save': 'Save',
+    'podcasts.episodes.episode.segments.audio-editor.not-cleaned':
+      "This segment's audio couldn't be cleaned ({reason}), so you're editing the original.",
+    'podcasts.episodes.episode.segments.audio-editor.filters.fillers': 'Shorten fillers',
+    'podcasts.episodes.episode.segments.audio-editor.filters.stutters': 'Shorten stutters',
+    'podcasts.episodes.episode.segments.audio-editor.filters.silences': 'Cut long silences',
+    'podcasts.episodes.episode.segments.audio-editor.filters.longer-than': 'longer than (seconds)',
+    'podcasts.episodes.episode.segments.audio-editor.filters.leave': 'leaving (seconds)',
+    'podcasts.episodes.episode.segments.audio-editor.filters.hint':
+      'Shaded parts of the track will be cut. Tap one to keep it.',
+    'podcasts.episodes.episode.segments.audio-editor.marks.FILLER_SOUND': 'Filler (tap to keep)',
+    'podcasts.episodes.episode.segments.audio-editor.marks.STUTTERING': 'Stutter (tap to keep)',
+    'podcasts.episodes.episode.segments.audio-editor.marks.SILENCE': 'Long silence (tap to keep)',
+    'podcasts.episodes.episode.segments.audio-editor.listen':
+      'Listen to the edited audio, exactly as it will be in the episode',
     'podcasts.episodes.episode.segments.audio-editor.saving': 'Saving...',
     'podcasts.episodes.episode.segments.audio-editor.rendering':
       'Saved. Rendering the edited audio...',
@@ -454,7 +477,12 @@ This is NOT reversible! `,
     // settings
     'settings.title': 'Settings',
     'settings.save-button': 'Save configuration changes for {plugin}',
-    'settings.no-configuration-for-plugin': 'No configuration settings for the {plugin} plugin'
+    'settings.no-configuration-for-plugin': 'No configuration settings for the {plugin} plugin',
+    'settings.categories.cleanvoice.title': 'Cleanvoice',
+    'settings.categories.cleanvoice.apiKey':
+      'Your Cleanvoice API key. With one, uploaded audio is cleaned automatically.',
+    'settings.categories.cleanvoice.applyDefaultFilters':
+      'Shorten fillers and stutters, and trim long silences, as soon as audio is cleaned'
   }
 }
 

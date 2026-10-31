@@ -36,6 +36,16 @@ export interface TrackEdit {
   [detail: string]: unknown
 }
 
+// a stretch of the source an automatic cut takes out (active) or would have but was put
+// back (not active), in seconds. tapping one asks for it to be flipped.
+export interface TrackMark {
+  id: string
+  start: number
+  end: number
+  kind: string
+  active: boolean
+}
+
 type Gesture =
   | { type: 'range'; pointerId: number; moved: boolean; start: number }
   | {
@@ -67,11 +77,13 @@ import {
   Volume2
 } from 'lucide-vue-next'
 import Waveform from './Waveform.vue'
+import { parseTimecode } from './timecode'
 
-const props = defineProps<{ clip: TrackClip }>()
+const props = defineProps<{ clip: TrackClip; marks?: Array<TrackMark> }>()
 const emit = defineEmits<{
   edit: [edit: TrackEdit]
   'selection-change': [selection: TrackSelection | null]
+  'toggle-mark': [id: string]
 }>()
 
 const segments = ref<TrackSegment[]>([])
@@ -140,6 +152,20 @@ function formatTime(seconds: number, precise = false) {
   return precise ? `${base}.${String(Math.floor((safe % 1) * 100)).padStart(2, '0')}` : base
 }
 
+// the marks that fall inside one clip, placed on it in pixels
+function marksIn(segment: TrackSegment) {
+  return (props.marks ?? [])
+    .filter((mark) => mark.end > segment.sourceStart && mark.start < segment.sourceEnd)
+    .map((mark) => {
+      const from = Math.max(mark.start, segment.sourceStart)
+      const to = Math.min(mark.end, segment.sourceEnd)
+      return {
+        ...mark,
+        left: (from - segment.sourceStart) * zoom.value,
+        width: Math.max(2, (to - from) * zoom.value)
+      }
+    })
+}
 function cloneSegments() {
   return segments.value.map((segment) => ({ ...segment }))
 }
@@ -396,15 +422,38 @@ function segmentAt(time: number) {
     (segment) => time >= segment.timelineStart && time < endOf(segment) - EPSILON
   )
 }
+// the clip the audio is playing right now, if any
+let playing: TrackSegment | null = null
+
 function pause() {
   isPlaying.value = false
   if (frame) cancelAnimationFrame(frame)
   frame = null
+  playing = null
   audio?.pause()
 }
+// the one seek playing a clip needs: to where the playhead is inside it
+function startPlaying(segment: TrackSegment, time: number) {
+  playing = segment
+  if (!audio) return
+  audio.currentTime = segment.sourceStart + time - segment.timelineStart
+  if (audio.paused) audio.play().catch(() => pause())
+}
+/**
+ * while a clip plays, the audio is the clock: the playhead follows the audio, and the
+ * audio is only told where to go when playback crosses into another clip. steering the
+ * audio to follow the wall clock instead -- seeking whenever the two drifted apart --
+ * stalled it on every seek, which made it drift again, and it stuttered several times a
+ * second. the wall clock only moves the playhead across gaps, where there's no audio.
+ */
 function playbackFrame(now: number) {
   if (!isPlaying.value) return
-  const time = playbackAt + (now - playbackStart) / 1000
+  let time: number
+  if (playing && audio && !audio.paused && !audio.seeking) {
+    time = playing.timelineStart + audio.currentTime - playing.sourceStart
+    playbackAt = time
+    playbackStart = now
+  } else time = playbackAt + (now - playbackStart) / 1000
   if (time >= timelineDuration.value) {
     playhead.value = timelineDuration.value
     pause()
@@ -412,12 +461,35 @@ function playbackFrame(now: number) {
   }
   playhead.value = time
   const segment = segmentAt(time)
-  if (audio && segment) {
-    const sourceTime = segment.sourceStart + time - segment.timelineStart
-    if (Math.abs(audio.currentTime - sourceTime) > 0.14) audio.currentTime = sourceTime
-    if (audio.paused) audio.play().catch(() => pause())
-  } else audio?.pause()
+  if (segment?.id !== playing?.id) {
+    if (segment) startPlaying(segment, time)
+    else {
+      playing = null
+      audio?.pause()
+    }
+  }
   frame = requestAnimationFrame(playbackFrame)
+}
+// typing a time moves the playhead there exactly, which a drag can't: say, to the end
+// of a 30-second bumper, to cut it out
+const jumpText = ref('')
+const jumpInvalid = ref(false)
+function jumpTo() {
+  const seconds = parseTimecode(jumpText.value)
+  if (seconds === null) {
+    jumpInvalid.value = true
+    return
+  }
+  jumpInvalid.value = false
+  const wasPlaying = isPlaying.value
+  pause()
+  clearSelection()
+  playhead.value = round(Math.min(seconds, timelineDuration.value))
+  nextTick(() => {
+    const area = scrollArea.value
+    if (area) area.scrollLeft = Math.max(0, playhead.value * zoom.value - area.clientWidth / 2)
+  })
+  if (wasPlaying) togglePlayback()
 }
 function goToStart() {
   playhead.value = 0
@@ -432,10 +504,7 @@ function togglePlayback() {
   // start the audio here, inside the tap or click: mobile Safari only lets audio begin
   // from the user gesture itself, not from a later animation frame.
   const segment = segmentAt(playhead.value)
-  if (audio && segment) {
-    audio.currentTime = segment.sourceStart + playhead.value - segment.timelineStart
-    audio.play().catch(() => pause())
-  }
+  if (segment) startPlaying(segment, playhead.value)
   playbackAt = playhead.value
   playbackStart = performance.now()
   isPlaying.value = true
@@ -543,6 +612,17 @@ onBeforeUnmount(() => {
           >{{ formatTime(playhead, true) }}
           <span>/ {{ formatTime(timelineDuration, true) }}</span></span
         >
+        <input
+          v-model="jumpText"
+          type="text"
+          inputmode="decimal"
+          :class="['jump-input', { invalid: jumpInvalid }]"
+          placeholder="go to 0:30.0"
+          aria-label="Go to time"
+          title="Type a time -- 90, 1:30, 1:30.25 or 1:02:03.5 -- and press Enter"
+          @input="jumpInvalid = false"
+          @keydown.enter.prevent="jumpTo"
+        />
       </div>
       <div class="toolbar-divider" />
       <div class="toolbar-group tool-group" aria-label="Timeline tools">
@@ -680,6 +760,17 @@ onBeforeUnmount(() => {
                 :source-end="segment.sourceEnd"
                 :source-duration="clip.duration"
               />
+              <button
+                v-for="mark in marksIn(segment)"
+                :key="mark.id"
+                type="button"
+                :class="['mark', mark.active ? 'mark-active' : 'mark-restored']"
+                :style="{ left: `${mark.left}px`, width: `${mark.width}px` }"
+                :title="mark.kind"
+                :aria-label="mark.kind"
+                @pointerdown.stop
+                @click.stop="emit('toggle-mark', mark.id)"
+              ></button>
               <div class="segment-source">
                 SOURCE {{ formatTime(segment.sourceStart) }} — {{ formatTime(segment.sourceEnd) }}
               </div>
@@ -798,6 +889,21 @@ onBeforeUnmount(() => {
   height: 24px;
   width: 1px;
   background: var(--te-line);
+}
+.jump-input {
+  width: 8.5em;
+  padding: 4px 6px;
+  border: 1px solid var(--te-line);
+  border-radius: 4px;
+  background: var(--te-surface);
+  color: var(--te-ink);
+  font:
+    11px 'JetBrains Mono',
+    monospace;
+}
+.jump-input.invalid {
+  border-color: #b00020;
+  outline: 1px solid #b00020;
 }
 .toolbar-spacer {
   flex: 1;
@@ -1084,6 +1190,31 @@ onBeforeUnmount(() => {
   height: 17px;
   border-radius: 2px;
   background: var(--te-ink);
+}
+/* an automatic cut: hatched where it takes audio out, just outlined where it was put back */
+.mark {
+  position: absolute;
+  top: 25px;
+  bottom: 18px;
+  padding: 0;
+  border: 0;
+  z-index: 2;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.mark-active {
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.45) 0,
+    rgba(0, 0, 0, 0.45) 3px,
+    transparent 3px,
+    transparent 6px
+  );
+}
+.mark-restored {
+  background: transparent;
+  outline: 1px dashed rgba(0, 0, 0, 0.55);
+  outline-offset: -1px;
 }
 .range-selection {
   position: absolute;

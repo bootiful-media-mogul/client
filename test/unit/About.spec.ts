@@ -5,8 +5,8 @@ import AboutView from '../../src/AboutView.vue'
 
 // Create i18n instance with your messages
 const i18n = createI18n({
-  legacy: false,  // Important! Enable Composition API mode
-  locale: 'en',   // or whatever your default locale is
+  legacy: false, // Important! Enable Composition API mode
+  locale: 'en', // or whatever your default locale is
   messages: {
     en: {
       about: {
@@ -29,6 +29,8 @@ describe('AboutView Component', () => {
 
     // Test that translations are rendered
     expect(wrapper.find('h1').text()).toBe('AboutView Us')
-    expect(wrapper.find('span').html()).toContain('Made with ❤️ by <a href="https://youtube.com/@coffeesoftware">Josh Long</a>')
+    expect(wrapper.find('span').html()).toContain(
+      'Made with ❤️ by <a href="https://youtube.com/@coffeesoftware">Josh Long</a>'
+    )
   })
 })

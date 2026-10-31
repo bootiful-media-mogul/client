@@ -53,8 +53,19 @@ function dismiss() {
   showModalNotification.value = false
 }
 
+function contextFields(context: string): Record<string, unknown> {
+  try {
+    const parsed = JSON.parse(context)
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {}
+  } catch {
+    return {}
+  }
+}
+
 function processNotification(notification: Notification) {
   latestNotification.value = t('notifications.' + notification.category, {
+    // a json context's fields are there by name too, for messages that want, say, a reason
+    ...contextFields(notification.context),
     key: notification.key,
     mogulId: notification.mogulId,
     when: notification.when,
