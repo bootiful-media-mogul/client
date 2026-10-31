@@ -475,14 +475,19 @@ This is NOT reversible! `,
     'podcasts.podcasts.delete': 'Delete',
 
     // settings
-    'settings.title': 'Settings',
-    'settings.save-button': 'Save configuration changes for {plugin}',
-    'settings.no-configuration-for-plugin': 'No configuration settings for the {plugin} plugin',
-    'settings.categories.cleanvoice.title': 'Cleanvoice',
-    'settings.categories.cleanvoice.apiKey':
-      'Your Cleanvoice API key. With one, uploaded audio is cleaned automatically.',
-    'settings.categories.cleanvoice.applyDefaultFilters':
-      'Shorten fillers and stutters, and trim long silences, as soon as audio is cleaned'
+    settings: {
+      title: 'Settings',
+      'save-button': 'Save configuration changes for {plugin}',
+      'no-configuration-for-plugin': 'No configuration settings for the {plugin} plugin',
+      categories: {
+        cleanvoice: {
+          title: 'Cleanvoice',
+          apiKey: 'Your Cleanvoice API key. With one, uploaded audio is cleaned automatically.',
+          applyDefaultFilters:
+            'Shorten fillers and stutters, and trim long silences, as soon as audio is cleaned'
+        }
+      }
+    }
   }
 }
 
