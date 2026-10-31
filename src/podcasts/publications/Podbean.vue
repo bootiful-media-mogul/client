@@ -51,7 +51,7 @@ async function publish(): Promise<number> {
 
 const disabled = ref<boolean>(false)
 
-listenForCategory('podcast-episode-completed-event', async (evt) => {
+listenForCategory('podcast-episode-completed-event', async () => {
   disabled.value = await isPluginDisabled()
 })
 

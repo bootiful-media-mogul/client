@@ -253,6 +253,28 @@ onMounted(async () => {
     draftEpisode.value.duration = segments.value.reduce((total, s) => total + (s.duration || 0), 0)
   })
 
+  // a segment's cleaning state decides what its editor button does. the toasters say what
+  // happened; these keep the buttons in step without reloading the episode.
+  function cleaningChanged(evt: Notification, cleaning: boolean, cleaned: boolean) {
+    const ctx = JSON.parse(evt.context)
+    if ('' + ctx['episodeId'] !== '' + draftEpisode.value.id) return
+    const segment = segments.value.find((s) => '' + s.id === '' + ctx['segmentId'])
+    if (!segment) return
+    segment.cleaning = cleaning
+    segment.cleaned = cleaned
+    segment.cleanable = !cleaning
+    segment.cleaningError = ctx['reason'] ?? null
+  }
+  listenForCategory('podcast-episode-segment-cleaning-started-event', async (evt: Notification) =>
+    cleaningChanged(evt, true, false)
+  )
+  listenForCategory('podcast-episode-segment-cleaned-event', async (evt: Notification) =>
+    cleaningChanged(evt, false, true)
+  )
+  listenForCategory('podcast-episode-segment-cleaning-failed-event', async (evt: Notification) =>
+    cleaningChanged(evt, false, false)
+  )
+
   // both of these are keyed by episode id, and both arrive for every episode this
   // mogul has open anywhere, so check before believing them.
   listenForCategory('podcast-episode-render-started-event', async (evt: Notification) => {
@@ -275,7 +297,7 @@ onMounted(async () => {
     await loadEpisodeFromDbIntoEditor(draftEpisode.value.id)
   })
 
-  listenForCategory('publication-started-event', async (_: Notification) => {
+  listenForCategory('publication-started-event', async () => {
     await loadEpisodeFromDbIntoEditor(draftEpisode.value.id)
   })
 })
@@ -385,6 +407,11 @@ onMounted(async () => {
               type="audio"
               :label="t('podcasts.episodes.episode.segments.number', { order: segment.order })"
               :managed-file-id="segment.audio.id"
+              :segment-id="segment.id"
+              :cleaning="segment.cleaning"
+              :cleaned="segment.cleaned"
+              :cleanable="segment.cleanable"
+              :cleaning-error="segment.cleaningError"
               :duration="segment.duration"
               accept=".mp3,audio/mpeg"
               show-reorder
@@ -392,6 +419,7 @@ onMounted(async () => {
               :can-move-down="!downArrowDisabled(draftEpisode, segment)"
               show-delete
               show-transcript
+              show-audio-editor
               @move-up="movePodcastEpisodeSegmentUp(draftEpisode, segment)"
               @move-down="movePodcastEpisodeSegmentDown(draftEpisode, segment)"
               @delete="deletePodcastEpisodeSegment(draftEpisode, segment)"

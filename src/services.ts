@@ -264,6 +264,78 @@ export class Podcasts {
     this.client = client
   }
 
+  // what the segment audio editor needs to open: the upload, its waveform, and the edits
+  async podcastEpisodeSegmentById(podcastEpisodeSegmentId: number): Promise<PodcastEpisodeSegment> {
+    const query = `
+      query ($podcastEpisodeSegmentId: Int) {
+        podcastEpisodeSegmentById(podcastEpisodeSegmentId: $podcastEpisodeSegmentId) {
+          id, name, order, duration,
+          audio { id, filename, contentType, written, url },
+          producedAudio { id, written },
+          waveform { id, written, url },
+          cleanedAudio { id, written, url },
+          cleaned, cleaning, cleaningError, cleanable,
+          detections,
+          filters { fillers, stutters, silences, silenceLongerThan, silenceLeave },
+          restored,
+          edits { start, end }
+        }
+      }
+    `
+    const result = await this.client.query(query, { podcastEpisodeSegmentId })
+    if (result.error) throw result.error
+    return result.data['podcastEpisodeSegmentById'] as PodcastEpisodeSegment
+  }
+
+  // keeps only these ranges (milliseconds) of the segment's audio and re-renders it; the
+  // render finishes later, with a media-normalized-event
+  async editPodcastEpisodeSegment(
+    podcastEpisodeSegmentId: number,
+    kept: Array<KeptRange> | null,
+    filters: SegmentFilters | null = null,
+    restored: Array<string> = []
+  ): Promise<boolean> {
+    const mutation = `
+      mutation ($podcastEpisodeSegmentId: Int, $kept: [KeptRangeInput!], $filters: SegmentFiltersInput, $restored: [String!]) {
+        editPodcastEpisodeSegment(podcastEpisodeSegmentId: $podcastEpisodeSegmentId, kept: $kept, filters: $filters, restored: $restored)
+      }
+    `
+    const result = await this.client.mutation(mutation, {
+      podcastEpisodeSegmentId,
+      kept,
+      filters,
+      restored
+    })
+    if (result.error) throw result.error
+    return result.data['editPodcastEpisodeSegment'] as boolean
+  }
+
+  // cleans the segment's audio with the mogul's cleanvoice account; the outcome arrives as
+  // podcast-episode-segment-cleaned-event or podcast-episode-segment-cleaning-failed-event
+  async cleanPodcastEpisodeSegment(podcastEpisodeSegmentId: number): Promise<boolean> {
+    const mutation = `
+      mutation ($podcastEpisodeSegmentId: Int) {
+        cleanPodcastEpisodeSegment(podcastEpisodeSegmentId: $podcastEpisodeSegmentId)
+      }
+    `
+    const result = await this.client.mutation(mutation, { podcastEpisodeSegmentId })
+    if (result.error) throw result.error
+    return result.data['cleanPodcastEpisodeSegment'] as boolean
+  }
+
+  // segments from before waveforms were drawn on upload get one on demand; it arrives
+  // with an audio-waveform-computed-event
+  async requestPodcastEpisodeSegmentWaveform(podcastEpisodeSegmentId: number): Promise<boolean> {
+    const mutation = `
+      mutation ($podcastEpisodeSegmentId: Int) {
+        requestPodcastEpisodeSegmentWaveform(podcastEpisodeSegmentId: $podcastEpisodeSegmentId)
+      }
+    `
+    const result = await this.client.mutation(mutation, { podcastEpisodeSegmentId })
+    if (result.error) throw result.error
+    return result.data['requestPodcastEpisodeSegmentWaveform'] as boolean
+  }
+
   async createPodcastEpisodeSegment(podcastEpisodeId: number) {
     const mutation = ` 
       mutation ($podcastEpisodeId: Int ){ 
@@ -313,6 +385,7 @@ export class Podcasts {
               graphic { id  },
               segments {
                 id, name, audio { id } , order , crossFadeDuration , duration ,
+                cleaned, cleaning, cleanable, cleaningError,
                 transcript {
                  id, transcript
                 }
@@ -384,34 +457,6 @@ export class Podcasts {
             }
         } 
     `
-    const res = await this.client.query(q, { podcastId: podcastId })
-    return (await res.data['podcastEpisodesByPodcast']) as Array<PodcastEpisode>
-  }
-
-  async podcastEpisodes(podcastId: number): Promise<Array<PodcastEpisode>> {
-    const q = `
-        query GetPodcastEpisodesByPodcast( $podcastId:  Int ){
-            podcastEpisodesByPodcast ( podcastId : $podcastId) {
-                created,
-                id ,
-                title,
-                description,
-                complete,
-                duration,
-                graphic { id  } ,
-
-                segments {
-                  id,
-                  name,
-                  audio { id } ,
-                  order ,
-                  crossFadeDuration,
-                  duration,
-                  transcript
-                }
-            }
-        }
-        `
     const res = await this.client.query(q, { podcastId: podcastId })
     return (await res.data['podcastEpisodesByPodcast']) as Array<PodcastEpisode>
   }
@@ -556,12 +601,25 @@ export class Setting {
   valid: boolean
   value: string
   required: boolean
+  // SECRET, TEXT or BOOLEAN: how the settings page shows it
+  type: string
+  // what an unset value means, if anything
+  defaultValue: string | null
 
-  constructor(name: string, valid: boolean, value: string, required: boolean) {
+  constructor(
+    name: string,
+    valid: boolean,
+    value: string,
+    required: boolean,
+    type: string = 'SECRET',
+    defaultValue: string | null = null
+  ) {
     this.name = name
     this.valid = valid
     this.value = value
     this.required = required
+    this.type = type
+    this.defaultValue = defaultValue
   }
 }
 
@@ -627,6 +685,21 @@ export class Transcript {
   }
 }
 
+// one stretch of a segment's uploaded audio to keep, in milliseconds
+export interface KeptRange {
+  start: number
+  end: number
+}
+
+// the automatic cuts in effect for a segment
+export interface SegmentFilters {
+  fillers: boolean
+  stutters: boolean
+  silences: boolean
+  silenceLongerThan: number
+  silenceLeave: number
+}
+
 export class PodcastEpisodeSegment {
   id: number
   name: string
@@ -634,6 +707,22 @@ export class PodcastEpisodeSegment {
   order: number
   transcript: Transcript
   duration: number
+  // the upload with the edits applied: what actually goes into the episode
+  producedAudio?: ManagedFile
+  // null for older segments until one is requested
+  waveform?: ManagedFile | null
+  // null when the segment hasn't been edited
+  edits?: Array<KeptRange> | null
+  // cleanvoice's cleaned copy, once there is one for the audio as it is now
+  cleanedAudio?: ManagedFile | null
+  cleaned?: boolean
+  cleaning?: boolean
+  cleaningError?: string | null
+  cleanable?: boolean
+  // json: {"cleanvoice": [{start, end, kind}], "silences": [{start, end}]}
+  detections?: string | null
+  filters?: SegmentFilters
+  restored?: Array<string>
 
   constructor(
     id: number,
@@ -967,6 +1056,8 @@ export class Settings {
                   valid
                   value
                   required
+                  type
+                  defaultValue
                  }
                 }
             }
