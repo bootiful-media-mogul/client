@@ -118,6 +118,7 @@ import editAsset from '@/assets/images/edit.png'
 import { useRouter } from 'vue-router'
 
 import { loadNotesForNotable, mogul, Podcast, podcasts, utils } from '@/services'
+import { apiUrl } from '@/config'
 import { dateTimeToString } from '@/dates'
 import { onMounted, ref } from 'vue'
 import Icon from '@/ui/Icon.vue'
@@ -174,7 +175,7 @@ async function navigateToEpisodesPageForPodcast(podcastId: number) {
 }
 
 function podcastRssFeedUrl(podcast: Podcast) {
-  const api = import.meta.env.VITE_API_URL
+  const api = apiUrl()
   return (
     api + '/public/feeds/moguls/' + mogulId.value + '/podcasts/' + podcast.id + '/episodes.atom'
   )

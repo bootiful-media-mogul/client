@@ -167,6 +167,7 @@
 import { useI18n } from 'vue-i18n'
 import { onMounted, ref } from 'vue'
 import { Blog, blogs, mogul, utils } from '@/services'
+import { apiUrl } from '@/config'
 import EntityViewDecorator from '@/ui/EntityViewDecorator.vue'
 import plusIconHighlight from '@/assets/images/plus-icon-highlight.png'
 import plusIcon from '@/assets/images/plus-icon.png'
@@ -224,7 +225,7 @@ function openRssFeed(blogId: number, url: string) {
 }
 
 function podcastRssFeedUrl(blog: Blog) {
-  const api = import.meta.env.VITE_API_URL
+  const api = apiUrl()
   return api + '/public/feeds/moguls/' + mogulId.value + '/blogs/' + blog.id + '/posts.atom'
 }
 
