@@ -349,7 +349,7 @@ This is NOT reversible! `,
     'about.title': 'About',
     // input wrappers
     'components.input.enter-a-value': 'Enter a value',
-    'components.inputWrapper.character-count': '{count} character(s)',
+    'components.inputWrapper.character-count': '{count} char(s)',
     'components.inputWrapper.empty': '(empty)',
     // compositions
     'compositions.buttons.add-attachment': 'Add Attachment',
