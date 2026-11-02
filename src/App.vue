@@ -4,7 +4,6 @@ import PreviewComponent from '@/managedfiles/PreviewComponent.vue'
 import NotificationBoxComponent from '@/notifications/NotificationBoxComponent.vue'
 import { onMounted, ref } from 'vue'
 import TranscriptComponent from '@/transcripts/TranscriptComponent.vue'
-import ServerTimeFooter from '@/diagnostics/ServerTimeFooter.vue'
 import PanelComponent from '@/layout/PanelComponent.vue'
 import Search from '@/search/Search.vue'
 import { useRoute } from 'vue-router'
@@ -28,6 +27,10 @@ import blogIconAssetHighlight from '@/assets/images/navbar/blogs-icon-highlight.
 
 import jobsIconAsset from '@/assets/images/navbar/jobs-icon.png'
 import jobsIconAssetHighlight from '@/assets/images/navbar/jobs-icon-highlight.png'
+
+import notesPanelIconAsset from '@/assets/images/entity-badges/note-icon.png'
+import previewPanelIconAsset from '@/assets/images/preview.png'
+import transcriptsPanelIconAsset from '@/assets/images/transcript.png'
 
 import router from '@/index'
 import { usePendingAction } from '@/composables/usePendingAction'
@@ -237,19 +240,22 @@ onMounted(async () => {
           <!-- Sidebar panels grouped together -->
           <div class="sidebar">
             <Tab :label="t('app.panels.notes')">
-              <PanelComponent :title="t('app.panels.notes')">
+              <PanelComponent :title="t('app.panels.notes')" :icon="notesPanelIconAsset">
                 <NotesComponent />
               </PanelComponent>
             </Tab>
 
             <Tab :label="t('app.panels.media-preview')">
-              <PanelComponent :title="t('app.panels.media-preview')">
+              <PanelComponent :title="t('app.panels.media-preview')" :icon="previewPanelIconAsset">
                 <PreviewComponent />
               </PanelComponent>
             </Tab>
 
             <Tab :label="t('app.panels.transcripts')">
-              <PanelComponent :title="t('app.panels.transcripts')">
+              <PanelComponent
+                :title="t('app.panels.transcripts')"
+                :icon="transcriptsPanelIconAsset"
+              >
                 <TranscriptComponent />
               </PanelComponent>
             </Tab>

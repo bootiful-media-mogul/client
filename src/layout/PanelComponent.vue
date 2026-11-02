@@ -48,10 +48,23 @@
 }
 
 .panel-menu-title {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--gutter-space) / 3);
   font-size: var(--font-size-sm);
   text-transform: uppercase;
   color: white;
   font-family: 'arial Black', sans-serif;
+}
+
+.panel-menu-title-icon {
+  /* the icons are drawn black, same as the ones that open the panel; inverted they sit
+     quietly in the black header without needing a second, white set of assets */
+  filter: invert(100%);
+  opacity: 0.85;
+  width: calc(var(--gutter-space) * 0.8);
+  height: calc(var(--gutter-space) * 0.8);
+  object-fit: contain;
 }
 
 .panel-maximized {
@@ -82,6 +95,12 @@
   <div ref="element" class="panel">
     <div class="panel-menu">
       <div class="panel-menu-title navigable-section">
+        <img
+          v-if="props.icon"
+          :src="props.icon"
+          alt=""
+          class="panel-menu-title-icon unselectable"
+        />
         {{ props.title }}
       </div>
       <div class="panel-menu-buttons">
@@ -115,7 +134,7 @@ const element = ref<HTMLElement>()
 // you tapped into still shows its content.
 const visible = ref<boolean>(false)
 
-const props = defineProps<{ title: string }>()
+const props = defineProps<{ title: string; icon?: string }>()
 
 function toggleVisible() {
   visible.value = !visible.value
