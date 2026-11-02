@@ -24,30 +24,30 @@
   --font-size-base: 1rem;
   --font-size-lg: 1.25rem;
 
-  /* the studio palette: the cadetblue page, soft teal-grey panels, and deep teal where
-     there used to be black. every color in the app should come from here, so a component
+  /* the studio palette: a sky blue page, white panels, navy where there used to be black,
+     and near-black ink. every color in the app should come from here, so a component
      never has to know which palette it is drawn in.
      --chrome-* is the dark bar family (panel headers, legends, buttons, tabs); --raised-*
      is the light one (popovers, active tool tabs) for anything that used to be white. */
   color-scheme: light;
-  --bg-color: cadetblue;
-  --panel-bg-color: #e2eae9;
-  --raised-color: #f7faf9;
-  --chrome-color: #183a3c;
-  --chrome-hover-color: #24504f;
-  --chrome-ink-color: #eef5f4;
-  --chrome-muted-color: #9dbab8;
-  --ink-color: #0f2526;
-  --muted-color: #4b6365;
-  --label-color: #26403f;
+  --bg-color: #9ccbe8;
+  --panel-bg-color: #f3f7fb;
+  --raised-color: #ffffff;
+  --chrome-color: #132a52;
+  --chrome-hover-color: #1f3d70;
+  --chrome-ink-color: #f2f6fc;
+  --chrome-muted-color: #9fb3d6;
+  --ink-color: #0a0f1a;
+  --muted-color: #475670;
+  --label-color: #1b2840;
   /* translucent ink, so a line reads the same on the page and on a panel */
-  --rule-color: rgba(15, 37, 38, 0.22);
+  --rule-color: rgba(10, 15, 26, 0.2);
   --field-bg-color: #ffffff;
-  --field-border-color: #a8bdbc;
-  --accent-color: #1d6f6c;
-  --accent-hover-color: #24504f;
+  --field-border-color: #a6bad3;
+  --accent-color: #1f4f9c;
+  --accent-hover-color: #1f3d70;
   --accent-ink-color: #ffffff;
-  --disabled-color: #87a09f;
+  --disabled-color: #8fa2bd;
   --danger-color: #c0392b;
   --bg-color-light: oklch(from var(--bg-color) calc(l + 0.5) c h);
   /* svg icons draw their highlight in this; Icon.vue falls back to white without it */
