@@ -12,7 +12,7 @@ const { t } = useI18n()
 const transcript = ref<string>('')
 const el = ref<HTMLElement>()
 const dirty = ref<boolean>()
-const key = ref<string>('')
+const title = ref<string>('')
 const transcriptId = ref<number>(0)
 const fresh = ref<boolean>(true)
 const busy = ref<boolean>(false)
@@ -35,7 +35,7 @@ onMounted(async () => {
 events.on('transcript-edit-event', async (event) => {
   const editEvent: TranscriptEditEvent = event as TranscriptEditEvent
   transcript.value = '' + (editEvent.transcript == null ? '' : editEvent.transcript)
-  key.value = editEvent.key
+  title.value = editEvent.title
   transcriptId.value = editEvent.id
   dirty.value = false
   events.emit('sidebar-panel-opened', el.value)
@@ -46,7 +46,7 @@ function isDirty() {
 }
 
 const cancel = () => {
-  key.value = ''
+  title.value = ''
   transcriptId.value = 0
   transcript.value = ''
   fresh.value = true
@@ -90,13 +90,8 @@ const saveTranscript = async () => {
   <form ref="el" class="pure-form pure-form-stacked">
     <fieldset>
       <div class="pure-control-group">
-        <label v-if="key" for="transcript">
-          {{
-            t('transcripts.text', {
-              key: t(key),
-              id: transcriptId
-            })
-          }}
+        <label v-if="title" for="transcript">
+          {{ t('transcripts.text', { title: title }) }}
         </label>
 
         <InputWrapper v-model="transcript">

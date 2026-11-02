@@ -1,14 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
-  <circle cx="150" cy="150" r="146" fill="#000"/>
-  <g fill="#fff">
-    <rect x="58" y="128" width="18" height="44" rx="9"/>
-    <rect x="88" y="98" width="18" height="104" rx="9"/>
-    <rect x="118" y="70" width="18" height="160" rx="9"/>
-    <rect x="148" y="108" width="18" height="84" rx="9"/>
-    <rect x="178" y="84" width="18" height="132" rx="9"/>
-    <rect x="208" y="116" width="18" height="68" rx="9"/>
-    <rect x="238" y="136" width="14" height="28" rx="7"/>
-  </g>
-  <rect x="139" y="52" width="6" height="200" rx="3" fill="#fff"/>
-  <path d="M124 44 h38 l-19 22 z" fill="#fff"/>
+  <!-- one color with the waveform knocked out, so Icon can draw it as a mask -->
+  <mask id="waveform">
+    <rect width="300" height="300" fill="#fff"/>
+    <g fill="#000">
+      <rect x="58" y="128" width="18" height="44" rx="9"/>
+      <rect x="88" y="98" width="18" height="104" rx="9"/>
+      <rect x="118" y="70" width="18" height="160" rx="9"/>
+      <rect x="148" y="108" width="18" height="84" rx="9"/>
+      <rect x="178" y="84" width="18" height="132" rx="9"/>
+      <rect x="208" y="116" width="18" height="68" rx="9"/>
+      <rect x="238" y="136" width="14" height="28" rx="7"/>
+      <rect x="139" y="52" width="6" height="200" rx="3"/>
+      <path d="M124 44 h38 l-19 22 z"/>
+    </g>
+  </mask>
+  <circle cx="150" cy="150" r="146" fill="#000" mask="url(#waveform)"/>
 </svg>

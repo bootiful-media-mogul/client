@@ -13,8 +13,7 @@ import BlogPostMarkdownFile from '@/blogs/publications/BlogPostMarkdownFile.vue'
 import Wordpress from '@/blogs/publications/Wordpress.vue'
 import Ayrshare from '@/blogs/publications/Ayrshare.vue'
 import InputWrapperChild from '@/ui/input/InputWrapperChild.vue'
-import asset from '@/assets/images/transcript.png'
-import assetHighlight from '@/assets/images/transcript-highlight.png'
+import transcriptAsset from '@/assets/images/icons/transcript.svg'
 import Icon from '@/ui/Icon.vue'
 import privacy from '@/assets/images/privacy-preview-highlight.png'
 import privacyHighlight from '@/assets/images/privacy-preview.png'
@@ -188,7 +187,7 @@ const cancel = async () => {
                 -->
                 <InputWrapperChild>
                   <template v-slot:icon>
-                    <Icon :icon="asset" :icon-hover="assetHighlight" />
+                    <Icon :icon="transcriptAsset" :icon-hover="transcriptAsset" />
                   </template>
                   <template v-slot:panel>
                     <button

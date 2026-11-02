@@ -163,7 +163,8 @@ export class Results {
 }
 
 export interface TranscriptEditEvent {
-  readonly key: string
+  // what the user calls the thing that owns the transcript, e.g. "Segment 3"
+  readonly title: string
   readonly id: number
   readonly transcript: string
 }
@@ -1279,10 +1280,11 @@ export class Transcripts {
     return (await result.data['writeTranscript']) as boolean
   }
 
-  editTranscript(id: number, text: string) {
+  editTranscript(id: number, text: string, title: string) {
     events.emit('transcript-edit-event', {
       transcript: text,
-      id: id
+      id: id,
+      title: title
     } as TranscriptEditEvent)
   }
 

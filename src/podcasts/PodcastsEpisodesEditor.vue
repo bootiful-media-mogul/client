@@ -136,7 +136,11 @@ const loadEpisodeIntoEditor = async (episode: PodcastEpisode) => {
 async function editPodcastEpisodeSegmentTranscript(seg: PodcastEpisodeSegment) {
   const episode = await podcasts.podcastEpisodeById(draftEpisode.value.id)
   const match = episode.segments.filter((pes) => pes.id == seg.id)[0]
-  transcripts.editTranscript(match.transcript.id, match.transcript.transcript)
+  transcripts.editTranscript(
+    match.transcript.id,
+    match.transcript.transcript,
+    t('podcasts.episodes.episode.segments.number', { order: seg.order })
+  )
 }
 
 const save = async () => {

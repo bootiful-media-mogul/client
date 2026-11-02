@@ -322,9 +322,8 @@ const translations = {
     
 This is NOT reversible! `,
     ok: 'OK',
-    'transcripts.podcasts.episodes.segments': 'Podcast Episode Segment',
     transcripts: {
-      text: 'Transcript for {key} #{id}',
+      text: 'Transcript for {title}',
       buttons: {
         accept: 'Accept',
         revert: 'Revert',
@@ -417,7 +416,7 @@ This is NOT reversible! `,
     'podcasts.episodes.new-episode': 'New Episode',
     'podcasts.episodes.buttons.publish': 'Publish',
     'podcasts.episodes.buttons.cancel': 'Cancel',
-    'podcasts.episodes.episode.segments.number': 'Segment {order} ',
+    'podcasts.episodes.episode.segments.number': 'Segment {order}',
     'podcasts.episodes.episode.graphic': 'Graphic',
     'podcasts.episodes.episode.segments.audio-editor.close': 'Close the audio editor',
     'podcasts.episodes.episode.segments.audio-editor.loading': 'Loading the audio...',

@@ -15,9 +15,7 @@ import downHighlightAsset from '@/assets/images/down-highlight.png'
 import downAsset from '@/assets/images/down.png'
 import deleteHighlightAsset from '@/assets/images/delete-highlight.png'
 import deleteAsset from '@/assets/images/delete.png'
-import transcriptHighlightAsset from '@/assets/images/transcript-highlight.png'
-import transcriptAsset from '@/assets/images/transcript.png'
-import audioEditorHighlightAsset from '@/assets/images/audio-editor-highlight.svg'
+import transcriptAsset from '@/assets/images/icons/transcript.svg'
 import audioEditorAsset from '@/assets/images/audio-editor.svg'
 
 //
@@ -139,7 +137,7 @@ const emit = defineEmits<{
       <div class="transcript-button">
         <Icon
           v-if="showTranscript"
-          :icon="transcriptHighlightAsset"
+          :icon="transcriptAsset"
           :icon-hover="transcriptAsset"
           class="transcript-icon"
           @click.prevent="emit('editTranscript')"
@@ -150,7 +148,7 @@ const emit = defineEmits<{
       <div class="audio-editor-button">
         <Icon
           v-if="showAudioEditor"
-          :icon="audioEditorHighlightAsset"
+          :icon="audioEditorAsset"
           :icon-hover="audioEditorAsset"
           :disabled="cleaning"
           class="audio-editor-icon"
