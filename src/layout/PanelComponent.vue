@@ -58,10 +58,13 @@
 }
 
 .panel-menu-title-icon {
-  /* white, bold redraws of the icons that open each panel: the originals are thin
-     black line art that turns to mush at header size */
+  /* the same svg the opening Icon shows, masked so it takes the header's white */
+  display: inline-block;
   width: calc(var(--font-size-sm) * 1.4);
   height: calc(var(--font-size-sm) * 1.4);
+  background-color: currentColor;
+  mask: var(--panel-icon) center / contain no-repeat;
+  -webkit-mask: var(--panel-icon) center / contain no-repeat;
 }
 
 .panel-maximized {
@@ -92,11 +95,11 @@
   <div ref="element" class="panel">
     <div class="panel-menu">
       <div class="panel-menu-title navigable-section">
-        <img
+        <span
           v-if="props.icon"
-          :src="props.icon"
-          alt=""
-          class="panel-menu-title-icon unselectable"
+          :style="{ '--panel-icon': `url(&quot;${props.icon}&quot;)` }"
+          aria-hidden="true"
+          class="panel-menu-title-icon"
         />
         {{ props.title }}
       </div>

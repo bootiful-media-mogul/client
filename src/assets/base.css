@@ -327,20 +327,18 @@ textarea {
   background-size: var(--icon-width) var(--icon-width);
 }
 
+/* the same svg Icon.vue draws: a mask over the text color, so it follows the theme */
 .preview-icon {
-  background: url('../assets/images/preview-highlight.png');
   height: var(--icon-width);
   display: inline-block;
   width: var(--icon-width);
-  background-size: var(--icon-width) var(--icon-width);
+  background-color: currentColor;
+  mask: url('../assets/images/icons/preview.svg') center / contain no-repeat;
+  -webkit-mask: url('../assets/images/icons/preview.svg') center / contain no-repeat;
 }
 
 .preview-icon:hover:not(.disabled) {
-  background: url('../assets/images/preview.png');
-  height: var(--icon-width);
-  display: inline-block;
-  width: var(--icon-width);
-  background-size: var(--icon-width) var(--icon-width);
+  opacity: 0.6;
 }
 
 .checkbox-icon {
