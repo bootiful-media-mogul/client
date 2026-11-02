@@ -38,7 +38,7 @@
 }
 
 .server-time-footer code {
-  font-family: monospace;
+  font-family: var(--font-mono);
 }
 
 .server-time-footer .error {

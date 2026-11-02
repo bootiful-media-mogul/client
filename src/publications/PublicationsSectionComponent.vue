@@ -53,11 +53,15 @@
 
 .toolbar-icon {
   border-radius: var(--radius);
-  background-color: black;
+  /* the page's icon ink, so the tiles match the icons around them */
+  background-color: var(--ink-color);
+  /* not a line box: a png logo is an inline <img> and sat on the text baseline, which
+     left the line's descender below it and made its tile taller than an svg icon's */
+  display: flex;
 }
 
 .toolbar-icon:hover {
-  background-color: white;
+  background-color: var(--raised-color);
 }
 
 .toolbar-icon-selected {
@@ -75,7 +79,7 @@
 }
 
 .publication-panel .plugin {
-  background-color: lightgray;
+  background-color: var(--panel-bg-color);
   padding: var(--gutter-space-half);
   border-bottom-right-radius: var(--radius);
   border-top-right-radius: var(--radius);

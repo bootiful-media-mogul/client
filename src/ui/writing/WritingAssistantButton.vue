@@ -15,7 +15,8 @@
   grid-template-areas: '   content  ';
 
   border-radius: var(--button-radius);
-  background-color: lightgrey;
+  background-color: var(--panel-bg-color);
+  color: var(--ink-color);
   padding: calc(var(--gutter-space) / 3);
   font-size: var(--font-size-sm);
 }

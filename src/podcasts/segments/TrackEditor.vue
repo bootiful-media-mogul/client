@@ -832,21 +832,25 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-/* layout ported from the ~/Desktop/timeline prototype; colors follow mogul: a cadetblue
-   page, lightgray panels, black controls with white text. */
+/* layout ported from the ~/Desktop/timeline prototype; colors follow mogul's theme
+   tokens (base.css): dark ink on a light panel, with the accent for the audio itself.
+   --te-on-ink is what sits on a solid --te-ink fill (the play button, track number). */
 .editor {
-  --te-ink: black;
-  --te-muted: #555;
-  --te-faint: #777;
-  --te-line: #a9a9a9;
-  --te-surface: white;
+  --te-ink: var(--chrome-color);
+  --te-on-ink: var(--chrome-ink-color);
+  --te-muted: var(--muted-color);
+  --te-faint: color-mix(in srgb, var(--muted-color) 75%, transparent);
+  --te-line: var(--rule-color);
+  --te-surface: var(--field-bg-color);
   /* the toolbar, sidebar, ruler and footer show the containing panel through */
   --te-chrome: transparent;
-  --te-hover: rgba(0, 0, 0, 0.08);
-  --te-accent: var(--bg-color, cadetblue);
-  --te-accent-light: color-mix(in srgb, var(--te-accent) 22%, white);
-  --te-accent-dark: #2f6b6d;
-  --te-disabled: #767676;
+  --te-hover: rgba(15, 37, 38, 0.08);
+  --te-accent: var(--accent-color);
+  --te-accent-light: color-mix(in srgb, var(--te-accent) 16%, white);
+  --te-accent-dark: var(--accent-color);
+  --te-disabled: var(--disabled-color);
+  --te-grid: rgba(15, 37, 38, 0.06);
+  --te-shade: rgba(15, 37, 38, 0.18);
 }
 .editor,
 .editor * {
@@ -877,7 +881,7 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 17px;
   padding: 0 17px;
-  border-bottom: 1px solid var(--te-ink);
+  border-bottom: 1px solid var(--te-line);
   background: var(--te-chrome);
 }
 .toolbar-group {
@@ -897,13 +901,11 @@ onBeforeUnmount(() => {
   border-radius: 4px;
   background: var(--te-surface);
   color: var(--te-ink);
-  font:
-    11px 'JetBrains Mono',
-    monospace;
+  font: 11px var(--font-mono);
 }
 .jump-input.invalid {
-  border-color: #b00020;
-  outline: 1px solid #b00020;
+  border-color: var(--danger-color);
+  outline: 1px solid var(--danger-color);
 }
 .toolbar-spacer {
   flex: 1;
@@ -934,13 +936,13 @@ onBeforeUnmount(() => {
   border: 0;
   background: var(--te-ink);
   border-radius: 7px;
-  color: white;
+  color: var(--te-on-ink);
 }
 .play-button:hover {
-  background: #333;
+  background: var(--accent-color);
 }
 .time-display {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   color: var(--te-ink);
   font-size: 11px;
   font-weight: 600;
@@ -966,14 +968,14 @@ onBeforeUnmount(() => {
 .tool-button.active {
   border-color: var(--te-ink);
   background: var(--te-ink);
-  color: white;
+  color: var(--te-on-ink);
 }
 .tool-button:hover:not(.active) {
   background: var(--te-hover);
   color: var(--te-ink);
 }
 .zoom-label {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 10px;
   color: var(--te-muted);
   min-width: 35px;
@@ -1012,13 +1014,11 @@ onBeforeUnmount(() => {
   width: 27px;
   height: 25px;
   background: var(--te-ink);
-  color: white;
+  color: var(--te-on-ink);
   border-radius: 4px;
   display: grid;
   place-items: center;
-  font:
-    600 10px 'JetBrains Mono',
-    monospace;
+  font: 600 10px var(--font-mono);
 }
 .track-identity strong {
   font-size: 11px;
@@ -1049,7 +1049,7 @@ onBeforeUnmount(() => {
   flex: 1;
   overflow-x: auto;
   overflow-y: hidden;
-  scrollbar-color: #888 transparent;
+  scrollbar-color: var(--rule-color) transparent;
   scrollbar-width: thin;
 }
 .timeline-content {
@@ -1068,7 +1068,7 @@ onBeforeUnmount(() => {
   position: absolute;
   top: 0;
   height: 36px;
-  border-left: 1px solid #8f8f8f;
+  border-left: 1px solid var(--te-line);
   pointer-events: none;
 }
 .tick:after {
@@ -1077,22 +1077,25 @@ onBeforeUnmount(() => {
   left: 29px;
   bottom: 0;
   height: 6px;
-  border-left: 1px solid #ababab;
+  border-left: 1px solid var(--te-line);
 }
 .tick span {
   position: absolute;
   left: 6px;
   top: 8px;
   color: var(--te-muted);
-  font:
-    10px 'JetBrains Mono',
-    monospace;
+  font: 10px var(--font-mono);
   white-space: nowrap;
 }
 .track-lane {
   height: 153px;
   position: relative;
-  background: repeating-linear-gradient(to right, transparent 0, transparent 74px, #ececec 75px),
+  background: repeating-linear-gradient(
+      to right,
+      transparent 0,
+      transparent 74px,
+      var(--te-grid) 75px
+    ),
     var(--te-surface);
   border-bottom: 1px solid var(--te-line);
   touch-action: pan-x pan-y;
@@ -1106,7 +1109,7 @@ onBeforeUnmount(() => {
   position: absolute;
   top: 10px;
   background: var(--te-accent-light);
-  border: 1px solid var(--te-ink);
+  border: 1px solid var(--te-accent);
   border-radius: 5px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   overflow: hidden;
@@ -1121,7 +1124,7 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 3px;
   padding: 0 20px 0 3px;
-  background: var(--te-ink);
+  background: var(--chrome-color);
   min-width: 0;
 }
 .segment-grip {
@@ -1129,7 +1132,7 @@ onBeforeUnmount(() => {
   width: 17px;
   border: 0;
   background: transparent;
-  color: #ccc;
+  color: var(--chrome-muted-color);
   display: grid;
   place-items: center;
   padding: 0;
@@ -1139,17 +1142,15 @@ onBeforeUnmount(() => {
 }
 .segment-name {
   font-size: 10px;
-  color: white;
+  color: var(--te-on-ink);
   font-weight: 700;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .segment-length {
-  font:
-    9px 'JetBrains Mono',
-    monospace;
-  color: #ccc;
+  font: 9px var(--font-mono);
+  color: var(--chrome-muted-color);
   margin-left: auto;
   white-space: nowrap;
 }
@@ -1159,9 +1160,7 @@ onBeforeUnmount(() => {
   color: var(--te-accent-dark);
 }
 .segment-source {
-  font:
-    9px 'JetBrains Mono',
-    monospace;
+  font: 9px var(--font-mono);
   color: var(--te-muted);
   padding: 3px 10px;
   white-space: nowrap;
@@ -1173,14 +1172,14 @@ onBeforeUnmount(() => {
   width: 10px;
   height: 100%;
   border: 0;
-  border-left: 1px solid rgba(0, 0, 0, 0.3);
-  background: rgba(0, 0, 0, 0.08);
+  border-left: 1px solid var(--te-shade);
+  background: var(--te-hover);
   padding: 0;
   cursor: ew-resize;
   touch-action: none;
 }
 .trim-handle:hover {
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--te-shade);
 }
 .trim-handle span {
   position: absolute;
@@ -1213,14 +1212,14 @@ onBeforeUnmount(() => {
 }
 .mark-restored {
   background: transparent;
-  outline: 1px dashed rgba(0, 0, 0, 0.55);
+  outline: 1px dashed var(--te-muted);
   outline-offset: -1px;
 }
 .range-selection {
   position: absolute;
   top: 0;
   height: 153px;
-  background: rgba(0, 0, 0, 0.12);
+  background: color-mix(in srgb, var(--te-accent) 14%, transparent);
   border-left: 2px solid var(--te-ink);
   border-right: 2px solid var(--te-ink);
   pointer-events: none;
@@ -1231,13 +1230,11 @@ onBeforeUnmount(() => {
   top: -31px;
   left: 0;
   white-space: nowrap;
-  color: white;
+  color: var(--te-on-ink);
   background: var(--te-ink);
   padding: 4px 7px;
   border-radius: 4px;
-  font:
-    9px 'JetBrains Mono',
-    monospace;
+  font: 9px var(--font-mono);
 }
 .timeline-void {
   height: 39px;
@@ -1280,7 +1277,7 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: space-between;
   padding: 0 17px;
-  border-top: 1px solid var(--te-ink);
+  border-top: 1px solid var(--te-line);
   background: var(--te-chrome);
 }
 .selection-status {
@@ -1295,7 +1292,7 @@ onBeforeUnmount(() => {
 }
 .selection-status strong {
   color: var(--te-ink);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 10px;
 }
 .delete-button {
@@ -1304,19 +1301,20 @@ onBeforeUnmount(() => {
   gap: 7px;
   border: 1px solid var(--te-ink);
   background: var(--te-ink);
-  color: white;
+  color: var(--te-on-ink);
   border-radius: var(--button-radius, 6px);
   padding: 7px 9px;
   font-size: 10px;
   font-weight: 700;
 }
 .delete-button:hover:not(:disabled) {
-  background: #333;
+  background: var(--danger-color);
+  border-color: var(--danger-color);
 }
 .delete-button:disabled {
   border-color: var(--te-disabled);
   background: var(--te-disabled);
-  color: white;
+  color: var(--te-muted);
 }
 .delete-button kbd {
   font-size: 12px;

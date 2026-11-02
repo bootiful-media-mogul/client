@@ -11,7 +11,7 @@
 
 /* ...except the one that's currently expanded, which merges into the row below it */
 .tools .writing-tools-button.active {
-  background-color: white;
+  background-color: var(--raised-color);
   opacity: 100%;
   margin-bottom: 0;
   padding-bottom: calc(2 * var(--writing-tools-panel-padding));
@@ -20,7 +20,7 @@
 }
 
 .styles.active .writing-tools-button {
-  background-color: white;
+  background-color: var(--raised-color);
   opacity: 100%;
 }
 
@@ -96,9 +96,9 @@
   min-width: 0;
   display: grid;
   grid-row-gap: calc(1 * var(--writing-tools-panel-padding));
-  /* white panel that connects up to the (white, active) AI tab above it;
+  /* a raised panel that connects up to the (raised, active) AI tab above it;
      flat top edge so the tab reads as sitting on a shelf, rounded bottom */
-  background-color: white;
+  background-color: var(--raised-color);
   padding: calc(1.5 * var(--writing-tools-panel-padding));
   border-radius: var(--button-radius);
   border-top-left-radius: 0;

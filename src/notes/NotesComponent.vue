@@ -240,7 +240,7 @@ onMounted(async () => {
 
 <style scoped>
 .note {
-  border-top: 1px solid black;
+  border-top: 1px solid var(--rule-color);
 }
 .note:first-of-type {
   border-top: none;
@@ -260,7 +260,7 @@ onMounted(async () => {
 
 .note-composition {
   padding-bottom: var(--gutter-space);
-  border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+  border-bottom: 2px solid var(--rule-color);
   margin-bottom: var(--gutter-space);
 }
 

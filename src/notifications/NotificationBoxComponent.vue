@@ -95,7 +95,7 @@ onMounted(() => {
 .toaster-notification-panel {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
   border-radius: 0 0 var(--gutter-space) var(--gutter-space);
-  background-color: white;
+  background-color: var(--raised-color);
   padding: var(--gutter-space);
   position: fixed;
   width: 40%;
@@ -117,7 +117,7 @@ onMounted(() => {
 
 .body-overlay {
   height: 100%;
-  background-color: white;
+  background-color: var(--raised-color);
   width: 100%;
   z-index: 1000;
   position: fixed;
@@ -133,12 +133,12 @@ onMounted(() => {
   transform: translate(-50%, -50%);
   z-index: 20001;
   border-radius: var(--gutter-space);
-  color: white;
+  color: var(--chrome-ink-color);
   padding: var(--gutter-space);
-  background-color: black;
+  background-color: var(--chrome-color);
 }
 
 .modal-notification-panel .buttons a {
-  color: white;
+  color: var(--chrome-ink-color);
 }
 </style>

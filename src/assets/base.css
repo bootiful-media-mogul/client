@@ -21,14 +21,43 @@
      root font size; replaces the old absolute `small`/`medium`/`large` keywords.
      The `sm` floor is deliberately above the keyword `small` (~13px) for legibility. */
   --font-size-sm: 0.9375rem;
+  /* below the sm floor on purpose: only for glanceable metadata, like a field's character count */
+  --font-size-xs: 0.75rem;
   --font-size-base: 1rem;
   --font-size-lg: 1.25rem;
 
-  /*--bg-color: tan */
-  --bg-color: cadetblue;
-  --panel-bg-color: lightgray;
-  /*--bg-color: cadetblue;*/
+  /* the studio palette: a sky blue page, white panels, navy where there used to be black,
+     and near-black ink. every color in the app should come from here, so a component
+     never has to know which palette it is drawn in.
+     --chrome-* is the dark bar family (panel headers, legends, buttons, tabs); --raised-*
+     is the light one (popovers, active tool tabs) for anything that used to be white. */
+  color-scheme: light;
+  --bg-color: #9ccbe8;
+  --panel-bg-color: #f3f7fb;
+  --raised-color: #ffffff;
+  --chrome-color: #132a52;
+  --chrome-hover-color: #1f3d70;
+  --chrome-ink-color: #f2f6fc;
+  --chrome-muted-color: #9fb3d6;
+  --ink-color: #0a0f1a;
+  --muted-color: #475670;
+  --label-color: #1b2840;
+  /* translucent ink, so a line reads the same on the page and on a panel */
+  --rule-color: rgba(10, 15, 26, 0.2);
+  --field-bg-color: #ffffff;
+  --field-border-color: #a6bad3;
+  --accent-color: #1f4f9c;
+  --accent-hover-color: #1f3d70;
+  --accent-ink-color: #ffffff;
+  --disabled-color: #8fa2bd;
+  --danger-color: #c0392b;
   --bg-color-light: oklch(from var(--bg-color) calc(l + 0.5) c h);
+  /* svg icons draw their highlight in this; Icon.vue falls back to white without it */
+  --icon-paper-color: var(--raised-color);
+
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 
   --icon-column: calc(var(--gutter-space) * 1.5);
   --id-column: calc(var(--gutter-space) * 5);
@@ -44,7 +73,40 @@
 
 label.required-field::after {
   content: ' *';
-  color: #e24b4a;
+  color: var(--danger-color);
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--ink-color);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+h1 {
+  letter-spacing: -0.035em;
+}
+
+code,
+kbd,
+pre,
+samp {
+  font-family: var(--font-mono);
+}
+
+::selection {
+  background-color: color-mix(in srgb, var(--accent-color) 35%, transparent);
 }
 
 /* Container query setup on .frame wrapper */
@@ -113,6 +175,41 @@ button,
   font-size: var(--control-font-size);
 }
 
+/* pure.css colors the fields of a .pure-form from the tokens above; this gives every
+   other field the same recessed well. :where() keeps it at zero specificity, so any
+   component that styles its own field (the track editor's jump box) still wins. */
+:where(
+    input:not([type='checkbox'], [type='radio'], [type='range'], [type='file']),
+    textarea,
+    select
+  ) {
+  background-color: var(--field-bg-color);
+  color: var(--ink-color);
+  border: 1px solid var(--field-border-color);
+}
+
+:where(input, textarea, select):focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted-color);
+  opacity: 1;
+}
+
+input[type='checkbox'],
+input[type='radio'],
+input[type='range'] {
+  accent-color: var(--accent-color);
+}
+
+.pure-form-message,
+.pure-form-message-inline {
+  color: var(--muted-color);
+}
+
 .pure-form input[type='text'],
 .pure-form input[type='password'],
 .pure-form input[type='email'],
@@ -133,16 +230,16 @@ button,
 }
 
 a {
-  color: black;
+  color: var(--ink-color);
   text-decoration: none;
-  font-weight: bold;
+  font-weight: 600;
 }
 
-/* the app's buttons are black -- all of them, everywhere. this was once two selectors,
+/* the app's buttons are chrome teal -- all of them, everywhere. this was once two selectors,
    a button inside a stacked form and a button carrying .publish-button, and anything
    matching neither fell through to pure's blue .pure-button-primary. enumerating the
    places a button is allowed to appear is a losing game: the next panel that isn't
-   wrapped in a form is blue again. so the rule sits on the button itself, and pure's
+   wrapped in a form is pure's blue again. so the rule sits on the button itself, and pure's
    primary and selected are named here so that their blue cannot come back on a tie. */
 .pure-button,
 .pure-button-primary,
@@ -150,17 +247,21 @@ a {
 a.pure-button,
 a.pure-button-primary,
 a.pure-button-selected {
-  border-color: black;
+  border-color: var(--chrome-color);
   border-radius: var(--button-radius);
-  background-color: black;
-  color: white;
+  background-color: var(--chrome-color);
+  color: var(--chrome-ink-color);
+  font-weight: 600;
+  /* pure's gradient overlay reads as grime on a flat accent */
+  background-image: none;
 }
 
 .pure-button:hover,
 .pure-button-primary:hover,
 .pure-button-selected:hover,
 a.pure-button:hover {
-  background-color: #333;
+  background-color: var(--chrome-hover-color);
+  border-color: var(--chrome-hover-color);
 }
 
 /* content-box only where it always was: these two set their own width, and widening the
@@ -170,10 +271,10 @@ a.pure-button:hover {
   box-sizing: content-box;
 }
 
-/* pure dims a disabled button with opacity alone and lets what's behind it show through.
-   what's behind it is the cadetblue page, so a disabled black button -- the ayrshare post
-   button sits disabled until a platform is picked -- came out reading as a blue one. an
-   opaque grey instead: disabled should look disabled, not blue. */
+/* pure dims a disabled button with opacity alone and lets what's behind it show through,
+   so a disabled button -- the ayrshare post button sits disabled until a platform is
+   picked -- came out tinted by the page. an opaque grey instead: disabled should look
+   disabled, not like a dimmer accent. */
 .pure-button[disabled],
 .pure-button[disabled]:hover,
 .pure-button-disabled,
@@ -181,9 +282,9 @@ a.pure-button:hover {
 .pure-button-disabled:focus,
 .pure-button-disabled:active {
   opacity: 1;
-  background-color: #767676;
-  border-color: #767676;
-  color: white;
+  background-color: var(--disabled-color);
+  border-color: var(--disabled-color);
+  color: var(--chrome-ink-color);
 }
 
 .pure-form-stacked select {
@@ -204,14 +305,14 @@ a.pure-button:hover {
 }
 
 a.disabled {
-  color: lightgrey;
+  color: var(--muted-color);
   text-decoration: none;
 }
 
 /* the grey is for link text; an icon in a disabled link keeps its ink, and is faded by
    .disabled like the png icons were */
 a.disabled > .icon {
-  color: black;
+  color: var(--ink-color);
 }
 
 /* Mobile-first: Default styles are for mobile */
@@ -286,9 +387,7 @@ textarea {
 }
 
 .navigable-section {
-  font-family:
-    Arial Black,
-    sans-serif;
+  font-family: var(--font-mono);
 }
 
 .navigation-links {
@@ -324,8 +423,8 @@ textarea {
 }
 
 .sidebar .pure-form legend {
-  color: black;
-  background-color: white;
+  color: var(--ink-color);
+  background-color: var(--raised-color);
 }
 
 /* Hide desktop panel controls on mobile (tab bar replaces them) */
@@ -351,8 +450,11 @@ textarea {
   display: inline-block;
   border-radius: 0;
 
-  background-color: black;
-  color: white;
+  background-color: var(--chrome-color);
+  color: var(--chrome-ink-color);
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.01em;
 
   border-width: 0;
 
@@ -370,12 +472,12 @@ textarea {
 
 .footer {
   padding: 0;
-  background-color: black;
+  background-color: var(--chrome-color);
 
   text-align: center;
 
   & a {
-    color: white;
+    color: var(--chrome-ink-color);
     font-weight: normal;
     font-size: var(--font-size-sm);
   }
@@ -412,7 +514,9 @@ textarea {
 
 .form-section .form-section-title {
   font-size: var(--font-size-lg);
-  border-top: 1px solid black;
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+  border-top: 1px solid var(--rule-color);
   margin-bottom: var(--gutter-space);
   margin-top: var(--gutter-space);
   padding-bottom: calc(var(--gutter-space) / 3);

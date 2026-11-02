@@ -188,21 +188,27 @@ provide('setInputDisabled', setInputDisabled)
   grid-template-areas:
     ' toolbar toolbar toolbar '
     ' input input  input '
-    ' word-count icons .  '
+    ' . word-count . '
+    ' . icons .  '
     ' panel panel panel  ';
   grid-template-columns: 1fr min-content 1fr;
-  grid-template-rows: auto auto auto auto;
+  grid-template-rows: auto auto auto auto auto;
   margin-bottom: var(--gutter-space);
 }
 
 .word-count {
   .status {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-xs);
   }
-  align-self: center;
-  /*text-align: right ;*/
-  padding-right: var(--gutter-space);
+  /* above the arrow/icon/arrow menu, centered on it. nowrap lets the count widen the
+     middle column instead of wrapping in it; the 1fr columns either side keep it centered */
+  justify-self: center;
+  white-space: nowrap;
+  color: var(--muted-color);
   grid-area: word-count;
+  /* above the open panel, which reaches up behind it */
+  position: relative;
+  z-index: 10;
 }
 .input-wrapper {
   grid-area: input;
@@ -220,19 +226,21 @@ provide('setInputDisabled', setInputDisabled)
 .input-panel {
   z-index: 8;
   --writing-tools-panel-padding: calc(var(--gutter-space) / 3);
+  /* the count's row, so the panel reaches up past the menu to enclose the count too */
+  --word-count-row: calc(var(--font-size-xs) * 1.55 + var(--writing-tools-panel-padding));
   grid-area: panel;
-  margin-top: calc(-2 * var(--icon-width));
+  margin-top: calc(-2 * var(--icon-width) - var(--word-count-row));
   padding-bottom: var(--writing-tools-panel-padding);
   padding-left: var(--writing-tools-panel-padding);
   padding-right: var(--writing-tools-panel-padding);
-  padding-top: calc(2.5 * var(--icon-width));
-  background-color: rgba(255, 255, 255, 0.5);
+  padding-top: calc(2.5 * var(--icon-width) + var(--word-count-row));
+  background-color: color-mix(in srgb, var(--raised-color) 50%, transparent);
   border-radius: 8px;
 }
 
 .toolbar {
   z-index: 8;
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: color-mix(in srgb, var(--raised-color) 50%, transparent);
 
   grid-area: toolbar;
   margin-bottom: calc(-1 * var(--icon-width));
