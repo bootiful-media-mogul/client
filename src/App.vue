@@ -103,6 +103,12 @@ onMounted(async () => {
   font-size: var(--font-size-sm);
 }
 
+/* the wordmark only has room on desktop; the floating mobile bar keeps its three rows */
+.toolbar-container .brand {
+  grid-area: brand;
+  display: none;
+}
+
 .toolbar-container .search {
   grid-area: search;
   width: 100%;
@@ -145,18 +151,50 @@ onMounted(async () => {
     right: auto;
     bottom: auto;
     display: grid;
+    /* wordmark, icons and the signed-in mogul share a row; equal 1fr sides keep the
+       icons centered on the page however long the wordmark or the name is */
     grid-template-areas:
-      'hello hello hello'
-      'global-toolbar global-toolbar global-toolbar'
+      'brand global-toolbar hello'
       'search search search';
-    grid-template-rows: auto auto auto;
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-rows: auto auto;
+    align-items: center;
     gap: 0;
     box-shadow: none;
   }
 
   .toolbar-container .hello {
-    text-align: center;
-    padding: var(--gutter-space-half) 0;
+    text-align: right;
+  }
+
+  .toolbar-container .brand {
+    display: flex;
+    align-items: baseline;
+    gap: var(--gutter-space-half);
+    justify-self: start;
+    color: var(--ink-color);
+    text-decoration: none;
+  }
+
+  .toolbar-container .brand:hover {
+    text-decoration: none;
+  }
+
+  .toolbar-container .brand-name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 2rem;
+    line-height: 1;
+    letter-spacing: -0.05em;
+  }
+
+  .toolbar-container .brand-product {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: var(--font-size-xs);
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--chrome-color);
   }
 
   .toolbar-container .search {
@@ -191,6 +229,10 @@ onMounted(async () => {
     <div class="frame">
       <div class="page">
         <div class="toolbar-container">
+          <a class="brand" href="#" @click.prevent="go('home')">
+            <span class="brand-name">{{ t('brand.name') }}</span>
+            <span class="brand-product">{{ t('brand.product') }}</span>
+          </a>
           <div class="hello">{{ t('hello', { mogul: mogulUsername }) }}</div>
           <div class="search">
             <Search />

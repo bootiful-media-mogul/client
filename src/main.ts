@@ -61,6 +61,7 @@ const translations = {
     },
 
     hello: 'Hi, {mogul}',
+    brand: { name: 'mogul', product: 'studio' },
     notes: {
       buttons: {
         save: 'Save'
