@@ -5,6 +5,7 @@
         <div class="plugin-column">
           <div class="plugin-icon-container">
             <Icon
+              highlight="always"
               v-if="iconFor(publication.plugin)"
               :icon="iconFor(publication.plugin)!.icon"
               :icon-hover="iconFor(publication.plugin)!.iconHover"
@@ -18,6 +19,7 @@
         </div>
         <div class="delete-column">
           <Icon
+            highlight="rest"
             v-if="unpublishable"
             :disabled="withdrawn(publication)"
             :icon="deleteAsset"
@@ -37,16 +39,23 @@
           class="publications-outcome row"
         >
           <div class="uri">
-            <a
-              :class="{ disabled: withdrawn(publication) }"
-              :href="outcome.url"
-              class="mogul-icon preview-icon"
-              target="_blank"
-            ></a>
+            <a :class="{ disabled: withdrawn(publication) }" :href="outcome.url" target="_blank">
+              <Icon
+                :icon="previewAsset"
+                :icon-hover="previewAsset"
+                :highlight="withdrawn(publication) ? 'always' : 'rest'"
+              />
+            </a>
           </div>
           <div class="success">
             <Icon v-if="outcome.success" :icon="checkmarkAsset" :icon-hover="checkmarkAsset" />
-            <Icon v-else :icon="errorAsset" :icon-hover="errorAsset" class="failed-outcome" />
+            <Icon
+              highlight="hover"
+              v-else
+              :icon="errorAsset"
+              :icon-hover="errorAsset"
+              class="failed-outcome"
+            />
           </div>
           <div class="key">
             {{ t('publications.outcomes.keys.' + outcome.key) }}
@@ -205,6 +214,7 @@ import { Publication } from '@/services'
 import { dateTimeToString } from '@/dates'
 import deleteAsset from '@/assets/images/icons/delete.svg'
 import errorAsset from '@/assets/images/icons/error.svg'
+import previewAsset from '@/assets/images/icons/preview.svg'
 import checkmarkAsset from '@/assets/images/icons/checkbox.svg'
 
 const { t } = useI18n()

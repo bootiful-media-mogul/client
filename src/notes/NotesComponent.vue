@@ -186,7 +186,12 @@ onMounted(async () => {
         </label>
         <div class="panel-menu-subtitle notes-section section-header">
           <span>{{ t('notes.system-wide.title') }}</span>
-          <Icon :icon-hover="plusIcon" :icon="plusIcon" @click="showComposerFor('mogul')" />
+          <Icon
+            highlight="hover"
+            :icon-hover="plusIcon"
+            :icon="plusIcon"
+            @click="showComposerFor('mogul')"
+          />
         </div>
         <div class="note" v-for="note in mogulNotes" :key="note.id">
           <NoteEditor
@@ -209,7 +214,12 @@ onMounted(async () => {
             t('notes.entity.title', { entityName: entityName })
           }}</span>
 
-          <Icon :icon-hover="plusIcon" :icon="plusIcon" @click="showComposerFor('entity')" />
+          <Icon
+            highlight="hover"
+            :icon-hover="plusIcon"
+            :icon="plusIcon"
+            @click="showComposerFor('entity')"
+          />
         </div>
         <div class="note" v-for="note in entityNotes" :key="note.id">
           <NoteEditor

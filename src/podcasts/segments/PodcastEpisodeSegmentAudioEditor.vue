@@ -15,6 +15,7 @@ import Icon from '@/ui/Icon.vue'
 import TrackEditor from '@/podcasts/segments/TrackEditor.vue'
 import closeAsset from '@/assets/images/icons/close.svg'
 import audioEditorAsset from '@/assets/images/icons/audio-editor.svg'
+import previewAsset from '@/assets/images/icons/preview.svg'
 
 const { t } = useI18n()
 const { listenForCategory } = useNotificationListeners()
@@ -259,11 +260,17 @@ onBeforeUnmount(() => {
       <a
         v-if="phase === 'ready'"
         href="#"
-        :class="'mogul-icon preview-icon' + (canListen ? '' : ' disabled')"
+        :class="{ disabled: !canListen }"
         :title="t('podcasts.episodes.episode.segments.audio-editor.listen')"
         :aria-label="t('podcasts.episodes.episode.segments.audio-editor.listen')"
         @click.prevent="listen"
-      ></a>
+      >
+        <Icon
+          :icon="previewAsset"
+          :icon-hover="previewAsset"
+          :highlight="canListen ? 'rest' : 'always'"
+        />
+      </a>
       <button
         v-if="phase === 'ready'"
         type="button"
@@ -274,6 +281,7 @@ onBeforeUnmount(() => {
         {{ t('podcasts.episodes.episode.segments.audio-editor.save') }}
       </button>
       <Icon
+        highlight="hover"
         :icon="closeAsset"
         :icon-hover="closeAsset"
         :alt="t('podcasts.episodes.episode.segments.audio-editor.close')"

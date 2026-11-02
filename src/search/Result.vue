@@ -65,11 +65,17 @@ function sourceFor(type: string): string {
   <div class="result-container">
     <div class="result">
       <div class="edit-button">
-        <Icon @click.prevent="navigateToEntity()" :icon="editAsset" :icon-hover="editAsset" />
+        <Icon
+          highlight="hover"
+          @click.prevent="navigateToEntity()"
+          :icon="editAsset"
+          :icon-hover="editAsset"
+        />
       </div>
       <div class="id-column">#{{ id }}</div>
       <div class="delete-button">
         <Icon
+          highlight="hover"
           v-if="props.allowDeletion"
           :icon="deleteAsset"
           :icon-hover="deleteAsset"

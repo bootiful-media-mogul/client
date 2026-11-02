@@ -61,20 +61,60 @@
     <template v-slot:toolbar>
       <div class="formatting-menu-toolbar">
         <div class="formatting-menu">
-          <Icon :icon="boldAsset" :icon-hover="boldAsset" @click.prevent="formatText('strong')" />
-          <Icon :icon="italicAsset" :icon-hover="italicAsset" @click.prevent="formatText('em')" />
-          <Icon :icon="linkAsset" :icon-hover="linkAsset" @click.prevent="formatText('link')" />
-          <Icon :icon="listAsset" :icon-hover="listAsset" @click.prevent="formatText('list')" />
-          <Icon :icon="h1Asset" :icon-hover="h1Asset" @click.prevent="formatText('h1')" />
-          <Icon :icon="h2Asset" :icon-hover="h2Asset" @click.prevent="formatText('h2')" />
-          <Icon :icon="h3Asset" :icon-hover="h3Asset" @click.prevent="formatText('h3')" />
+          <Icon
+            highlight="hover"
+            :icon="boldAsset"
+            :icon-hover="boldAsset"
+            @click.prevent="formatText('strong')"
+          />
+          <Icon
+            highlight="hover"
+            :icon="italicAsset"
+            :icon-hover="italicAsset"
+            @click.prevent="formatText('em')"
+          />
+          <Icon
+            highlight="hover"
+            :icon="linkAsset"
+            :icon-hover="linkAsset"
+            @click.prevent="formatText('link')"
+          />
+          <Icon
+            highlight="hover"
+            :icon="listAsset"
+            :icon-hover="listAsset"
+            @click.prevent="formatText('list')"
+          />
+          <Icon
+            highlight="hover"
+            :icon="h1Asset"
+            :icon-hover="h1Asset"
+            @click.prevent="formatText('h1')"
+          />
+          <Icon
+            highlight="hover"
+            :icon="h2Asset"
+            :icon-hover="h2Asset"
+            @click.prevent="formatText('h2')"
+          />
+          <Icon
+            highlight="hover"
+            :icon="h3Asset"
+            :icon-hover="h3Asset"
+            @click.prevent="formatText('h3')"
+          />
 
-          <Icon :icon="imageAsset" :icon-hover="imageAsset" @click.prevent="formatText('image')" />
+          <Icon
+            highlight="hover"
+            :icon="imageAsset"
+            :icon-hover="imageAsset"
+            @click.prevent="formatText('image')"
+          />
         </div>
       </div>
     </template>
     <template v-slot:icon>
-      <Icon :icon="asset" :icon-hover="asset" />
+      <Icon highlight="rest" :icon="asset" :icon-hover="asset" />
     </template>
   </InputWrapperChild>
 </template>

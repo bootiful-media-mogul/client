@@ -1,5 +1,20 @@
+<script lang="ts">
+// each svg is fetched once, then shared by every Icon that shows it
+const markupCache = new Map<string, Promise<string>>()
+let instances = 0
+
+function markupFor(url: string): Promise<string> {
+  if (!markupCache.has(url)) {
+    markupCache.set(
+      url,
+      fetch(url).then((response) => (response.ok ? response.text() : ''))
+    )
+  }
+  return markupCache.get(url)!
+}
+</script>
 <script lang="ts" setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
@@ -11,23 +26,48 @@ interface Props {
   readonly disabled?: boolean | string
   readonly sticky?: boolean | string
   readonly width?: number
+  // when an svg shows its white highlight ("paper"): at rest and hollow on hover, hollow
+  // at rest and white on hover, or always. without it the svg is ink only
+  readonly highlight?: 'rest' | 'hover' | 'always'
 }
 
 const props = defineProps<Props>()
 const element = ref<HTMLElement>()
 const src = ref<string>()
 
-// an svg is drawn as a mask over the current text color rather than as an <img>, so a
-// single file works on light forms and in the black panel bar alike. vite inlines
-// small svgs as data uris, so both forms of url have to be recognized.
+// an svg is inlined rather than shown as an <img>, so it can be styled from here: its ink
+// takes the current text color, and its paper (the white highlight under the ink) is the
+// --icon-paper variable, toggled by the highlight prop. vite may inline small svgs as data
+// uris, so both forms of url are recognized.
 const svg = computed(() => {
   const url = src.value ?? props.icon
   return url.startsWith('data:image/svg+xml') || /\.svg($|\?)/.test(url)
 })
-const svgStyle = computed(() => {
-  const url = `url("${src.value ?? props.icon}")`
-  return { maskImage: url, webkitMaskImage: url }
-})
+const markup = ref<string>('')
+// masks and filters are found by id, and the same svg appears many times on a page, so
+// every copy gets its own ids
+const suffix = `-icon${++instances}`
+
+watch(
+  () => (svg.value ? src.value ?? props.icon : null),
+  async (url) => {
+    if (!url) return
+    const text = await markupFor(url)
+    if (url === (src.value ?? props.icon)) {
+      markup.value = text
+        .replace(/\bid="([\w-]+)"/g, `id="$1${suffix}"`)
+        .replace(/url\(#([\w-]+)\)/g, `url(#$1${suffix})`)
+    }
+  },
+  { immediate: true }
+)
+
+const svgClasses = computed(() => ({
+  icon: true,
+  'icon-disabled': !!props.disabled,
+  unselectable: !!props.disabled,
+  [`icon-paper-${props.highlight}`]: !!props.highlight && !props.disabled
+}))
 
 const swap = function () {
   if (props.iconHover) src.value = props.icon == src.value ? props.iconHover : props.icon
@@ -80,49 +120,42 @@ img.icon-disabled {
   cursor: pointer;
   width: var(--icon-width);
   aspect-ratio: 1;
-  background-color: currentColor;
-  mask-origin: content-box;
-  mask-clip: content-box;
-  -webkit-mask-origin: content-box;
-  -webkit-mask-clip: content-box;
-  mask-size: contain;
-  mask-repeat: no-repeat;
-  mask-position: center;
-  -webkit-mask-size: contain;
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-position: center;
+  --icon-paper: transparent;
 }
 
-/* the png icons swap to a hollow variant on hover; one-color svgs dim instead */
-:where(span.icon):hover {
-  opacity: 0.6;
+:where(span.icon) :deep(svg) {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
-:where(span.icon-disabled),
-:where(span.icon-disabled):hover {
+/* the paper is white unless a dark surface asks for another --icon-paper-color */
+:where(span.icon-paper-rest),
+:where(span.icon-paper-always),
+:where(span.icon-paper-hover):hover {
+  --icon-paper: var(--icon-paper-color, white);
+}
+
+:where(span.icon-paper-rest):hover {
+  --icon-paper: transparent;
+}
+
+:where(span.icon-disabled) {
   cursor: unset;
   opacity: 0.2;
 }
 </style>
 <template>
   <span
-    v-if="svg && disabled"
+    v-if="svg"
     ref="element"
     :aria-label="altText"
-    :style="svgStyle"
-    class="icon icon-disabled unselectable"
+    :class="svgClasses"
     role="img"
-  />
-  <span
-    v-else-if="svg"
-    ref="element"
-    :aria-label="altText"
-    :style="svgStyle"
-    class="icon"
-    role="img"
-    @click="clickDelegate"
-    @mouseout="mouseSwap"
-    @mouseover="mouseSwap"
+    @click="disabled ? undefined : clickDelegate($event)"
+    @mouseout="disabled ? undefined : mouseSwap()"
+    @mouseover="disabled ? undefined : mouseSwap()"
+    v-html="markup"
   />
   <img
     v-else-if="disabled"

@@ -12,6 +12,7 @@
           class="toolbar-icon"
         >
           <Icon
+            highlight="always"
             :alt="slot.plugin"
             :icon="slot.icon.icon"
             :icon-hover="slot.icon.iconHover"

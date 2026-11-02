@@ -76,7 +76,7 @@ async function newEpisode() {
           {{ t('podcasts.episodes.title', { title: currentPodcast?.title }) }}
         </legend>
         <div class="toolbar">
-          <Icon :icon-hover="plusIcon" :icon="plusIcon" @click="newEpisode()" />
+          <Icon highlight="hover" :icon-hover="plusIcon" :icon="plusIcon" @click="newEpisode()" />
         </div>
         <div v-for="episode in episodes" v-bind:key="episode.id">
           <Result

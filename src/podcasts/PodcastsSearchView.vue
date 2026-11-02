@@ -8,7 +8,12 @@
       <form class="pure-form">
         <fieldset>
           <div class="toolbar">
-            <Icon :icon-hover="plusIcon" :icon="plusIcon" @click="createPodcast" />
+            <Icon
+              highlight="hover"
+              :icon-hover="plusIcon"
+              :icon="plusIcon"
+              @click="createPodcast"
+            />
           </div>
 
           <legend>{{ t('podcasts.all', { user: mogulName }) }}</legend>
@@ -31,6 +36,7 @@
             </div>
             <div class="edit">
               <Icon
+                highlight="rest"
                 :icon="editAsset"
                 :icon-hover="editAsset"
                 @click.prevent="editPodcast(podcast)"
@@ -38,6 +44,7 @@
             </div>
             <div class="rss">
               <Icon
+                highlight="rest"
                 :icon="rssAsset"
                 :icon-hover="rssAsset"
                 @click.prevent="openRssFeed(podcast.id, podcastRssFeedUrl(podcast))"
@@ -45,6 +52,7 @@
             </div>
             <div class="delete">
               <Icon
+                highlight="rest"
                 :disabled="all.length == 1"
                 :icon="deleteAsset"
                 :icon-hover="deleteAsset"

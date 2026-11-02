@@ -6,6 +6,7 @@
 </style>
 <template>
   <Icon
+    highlight="rest"
     ref="icon"
     :icon="eyeAsset"
     :icon-hover="eyeOffAsset"

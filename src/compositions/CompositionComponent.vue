@@ -208,6 +208,7 @@ async function addCompositionAttachment(compositionId: number) {
             </div>
             <div class="delete-icon">
               <Icon
+                highlight="rest"
                 :icon="deleteAsset"
                 :icon-hover="deleteAsset"
                 @click.prevent="deleteCompositionAttachment(attachment.id)"

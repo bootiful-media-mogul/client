@@ -385,6 +385,7 @@ onMounted(async () => {
           <div class="form-section-title">{{ t('podcasts.episodes.segments') }}</div>
           <div class="toolbar">
             <Icon
+              highlight="hover"
               :icon-hover="plusIcon"
               :icon="plusIcon"
               @click.prevent="addNewPodcastEpisodeSegment(draftEpisode)"

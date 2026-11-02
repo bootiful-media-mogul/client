@@ -208,6 +208,12 @@ a.disabled {
   text-decoration: none;
 }
 
+/* the grey is for link text; an icon in a disabled link keeps its ink, and is faded by
+   .disabled like the png icons were */
+a.disabled > .icon {
+  color: black;
+}
+
 /* Mobile-first: Default styles are for mobile */
 html,
 body {
@@ -235,51 +241,6 @@ body {
 }
 
 .transcript-icon {
-}
-
-/* css-only icons draw the same svgs Icon.vue does: a mask over the text color, so
-   they follow the theme. each class below just names its svg */
-.close-icon,
-.preview-icon,
-.folder-icon,
-.link-icon {
-  height: var(--icon-width);
-  display: inline-block;
-  width: var(--icon-width);
-  background-color: currentColor;
-  mask-size: contain;
-  mask-repeat: no-repeat;
-  mask-position: center;
-  -webkit-mask-size: contain;
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-}
-
-.close-icon:hover,
-.preview-icon:hover:not(.disabled),
-.folder-icon:hover,
-.link-icon:hover {
-  opacity: 0.6;
-}
-
-.close-icon {
-  mask-image: url('../assets/images/icons/close.svg');
-  -webkit-mask-image: url('../assets/images/icons/close.svg');
-}
-
-.preview-icon {
-  mask-image: url('../assets/images/icons/preview.svg');
-  -webkit-mask-image: url('../assets/images/icons/preview.svg');
-}
-
-.folder-icon {
-  mask-image: url('../assets/images/icons/folder.svg');
-  -webkit-mask-image: url('../assets/images/icons/folder.svg');
-}
-
-.link-icon {
-  mask-image: url('../assets/images/icons/link.svg');
-  -webkit-mask-image: url('../assets/images/icons/link.svg');
 }
 
 input,

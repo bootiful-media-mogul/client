@@ -22,7 +22,9 @@
           <code>{{ size }}</code>
         </div>
         <div v-if="url">
-          <a :href="url" :title="url" class="link-icon" @click.prevent="launchPublicUrl"></a>
+          <a :href="url" :title="url" @click.prevent="launchPublicUrl">
+            <Icon :icon="linkAsset" :icon-hover="linkAsset" highlight="rest" />
+          </a>
         </div>
       </div>
     </fieldset>
@@ -35,6 +37,8 @@ import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 import { prettyPrintInBytes } from '@/managedfiles/files'
 import { onMounted, ref, watch } from 'vue'
+import Icon from '@/ui/Icon.vue'
+import linkAsset from '@/assets/images/icons/link.svg'
 
 const el = ref<HTMLElement>()
 const isImage = ref(false)

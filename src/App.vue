@@ -114,9 +114,11 @@ onMounted(async () => {
   justify-content: center;
 }
 
-/* the svg icons take the text color: grey on the floating black bar, white on hover */
+/* the svg icons take the text color: grey on the floating black bar, white on hover.
+   their highlight is black there, as the inverted pngs' was */
 .toolbar-container .icon {
   color: grey;
+  --icon-paper-color: black;
 }
 
 .toolbar-container .icon:hover {
@@ -170,6 +172,7 @@ onMounted(async () => {
   .toolbar-container .icon,
   .toolbar-container .icon:hover {
     color: inherit;
+    --icon-paper-color: white;
   }
 
   /* the buffer exists to clear the floating toolbar, which is only fixed on mobile.
@@ -192,19 +195,36 @@ onMounted(async () => {
             <Search />
           </div>
           <div class="global-toolbar">
-            <Icon @click.prevent="go('home')" :icon-hover="homeIconAsset" :icon="homeIconAsset" />
             <Icon
+              highlight="hover"
+              @click.prevent="go('home')"
+              :icon-hover="homeIconAsset"
+              :icon="homeIconAsset"
+            />
+            <Icon
+              highlight="hover"
               @click.prevent="goPodcasts"
               :icon-hover="podcastIconAsset"
               :icon="podcastIconAsset"
             />
-            <Icon @click.prevent="go('blogs')" :icon-hover="blogIconAsset" :icon="blogIconAsset" />
             <Icon
+              highlight="hover"
+              @click.prevent="go('blogs')"
+              :icon-hover="blogIconAsset"
+              :icon="blogIconAsset"
+            />
+            <Icon
+              highlight="hover"
               @click.prevent="go('settings')"
               :icon-hover="settingsIconAsset"
               :icon="settingsIconAsset"
             />
-            <Icon @click.prevent="go('jobs')" :icon-hover="jobsIconAsset" :icon="jobsIconAsset" />
+            <Icon
+              highlight="hover"
+              @click.prevent="go('jobs')"
+              :icon-hover="jobsIconAsset"
+              :icon="jobsIconAsset"
+            />
           </div>
         </div>
 

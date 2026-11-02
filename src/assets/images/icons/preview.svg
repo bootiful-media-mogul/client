@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round">
+  <circle cx="10" cy="10" r="6.5" style="fill:var(--icon-paper,transparent)"/>
   <circle cx="10" cy="10" r="6.5" stroke-width="2.8"/>
   <path d="M15 15l6 6" stroke-width="4"/>
 </svg>

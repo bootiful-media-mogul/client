@@ -4,4 +4,5 @@
     <g fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8h10M10.5 6h3"/><path d="M8.3 10h7.4l-.8 8H9.1z" fill="#000"/></g>
   </mask>
   <g fill="currentColor" mask="url(#glyph)"><circle cx="12" cy="12" r="11"/></g>
+  <g fill="none" style="stroke:var(--icon-paper,transparent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8h10M10.5 6h3"/><path d="M8.3 10h7.4l-.8 8H9.1z" style="fill:var(--icon-paper,transparent)"/></g>
 </svg>

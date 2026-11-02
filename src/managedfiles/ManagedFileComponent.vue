@@ -75,11 +75,17 @@
     </span>
 
     <a class="choose" href="#" @click="launchFileUpload">
-      <span :title="t('managedfiles.upload')" class="folder-icon"></span>
+      <Icon
+        :icon="folderAsset"
+        :icon-hover="folderAsset"
+        :title="t('managedfiles.upload')"
+        highlight="rest"
+      />
     </a>
     <a class="visible" href="#">
       <div v-if="visible">
         <Icon
+          highlight="always"
           ref="icon"
           :icon-hover="eyeAsset"
           :icon="eyeAsset"
@@ -108,11 +114,16 @@
     </div>
     <div class="preview">
       <a
-        :class="'mogul-icon preview-icon ' + (written ? '' : ' disabled')"
+        :class="{ disabled: !written }"
         :title="t('managedfiles.preview')"
         href="#"
         @click.prevent="preview"
       >
+        <Icon
+          :icon="previewAsset"
+          :icon-hover="previewAsset"
+          :highlight="written ? 'rest' : 'always'"
+        />
       </a>
     </div>
 
@@ -138,6 +149,8 @@ import checkmarkAsset from '@/assets/images/icons/checkbox.svg'
 import Icon from '@/ui/Icon.vue'
 import { useI18n } from 'vue-i18n'
 import eyeAsset from '@/assets/images/icons/eye.svg'
+import folderAsset from '@/assets/images/icons/folder.svg'
+import previewAsset from '@/assets/images/icons/preview.svg'
 import eyeOffAsset from '@/assets/images/icons/eye-off.svg'
 
 const { t } = useI18n()

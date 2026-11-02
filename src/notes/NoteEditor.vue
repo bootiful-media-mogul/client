@@ -48,8 +48,14 @@ const props = defineProps<{
         :title="t('notes.done')"
         @change="setDone"
       />
-      <Icon :icon="editAsset" :icon-hover="editAsset" @click.prevent="$emit('update', id, type)" />
       <Icon
+        highlight="hover"
+        :icon="editAsset"
+        :icon-hover="editAsset"
+        @click.prevent="$emit('update', id, type)"
+      />
+      <Icon
+        highlight="hover"
         @click.prevent="deleteNote"
         :icon="deleteAsset"
         :icon-hover="deleteAsset"

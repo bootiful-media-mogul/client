@@ -187,7 +187,7 @@ const cancel = async () => {
                 -->
                 <InputWrapperChild>
                   <template v-slot:icon>
-                    <Icon :icon="transcriptAsset" :icon-hover="transcriptAsset" />
+                    <Icon highlight="hover" :icon="transcriptAsset" :icon-hover="transcriptAsset" />
                   </template>
                   <template v-slot:panel>
                     <button
@@ -219,6 +219,7 @@ const cancel = async () => {
             <label>{{ t('blogs.posts.post.visible') }}</label>
             <a class="visibility-toggle" href="#" @click.prevent="toggleVisibility">
               <Icon
+                highlight="always"
                 v-if="visible"
                 :alt="t('blogs.posts.post.visible')"
                 :icon-hover="eyeAsset"

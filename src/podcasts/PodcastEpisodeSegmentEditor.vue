@@ -108,6 +108,7 @@ const emit = defineEmits<{
     <!-- Reorder arrows (if enabled) -->
     <div class="arrows">
       <Icon
+        highlight="rest"
         v-if="showReorder"
         class="up"
         :disabled="!canMoveUp"
@@ -116,6 +117,7 @@ const emit = defineEmits<{
         @click.prevent="emit('moveUp')"
       />
       <Icon
+        highlight="rest"
         v-if="showReorder"
         class="down"
         :disabled="!canMoveDown"
@@ -133,6 +135,7 @@ const emit = defineEmits<{
       <!-- Transcript action (if enabled) -->
       <div class="transcript-button">
         <Icon
+          highlight="rest"
           v-if="showTranscript"
           :icon="transcriptAsset"
           :icon-hover="transcriptAsset"
@@ -160,6 +163,7 @@ const emit = defineEmits<{
       <!-- Delete action (if enabled) -->
       <div class="delete-button">
         <Icon
+          highlight="rest"
           :disabled="!showDelete"
           :icon="deleteAsset"
           :icon-hover="deleteAsset"

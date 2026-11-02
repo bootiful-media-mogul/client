@@ -29,7 +29,7 @@
           @click="togglePanel(slot)"
         >
           <div v-if="panelVisible && slot.iconVisible">
-            <div class="close-icon"></div>
+            <Icon :icon="closeAsset" :icon-hover="closeAsset" highlight="rest" />
           </div>
           <div v-else>
             <component :is="slot.icon" v-if="slot.iconVisible"></component>
@@ -52,6 +52,8 @@ type TextInputElement = HTMLInputElement | HTMLTextAreaElement
 
 import { computed, onBeforeUnmount, onMounted, provide, ref } from 'vue'
 import InputWrapperMenu from '@/ui/input/InputWrapperMenu.vue'
+import Icon from '@/ui/Icon.vue'
+import closeAsset from '@/assets/images/icons/close.svg'
 import type { PanelSlot } from './input'
 
 import { useI18n } from 'vue-i18n'

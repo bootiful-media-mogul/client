@@ -140,21 +140,21 @@
               :label="t('writingassistant.buttons.proofread')"
               @click="proofread"
             >
-              <Icon :icon-hover="proofreadAsset" :icon="proofreadAsset" />
+              <Icon highlight="hover" :icon-hover="proofreadAsset" :icon="proofreadAsset" />
             </WritingAssistantButton>
             <WritingAssistantButton
               :class="rewriteToolsClasses"
               :label="t('writingassistant.buttons.rewrite')"
               @click="toggleRewriteTools"
             >
-              <Icon :icon-hover="rewriteAsset" :icon="rewriteAsset" />
+              <Icon highlight="hover" :icon-hover="rewriteAsset" :icon="rewriteAsset" />
             </WritingAssistantButton>
             <WritingAssistantButton
               :class="aiToolsClasses"
               :label="t('writingassistant.buttons.generate-with-ai')"
               @click="toggleAiTools"
             >
-              <Icon :icon-hover="aiAsset" :icon="aiAsset" />
+              <Icon highlight="hover" :icon-hover="aiAsset" :icon="aiAsset" />
             </WritingAssistantButton>
             <div v-if="aiToolsVisible" class="ai">
               <textarea
@@ -220,7 +220,7 @@
       </div>
     </template>
     <template v-slot:icon>
-      <Icon :icon="rewriteAsset" :icon-hover="rewriteAsset" />
+      <Icon highlight="rest" :icon="rewriteAsset" :icon-hover="rewriteAsset" />
     </template>
   </InputWrapperChild>
 </template>
