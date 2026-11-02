@@ -47,6 +47,5 @@ jobs:
 
       - name: Invoke Pipeline
         run: |
-          curl -H "Accept: application/vnd.github.everest-preview+json" -H "Authorization: token ${GH_PAT}" --request POST  --data '{"event_type": "update-event"}' https://api.github.com/repos/bootiful-media-mogul/pipeline/dispatches
+          curl --fail-with-body --silent --show-error -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GH_PAT}" --request POST --data '{"event_type": "update-event"}' https://api.github.com/repos/bootiful-media-mogul/pipeline/dispatches
           echo "Invoking the pipeline to have it deploy everything..."
-
