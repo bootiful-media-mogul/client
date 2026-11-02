@@ -11,7 +11,7 @@
       <slot></slot>
     </div>
     <div class="word-count">
-      <div class="status" ref="wordCount"></div>
+      <div class="status">{{ characterCount }}</div>
     </div>
     <div class="icon-column">
       <InputWrapperMenu
@@ -50,7 +50,7 @@
 <script lang="ts" setup>
 type TextInputElement = HTMLInputElement | HTMLTextAreaElement
 
-import { onBeforeUnmount, onMounted, provide, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, provide, ref } from 'vue'
 import InputWrapperMenu from '@/ui/input/InputWrapperMenu.vue'
 import type { PanelSlot } from './input'
 
@@ -58,7 +58,13 @@ import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 
-const wordCount = ref<HTMLElement>()
+const props = defineProps<{ modelValue: string | null }>()
+const characterCount = computed(() => {
+  const count = props.modelValue?.length ?? 0
+  return count === 0
+    ? t('components.inputWrapper.empty')
+    : t('components.inputWrapper.character-count', count)
+})
 const emit = defineEmits<{ (e: 'update:modelValue', value: string): void }>()
 const root = ref<HTMLElement>()
 const inputElement = ref<TextInputElement>()
@@ -142,23 +148,10 @@ const togglePanel = (slot: PanelSlot) => {
   panelVisible.value = !panelVisible.value
 }
 
-function evaluateWordCount(element: TextInputElement) {
-  wordCount.value!!.innerText =
-    element.value.length == 0
-      ? t('components.inputWrapper.empty')
-      : t('components.inputWrapper.character-count', element.value.length)
-}
-
-function registerWordCountListener(element: TextInputElement) {
-  const charChangeListener = () => evaluateWordCount(element)
-  element.addEventListener('input', charChangeListener)
-}
-
 onMounted(() => {
   inputElement.value = root.value?.querySelector('input, textarea')!!
   if (inputElement.value) {
     const element = inputElement.value!!
-    registerWordCountListener(element)
     inputEvents.forEach((evt) => element.addEventListener(evt, updateValue))
   }
   childSlots.value[0].iconVisible = true

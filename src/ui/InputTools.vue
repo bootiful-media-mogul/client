@@ -14,8 +14,8 @@ interface Props {
 }
 
 const emit = defineEmits<{ (e: 'update:modelValue', value: string): void }>()
-const props = defineProps<Props>()
+defineProps<Props>()
 const updateValue = (value: string): void => {
-  emit('update:modelValue', props.modelValue)
+  emit('update:modelValue', value)
 }
 </script>
