@@ -30,7 +30,7 @@
   const totalElements = Array.from(fontSizeMap.values()).reduce((a, b) => a + b, 0)
   const threshold = 0.1 * totalElements // Set a threshold for outlier detection (10% of elements)
   const outlierSizes = sortedFontSizes
-    .filter(([fontSize, count]) => count < threshold)
+    .filter(([, count]) => count < threshold)
     .map(([fontSize]) => fontSize)
 
   // Step 4: Generate a report of outliers and their selectors

@@ -82,7 +82,7 @@
 <style scoped>
 /* svg icons take the text color, so a failure is tinted rather than drawn in red */
 .failed-outcome {
-  color: #e24b4a;
+  color: var(--danger-color);
 }
 
 .publications {
@@ -100,8 +100,8 @@
     auto;
   padding-top: calc(var(--radius) * 1);
   padding-bottom: var(--gutter-space-half);
-  border-top: 1px solid black;
-  border-bottom: 1px solid black;
+  border-top: 1px solid var(--rule-color);
+  border-bottom: 1px solid var(--rule-color);
 }
 
 .publications .publications-row .plugin-column {
@@ -125,7 +125,7 @@
 }
 
 .publications .publications-row .plugin-icon-container {
-  background-color: black;
+  background-color: var(--chrome-color);
   border-radius: var(--radius);
   overflow: hidden;
 
@@ -140,7 +140,7 @@
   border-top-left-radius: 0;
   padding-left: var(--gutter-space);
   padding-top: var(--radius);
-  border: 1px solid black;
+  border: 1px solid var(--rule-color);
   border-top: 0;
   border-right: none;
   border-top-right-radius: 0;

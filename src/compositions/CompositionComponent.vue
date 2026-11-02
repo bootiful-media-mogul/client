@@ -246,7 +246,7 @@ async function addCompositionAttachment(compositionId: number) {
   display: grid;
   grid-template-areas: 'draggable-handle delete managed-file';
   grid-template-columns: var(--gutter-space) var(--icon-column) auto;
-  border-top: 1px solid black;
+  border-top: 1px solid var(--rule-color);
 }
 
 .managed-file {
@@ -290,7 +290,7 @@ async function addCompositionAttachment(compositionId: number) {
 .dot {
   width: 3px;
   height: 3px;
-  background-color: white;
+  background-color: var(--raised-color);
   border-radius: 50%;
   opacity: 0.8;
 }

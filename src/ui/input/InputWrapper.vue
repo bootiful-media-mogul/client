@@ -226,13 +226,13 @@ provide('setInputDisabled', setInputDisabled)
   padding-left: var(--writing-tools-panel-padding);
   padding-right: var(--writing-tools-panel-padding);
   padding-top: calc(2.5 * var(--icon-width));
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: color-mix(in srgb, var(--raised-color) 50%, transparent);
   border-radius: 8px;
 }
 
 .toolbar {
   z-index: 8;
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: color-mix(in srgb, var(--raised-color) 50%, transparent);
 
   grid-area: toolbar;
   margin-bottom: calc(-1 * var(--icon-width));

@@ -24,11 +24,11 @@
   pointer-events: auto;
 }
 
-/* the actual white background that fades in */
+/* the actual raised background that fades in */
 .expanding-panel__bg {
   min-height: 100vh;
-  /* start transparent at the top-right, go to white */
-  background: white;
+  /* start transparent at the top-right, go to the raised color */
+  background: var(--raised-color);
   padding: 24px;
   box-sizing: border-box;
 }
@@ -37,7 +37,7 @@
   0% {
     transform: scale(0);
     opacity: 0;
-    background: rgba(255, 255, 255, 0);
+    background: transparent;
   }
   40% {
     opacity: 1;
@@ -45,7 +45,7 @@
   100% {
     transform: scale(1);
     opacity: 1;
-    background: rgba(255, 255, 255, 1);
+    background: var(--raised-color);
   }
 }
 
@@ -56,7 +56,8 @@
   right: 0;
   display: inline-block;
   margin-left: auto;
-  background: #eee;
+  background: var(--panel-bg-color);
+  color: var(--ink-color);
   border: none;
   padding: 6px 10px;
   cursor: pointer;

@@ -193,8 +193,8 @@ const emit = defineEmits<{
     font-size: var(--font-size-sm);
     grid-area: type;
     top: calc(var(--radius) * -1);
-    background-color: black;
-    color: white;
+    background-color: var(--chrome-color);
+    color: var(--chrome-ink-color);
     border-bottom-right-radius: var(--radius);
     display: grid;
     grid-template-areas: 'icon label';
@@ -211,7 +211,7 @@ const emit = defineEmits<{
     }
   }
   .buttons {
-    border-top: 1px solid black;
+    border-top: 1px solid var(--rule-color);
     padding: var(--gutter-space-half);
     grid-area: buttons;
     display: grid;
@@ -229,6 +229,7 @@ const emit = defineEmits<{
       grid-area: duration;
       place-self: center;
       font-size: var(--font-size-sm);
+      font-family: var(--font-mono);
       font-variant-numeric: tabular-nums;
       color: var(--muted-color, inherit);
     }
@@ -237,7 +238,7 @@ const emit = defineEmits<{
     }
   }
   .managed-file-row {
-    border-top: 1px solid black;
+    border-top: 1px solid var(--rule-color);
 
     grid-area: managed-file-row;
   }

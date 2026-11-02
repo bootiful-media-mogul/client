@@ -20,7 +20,7 @@
 
 <style scoped>
 .tab-bar-bumper {
-  background-color: black;
+  background-color: var(--chrome-color);
   position: relative;
   margin-bottom: var(--gutter-space);
 }
@@ -38,7 +38,7 @@
 
 .tab-bar {
   display: flex;
-  background-color: black;
+  background-color: var(--chrome-color);
   padding-left: var(--gutter-space);
   gap: var(--gutter-space-half);
   padding-top: var(--gutter-space-third);
@@ -50,9 +50,11 @@
   cursor: pointer;
   text-align: center;
   font-size: var(--font-size-sm);
+  font-weight: 500;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: white;
-  font-family: 'arial Black', sans-serif;
+  color: var(--chrome-ink-color);
+  font-family: var(--font-mono);
   padding: var(--gutter-space-third);
   padding-bottom: var(--gutter-space);
   text-decoration: none;
@@ -60,13 +62,13 @@
 }
 
 .tab-active {
-  background-color: white;
-  color: black;
+  background-color: var(--raised-color);
+  color: var(--ink-color);
 }
 
 .tab:hover:not(.tab-active) {
-  background-color: gray;
-  color: rgba(0, 0, 0, 0.7);
+  background-color: var(--chrome-hover-color);
+  color: var(--chrome-ink-color);
 }
 
 /* Hide on desktop */

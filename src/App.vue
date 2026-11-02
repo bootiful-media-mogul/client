@@ -80,10 +80,10 @@ onMounted(async () => {
 }
 /* Mobile-first: Default styles for mobile */
 .toolbar-container {
-  color: white;
+  color: var(--chrome-ink-color);
   border-radius: var(--radius);
   padding: var(--gutter-space);
-  background-color: black;
+  background-color: var(--chrome-color);
   position: fixed;
   bottom: var(--gutter-space);
   left: var(--gutter-space);
@@ -100,6 +100,7 @@ onMounted(async () => {
 .toolbar-container .hello {
   grid-area: hello;
   text-align: center;
+  font-size: var(--font-size-sm);
 }
 
 .toolbar-container .search {
@@ -114,15 +115,15 @@ onMounted(async () => {
   justify-content: center;
 }
 
-/* the svg icons take the text color: grey on the floating black bar, white on hover.
-   their highlight is black there, as the inverted pngs' was */
+/* the svg icons take the text color: muted on the floating bar, light on hover.
+   their highlight is the bar itself, so only the glyph changes */
 .toolbar-container .icon {
-  color: grey;
-  --icon-paper-color: black;
+  color: var(--chrome-muted-color);
+  --icon-paper-color: var(--chrome-color);
 }
 
 .toolbar-container .icon:hover {
-  color: white;
+  color: var(--chrome-ink-color);
 }
 
 .page-content-buffer {
@@ -133,7 +134,7 @@ onMounted(async () => {
 /* Desktop overrides */
 @container app (min-width: 900px) {
   .toolbar-container {
-    color: black;
+    color: var(--ink-color);
     background-color: transparent;
     position: static;
     padding: var(--gutter-space);
@@ -171,8 +172,8 @@ onMounted(async () => {
 
   .toolbar-container .icon,
   .toolbar-container .icon:hover {
-    color: inherit;
-    --icon-paper-color: white;
+    color: var(--ink-color);
+    --icon-paper-color: var(--raised-color);
   }
 
   /* the buffer exists to clear the floating toolbar, which is only fixed on mobile.

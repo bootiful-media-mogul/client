@@ -14,5 +14,5 @@
       <path d="M124 44 h38 l-19 22 z"/>
     </g>
   </mask>
-  <circle cx="150" cy="150" r="146" fill="#000" mask="url(#waveform)"/>
+  <circle cx="150" cy="150" r="146" fill="currentColor" mask="url(#waveform)"/>
 </svg>

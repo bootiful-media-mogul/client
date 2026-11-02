@@ -111,7 +111,7 @@
 .podcasts-row {
   padding-bottom: var(--gutter-space);
   grid-template-rows: minmax(var(--row-height), auto) auto;
-  border-top: 1px solid black;
+  border-top: 1px solid var(--rule-color);
   display: grid;
   grid-column-gap: var(--gutter-space);
   grid-template-areas:

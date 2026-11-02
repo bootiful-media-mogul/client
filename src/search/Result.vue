@@ -103,7 +103,7 @@ function sourceFor(type: string): string {
   display: grid;
   grid-template-areas: 'watermark result';
   grid-template-columns: calc(var(--gutter-space-half) + var(--watermark-image-dimension)) auto;
-  border-top: 1px solid black;
+  border-top: 1px solid var(--rule-color);
   padding-bottom: var(--gutter-space-half);
   padding-top: var(--gutter-space-half);
 
@@ -130,12 +130,12 @@ function sourceFor(type: string): string {
     .id-column {
       grid-area: id-column;
       padding-left: calc(0.5 * var(--gutter-space));
-      border-left: 0.5px solid black;
+      border-left: 0.5px solid var(--rule-color);
     }
     .created-column {
       grid-area: created-column;
       text-align: right;
-      border-right: 0.5px solid black;
+      border-right: 0.5px solid var(--rule-color);
       padding-right: calc(0.5 * var(--gutter-space));
     }
     .delete-button {

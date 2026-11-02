@@ -1,7 +1,7 @@
 <style>
 .search-outer-box {
   & input {
-    border: 1px solid red;
+    border: 1px solid var(--field-border-color);
     border-radius: var(--radius);
     text-align: center;
     font-size: 1rem;

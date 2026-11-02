@@ -1,6 +1,6 @@
 <style>
 .panel-menu {
-  background-color: black;
+  background-color: var(--chrome-color);
   padding: calc(var(--gutter-space) / 2);
   display: grid;
   grid-template-columns: auto min-content min-content;
@@ -9,8 +9,8 @@
 .panel-menu-subtitle {
   font-size: var(--font-size-sm);
   text-transform: uppercase;
-  font-family: 'arial Black', sans-serif;
-  color: #777777;
+  font-family: var(--font-mono);
+  color: var(--muted-color);
 }
 
 .panel {
@@ -41,7 +41,9 @@
 }
 
 .panel-menu-buttons-img {
+  /* the svgs are black ink; invert makes them white, the opacity brings that to the ink */
   filter: invert(100%);
+  opacity: 0.85;
   cursor: pointer;
   width: calc(var(--gutter-space) * 0.7);
   height: calc(var(--gutter-space) * 0.7);
@@ -52,9 +54,11 @@
   align-items: center;
   gap: calc(var(--gutter-space) / 3);
   font-size: var(--font-size-sm);
+  font-weight: 500;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: white;
-  font-family: 'arial Black', sans-serif;
+  color: var(--chrome-ink-color);
+  font-family: var(--font-mono);
 }
 
 .panel-menu-title-icon {

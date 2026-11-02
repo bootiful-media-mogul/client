@@ -389,8 +389,8 @@ onBeforeUnmount(() => {
     font-size: var(--font-size-sm);
     grid-area: type;
     top: calc(var(--radius) * -1);
-    background-color: black;
-    color: white;
+    background-color: var(--chrome-color);
+    color: var(--chrome-ink-color);
     border-bottom-right-radius: var(--radius);
     display: grid;
     grid-template-areas: 'icon label';
@@ -423,7 +423,7 @@ onBeforeUnmount(() => {
   }
   .editor-body {
     grid-area: editor-body;
-    border-top: 1px solid black;
+    border-top: 1px solid var(--rule-color);
     min-width: 0;
   }
   .status {
@@ -436,7 +436,7 @@ onBeforeUnmount(() => {
     align-items: center;
     gap: var(--gutter-space-half) var(--gutter-space);
     padding: var(--gutter-space-half) var(--gutter-space);
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid var(--rule-color);
     font-size: var(--font-size-sm);
     & label {
       display: inline-flex;
@@ -451,7 +451,7 @@ onBeforeUnmount(() => {
       width: 4.5em;
     }
     .filters-hint {
-      color: #555;
+      color: var(--muted-color);
     }
   }
 }
