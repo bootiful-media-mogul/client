@@ -93,6 +93,13 @@
     display: none !important;
   }
 }
+
+/* the centered wide layout: the panels no longer meet the window's right edge */
+@container app (min-width: 1700px) {
+  .panel {
+    border-radius: var(--radius);
+  }
+}
 </style>
 
 <template>

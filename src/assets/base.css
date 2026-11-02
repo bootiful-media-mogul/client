@@ -6,6 +6,10 @@
   --gutter-space-third: calc(var(--gutter-space) / 3);
   --main-toolbar-gutter: var(--gutter-space);
   --sidebar-width: 40vw;
+  /* the widest the page (main content and sidebar together) gets; past it the page is
+     centered. the @container app (min-width: 1700px) queries carry the matching break:
+     this width plus enough margin that the page visibly floats when it kicks in */
+  --wide-layout-width: 1600px;
   --radius: 0.5em;
   --button-radius: var(--radius);
   --small-gutter-space: calc(0.5 * var(--gutter-space));
@@ -604,5 +608,19 @@ button {
     padding-left: var(--gutter-space);
     position: relative;
     width: calc(100%);
+  }
+}
+
+/* Wide styles - a studio display. the page stops stretching and becomes one box,
+   centered with equal margins. the bars that bled off the left and right edges of the
+   window now end in open space, so they round on both ends */
+@container app (min-width: 1700px) {
+  .page {
+    width: var(--wide-layout-width);
+    margin-inline: auto;
+  }
+
+  .pure-form legend {
+    border-radius: var(--radius);
   }
 }

@@ -218,6 +218,15 @@ onMounted(async () => {
     height: 0;
   }
 }
+
+/* the centered wide layout: the page is a box in the middle of the window, but the top
+   bar stays a full-width band. its contents stay in the box; the border-image outset
+   paints the black out to the window edges (.frame clips the overflow) */
+@container app (min-width: 1700px) {
+  .toolbar-container .top-bar {
+    border-image: conic-gradient(var(--ink-color) 0 0) fill 0 / /0 100vmax;
+  }
+}
 </style>
 <template>
   <div v-if="mogulUsername" class="app-wrapper">
