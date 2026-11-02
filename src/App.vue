@@ -103,6 +103,12 @@ onMounted(async () => {
   font-size: var(--font-size-sm);
 }
 
+/* on mobile the top bar is only a grouping: display: contents keeps its children as items
+   of the floating toolbar's grid, in that grid's hello / search / icons order */
+.toolbar-container .top-bar {
+  display: contents;
+}
+
 /* the wordmark only has room on desktop; the floating mobile bar keeps its three rows */
 .toolbar-container .brand {
   grid-area: brand;
@@ -143,7 +149,7 @@ onMounted(async () => {
     color: var(--ink-color);
     background-color: transparent;
     position: static;
-    padding: var(--gutter-space);
+    padding: 0;
     border: none;
     border-radius: 0;
     z-index: auto;
@@ -151,20 +157,30 @@ onMounted(async () => {
     right: auto;
     bottom: auto;
     display: grid;
-    /* wordmark, icons and the signed-in mogul share a row; equal 1fr sides keep the
-       icons centered on the page however long the wordmark or the name is */
     grid-template-areas:
-      'brand global-toolbar hello'
-      'search search search';
-    grid-template-columns: 1fr auto 1fr;
+      'top-bar'
+      'search';
     grid-template-rows: auto auto;
-    align-items: center;
     gap: 0;
     box-shadow: none;
   }
 
+  /* wordmark, icons and the signed-in mogul share a full-width black bar; equal 1fr
+     sides keep the icons centered on the page however long the wordmark or the name is */
+  .toolbar-container .top-bar {
+    grid-area: top-bar;
+    display: grid;
+    grid-template-areas: 'brand global-toolbar hello';
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    padding: 0 calc(2 * var(--gutter-space));
+    background-color: var(--ink-color);
+    color: var(--chrome-ink-color);
+  }
+
   .toolbar-container .hello {
     text-align: right;
+    color: var(--chrome-muted-color);
   }
 
   .toolbar-container .brand {
@@ -172,7 +188,7 @@ onMounted(async () => {
     align-items: baseline;
     gap: var(--gutter-space-half);
     justify-self: start;
-    color: var(--ink-color);
+    color: var(--chrome-ink-color);
     text-decoration: none;
   }
 
@@ -194,13 +210,13 @@ onMounted(async () => {
     font-size: var(--font-size-xs);
     letter-spacing: 0.24em;
     text-transform: uppercase;
-    color: var(--chrome-color);
+    color: var(--bg-color);
   }
 
   .toolbar-container .search {
     width: 50%;
     justify-self: center;
-    padding-bottom: var(--gutter-space);
+    padding: var(--gutter-space) 0;
   }
 
   .toolbar-container .global-toolbar {
@@ -208,10 +224,14 @@ onMounted(async () => {
     place-self: center;
   }
 
-  .toolbar-container .icon,
+  /* light glyphs on the bar, its own black as their highlight; sky blue on hover */
+  .toolbar-container .icon {
+    color: var(--chrome-ink-color);
+    --icon-paper-color: var(--ink-color);
+  }
+
   .toolbar-container .icon:hover {
-    color: var(--ink-color);
-    --icon-paper-color: var(--raised-color);
+    color: var(--bg-color);
   }
 
   /* the buffer exists to clear the floating toolbar, which is only fixed on mobile.
@@ -229,45 +249,47 @@ onMounted(async () => {
     <div class="frame">
       <div class="page">
         <div class="toolbar-container">
-          <a class="brand" href="#" @click.prevent="go('home')">
-            <span class="brand-name">{{ t('brand.name') }}</span>
-            <span class="brand-product">{{ t('brand.product') }}</span>
-          </a>
-          <div class="hello">{{ t('hello', { mogul: mogulUsername }) }}</div>
+          <div class="top-bar">
+            <a class="brand" href="#" @click.prevent="go('home')">
+              <span class="brand-name">{{ t('brand.name') }}</span>
+              <span class="brand-product">{{ t('brand.product') }}</span>
+            </a>
+            <div class="hello">{{ t('hello', { mogul: mogulUsername }) }}</div>
+            <div class="global-toolbar">
+              <Icon
+                highlight="hover"
+                @click.prevent="go('home')"
+                :icon-hover="homeIconAsset"
+                :icon="homeIconAsset"
+              />
+              <Icon
+                highlight="hover"
+                @click.prevent="goPodcasts"
+                :icon-hover="podcastIconAsset"
+                :icon="podcastIconAsset"
+              />
+              <Icon
+                highlight="hover"
+                @click.prevent="go('blogs')"
+                :icon-hover="blogIconAsset"
+                :icon="blogIconAsset"
+              />
+              <Icon
+                highlight="hover"
+                @click.prevent="go('settings')"
+                :icon-hover="settingsIconAsset"
+                :icon="settingsIconAsset"
+              />
+              <Icon
+                highlight="hover"
+                @click.prevent="go('jobs')"
+                :icon-hover="jobsIconAsset"
+                :icon="jobsIconAsset"
+              />
+            </div>
+          </div>
           <div class="search">
             <Search />
-          </div>
-          <div class="global-toolbar">
-            <Icon
-              highlight="hover"
-              @click.prevent="go('home')"
-              :icon-hover="homeIconAsset"
-              :icon="homeIconAsset"
-            />
-            <Icon
-              highlight="hover"
-              @click.prevent="goPodcasts"
-              :icon-hover="podcastIconAsset"
-              :icon="podcastIconAsset"
-            />
-            <Icon
-              highlight="hover"
-              @click.prevent="go('blogs')"
-              :icon-hover="blogIconAsset"
-              :icon="blogIconAsset"
-            />
-            <Icon
-              highlight="hover"
-              @click.prevent="go('settings')"
-              :icon-hover="settingsIconAsset"
-              :icon="settingsIconAsset"
-            />
-            <Icon
-              highlight="hover"
-              @click.prevent="go('jobs')"
-              :icon-hover="jobsIconAsset"
-              :icon="jobsIconAsset"
-            />
           </div>
         </div>
 
