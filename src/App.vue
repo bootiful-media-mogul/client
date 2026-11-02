@@ -10,6 +10,7 @@ import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import NotesComponent from '@/notes/NotesComponent.vue'
 import TabBar from '@/layout/TabBar.vue'
+import BrandMark from '@/layout/BrandMark.vue'
 import Tab from '@/layout/Tab.vue'
 import Icon from '@/ui/Icon.vue'
 
@@ -110,7 +111,7 @@ onMounted(async () => {
 }
 
 /* the wordmark only has room on desktop; the floating mobile bar keeps its three rows */
-.toolbar-container .brand {
+.toolbar-container .brand-slot {
   grid-area: brand;
   display: none;
 }
@@ -183,34 +184,9 @@ onMounted(async () => {
     color: var(--chrome-muted-color);
   }
 
-  .toolbar-container .brand {
-    display: flex;
-    align-items: baseline;
-    gap: var(--gutter-space-half);
+  .toolbar-container .brand-slot {
+    display: block;
     justify-self: start;
-    color: var(--chrome-ink-color);
-    text-decoration: none;
-  }
-
-  .toolbar-container .brand:hover {
-    text-decoration: none;
-  }
-
-  .toolbar-container .brand-name {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 2rem;
-    line-height: 1;
-    letter-spacing: -0.05em;
-  }
-
-  .toolbar-container .brand-product {
-    font-family: var(--font-mono);
-    font-weight: 500;
-    font-size: var(--font-size-xs);
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-    color: var(--bg-color);
   }
 
   .toolbar-container .search {
@@ -250,10 +226,7 @@ onMounted(async () => {
       <div class="page">
         <div class="toolbar-container">
           <div class="top-bar">
-            <a class="brand" href="#" @click.prevent="go('home')">
-              <span class="brand-name">{{ t('brand.name') }}</span>
-              <span class="brand-product">{{ t('brand.product') }}</span>
-            </a>
+            <div class="brand-slot"><BrandMark /></div>
             <div class="hello">{{ t('hello', { mogul: mogulUsername }) }}</div>
             <div class="global-toolbar">
               <Icon
@@ -296,6 +269,7 @@ onMounted(async () => {
         <!-- Tab Bar with Provider/Inject Pattern
         -->
         <TabBar>
+          <template #header><BrandMark /></template>
           <!-- Main content tab -->
           <Tab :label="t('app.tabs.main')">
             <div class="view">

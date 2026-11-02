@@ -2,6 +2,9 @@
   <div class="tab-bar-wrapper">
     <!-- Tab Bar UI (visible on mobile only) -->
     <div class="tab-bar-container">
+      <div v-if="$slots.header" class="tab-bar-header">
+        <slot name="header"></slot>
+      </div>
       <div class="tab-bar">
         <a
           href="#"
@@ -20,7 +23,7 @@
 
 <style scoped>
 .tab-bar-bumper {
-  background-color: var(--chrome-color);
+  background-color: var(--ink-color);
   position: relative;
   margin-bottom: var(--gutter-space);
 }
@@ -36,9 +39,19 @@
   display: block;
 }
 
+/* the same near-black as the wide layout's top bar, with the header (the wordmark)
+   centered above the tabs */
+.tab-bar-header {
+  background-color: var(--ink-color);
+  display: flex;
+  justify-content: center;
+  padding: var(--gutter-space-half) var(--gutter-space) var(--gutter-space-third);
+  --brand-size: 1.375rem;
+}
+
 .tab-bar {
   display: flex;
-  background-color: var(--chrome-color);
+  background-color: var(--ink-color);
   padding-left: var(--gutter-space);
   gap: var(--gutter-space-half);
   padding-top: var(--gutter-space-third);
