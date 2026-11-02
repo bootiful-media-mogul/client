@@ -9,11 +9,10 @@ import { useI18n } from 'vue-i18n'
 import Result from '@/search/Result.vue'
 import EntityViewDecorator from '@/ui/EntityViewDecorator.vue'
 
-import blogIcon from '@/assets/images/navbar/blogs-icon.png'
+import blogIcon from '@/assets/images/icons/rss.svg'
 import Icon from '@/ui/Icon.vue'
 
-import plusIcon from '@/assets/images/plus-icon.png'
-import plusIconHighlight from '@/assets/images/plus-icon-highlight.png'
+import plusIcon from '@/assets/images/icons/plus.svg'
 
 // Props
 const props = defineProps<{ blogId: number }>()
@@ -69,7 +68,7 @@ async function newPost() {
       <fieldset>
         <legend>{{ t('blogs.posts.posts-for', { title: currentBlog?.title }) }}</legend>
         <div class="toolbar">
-          <Icon :icon-hover="plusIconHighlight" :icon="plusIcon" @click="newPost()" />
+          <Icon :icon-hover="plusIcon" :icon="plusIcon" @click="newPost()" />
         </div>
         <div v-for="post in posts" v-bind:key="post.id">
           <Result

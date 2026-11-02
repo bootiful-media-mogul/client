@@ -14,7 +14,7 @@ import {
 import { useI18n } from 'vue-i18n'
 import EntityViewDecorator from '@/ui/EntityViewDecorator.vue'
 
-import segmentAsset from '@/assets/images/entity-badges/segment-icon.png'
+import segmentAsset from '@/assets/images/icons/podcast.svg'
 
 import { dateTimeToString, durationToString } from '@/dates'
 import InputWrapper from '@/ui/input/InputWrapper.vue'
@@ -27,8 +27,7 @@ import PodcastEpisodeAudioFile from '@/podcasts/publications/PodcastEpisodeAudio
 import Podbean from '@/podcasts/publications/Podbean.vue'
 import Ayrshare from '@/podcasts/publications/Ayrshare.vue'
 import Mock from '@/podcasts/publications/Mock.vue'
-import plusIconHighlight from '@/assets/images/plus-icon-highlight.png'
-import plusIcon from '@/assets/images/plus-icon.png'
+import plusIcon from '@/assets/images/icons/plus.svg'
 import Icon from '@/ui/Icon.vue'
 
 import { useNotificationListeners } from '@/composables/useNotificationListeners'
@@ -386,7 +385,7 @@ onMounted(async () => {
           <div class="form-section-title">{{ t('podcasts.episodes.segments') }}</div>
           <div class="toolbar">
             <Icon
-              :icon-hover="plusIconHighlight"
+              :icon-hover="plusIcon"
               :icon="plusIcon"
               @click.prevent="addNewPodcastEpisodeSegment(draftEpisode)"
             />

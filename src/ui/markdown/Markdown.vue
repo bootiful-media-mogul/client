@@ -40,7 +40,7 @@
   padding-bottom: var(--gutter-space);
 }
 
-.formatting-menu img {
+.formatting-menu .icon {
   max-width: calc(var(--icon-width) * 0.7);
   /*max-height: calc(var(--icon-width) * 0.5);*/
   padding: 0 calc(var(--icon-width) / 2);
@@ -61,73 +61,42 @@
     <template v-slot:toolbar>
       <div class="formatting-menu-toolbar">
         <div class="formatting-menu">
-          <Icon
-            :icon="boldAsset"
-            :icon-hover="boldHighlightAsset"
-            @click.prevent="formatText('strong')"
-          />
-          <Icon
-            :icon="italicAsset"
-            :icon-hover="italicHighlightAsset"
-            @click.prevent="formatText('em')"
-          />
-          <Icon
-            :icon="linkAsset"
-            :icon-hover="linkHighlightAsset"
-            @click.prevent="formatText('link')"
-          />
-          <Icon
-            :icon="listAsset"
-            :icon-hover="listHighlightAsset"
-            @click.prevent="formatText('list')"
-          />
-          <Icon :icon="h1Asset" :icon-hover="h1HighlightAsset" @click.prevent="formatText('h1')" />
-          <Icon :icon="h2Asset" :icon-hover="h2HighlightAsset" @click.prevent="formatText('h2')" />
-          <Icon :icon="h3Asset" :icon-hover="h3HighlightAsset" @click.prevent="formatText('h3')" />
+          <Icon :icon="boldAsset" :icon-hover="boldAsset" @click.prevent="formatText('strong')" />
+          <Icon :icon="italicAsset" :icon-hover="italicAsset" @click.prevent="formatText('em')" />
+          <Icon :icon="linkAsset" :icon-hover="linkAsset" @click.prevent="formatText('link')" />
+          <Icon :icon="listAsset" :icon-hover="listAsset" @click.prevent="formatText('list')" />
+          <Icon :icon="h1Asset" :icon-hover="h1Asset" @click.prevent="formatText('h1')" />
+          <Icon :icon="h2Asset" :icon-hover="h2Asset" @click.prevent="formatText('h2')" />
+          <Icon :icon="h3Asset" :icon-hover="h3Asset" @click.prevent="formatText('h3')" />
 
-          <Icon
-            :icon="imageAsset"
-            :icon-hover="imageHighlightAsset"
-            @click.prevent="formatText('image')"
-          />
+          <Icon :icon="imageAsset" :icon-hover="imageAsset" @click.prevent="formatText('image')" />
         </div>
       </div>
     </template>
     <template v-slot:icon>
-      <Icon :icon="asset" :icon-hover="assetHighlight" />
+      <Icon :icon="asset" :icon-hover="asset" />
     </template>
   </InputWrapperChild>
 </template>
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
 
-import imageAsset from '@/assets/images/formatting-icons/image.png'
-import imageHighlightAsset from '@/assets/images/formatting-icons/image-highlight.png'
+import imageAsset from '@/assets/images/icons/image.svg'
 
-import asset from '@/assets/images/markdown/markdown-preview.png'
-import assetHighlight from '@/assets/images/markdown/markdown-preview-highlight.png'
+import asset from '@/assets/images/icons/markdown.svg'
 
-import listAsset from '@/assets/images/formatting-icons/list.png'
-import listHighlightAsset from '@/assets/images/formatting-icons/list-highlight.png'
+import listAsset from '@/assets/images/icons/list.svg'
 
-import linkAsset from '@/assets/images/link.png'
-import linkHighlightAsset from '@/assets/images/link-highlight.png'
+import linkAsset from '@/assets/images/icons/link.svg'
 
-import h1Asset from '@/assets/images/formatting-icons/h1.png'
-import h1HighlightAsset from '@/assets/images/formatting-icons/h1-highlight.png'
+import h1Asset from '@/assets/images/icons/h1.svg'
 
-import h2Asset from '@/assets/images/formatting-icons/h2.png'
-import h3Asset from '@/assets/images/formatting-icons/h3.png'
+import h2Asset from '@/assets/images/icons/h2.svg'
+import h3Asset from '@/assets/images/icons/h3.svg'
 
-import h2HighlightAsset from '@/assets/images/formatting-icons/h2-highlight.png'
+import boldAsset from '@/assets/images/icons/bold.svg'
 
-import h3HighlightAsset from '@/assets/images/formatting-icons/h3-highlight.png'
-
-import boldAsset from '@/assets/images/formatting-icons/bold.png'
-import boldHighlightAsset from '@/assets/images/formatting-icons/bold-highlight.png'
-
-import italicAsset from '@/assets/images/formatting-icons/italics.png'
-import italicHighlightAsset from '@/assets/images/formatting-icons/italics-highlight.png'
+import italicAsset from '@/assets/images/icons/italic.svg'
 
 import InputWrapperChild from '@/ui/input/InputWrapperChild.vue'
 import { markdown } from '@/services'

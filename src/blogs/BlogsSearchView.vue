@@ -1,5 +1,5 @@
 <template>
-  <EntityViewDecorator watermark-image="segment-icon.png">
+  <EntityViewDecorator :watermark-image="rssAsset">
     <h1>
       {{ t('blogs.title') }}
     </h1>
@@ -7,7 +7,7 @@
       <form class="pure-form">
         <fieldset>
           <div class="toolbar">
-            <Icon :icon-hover="plusIconHighlight" :icon="plusIcon" @click="createBlog" />
+            <Icon :icon-hover="plusIcon" :icon="plusIcon" @click="createBlog" />
           </div>
           <legend>{{ t('blogs.all', { user: mogulName }) }}</legend>
           <div v-for="blog in blogResults" v-bind:key="blog.id" class="row blogs-row">
@@ -27,15 +27,11 @@
             </div>
 
             <div class="edit-column">
-              <Icon
-                :icon="editHighlightAsset"
-                :icon-hover="editAsset"
-                @click.prevent="editBlog(blog)"
-              />
+              <Icon :icon="editAsset" :icon-hover="editAsset" @click.prevent="editBlog(blog)" />
             </div>
             <div class="rss-column">
               <Icon
-                :icon="rssHighlightAsset"
+                :icon="rssAsset"
                 :icon-hover="rssAsset"
                 @click.prevent="openRssFeed(blog.id, podcastRssFeedUrl(blog))"
               />
@@ -43,7 +39,7 @@
             <div class="delete-column">
               <Icon
                 :disabled="blogResults.length <= 1"
-                :icon="deleteHighlightAsset"
+                :icon="deleteAsset"
                 :icon-hover="deleteAsset"
                 @click.prevent="deleteBlog(blog)"
               />
@@ -109,7 +105,7 @@
       <form class="pure-form">
         <fieldset>
           <div class="toolbar">
-            <Icon :icon-hover="plusIconHighlight" :icon="plusIcon" @click="createPodcast" />
+            <Icon :icon-hover="plusIcon" :icon="plusIcon" @click="createPodcast" />
           </div>
 
           <legend>{{ t('blogs.all', { user: mogulName }) }}</legend>
@@ -132,14 +128,14 @@
             </div>
             <div class="edit">
               <Icon
-                :icon="editHighlightAsset"
+                :icon="editAsset"
                 :icon-hover="editAsset"
                 @click.prevent="editPodcast(podcast)"
               />
             </div>
             <div class="rss">
               <Icon
-                :icon="rssHighlightAsset"
+                :icon="rssAsset"
                 :icon-hover="rssAsset"
                 @click.prevent="openRssFeed(podcast.id, podcastRssFeedUrl(podcast))"
               />
@@ -147,7 +143,7 @@
             <div class="delete">
               <Icon
                 :disabled="all.length == 1"
-                :icon="deleteHighlightAsset"
+                :icon="deleteAsset"
                 :icon-hover="deleteAsset"
                 @click.prevent="deletePodcast(podcast)"
               />
@@ -169,16 +165,12 @@ import { onMounted, ref } from 'vue'
 import { Blog, blogs, mogul, utils } from '@/services'
 import { apiUrl } from '@/config'
 import EntityViewDecorator from '@/ui/EntityViewDecorator.vue'
-import plusIconHighlight from '@/assets/images/plus-icon-highlight.png'
-import plusIcon from '@/assets/images/plus-icon.png'
+import plusIcon from '@/assets/images/icons/plus.svg'
 import Icon from '@/ui/Icon.vue'
 import { dateTimeToString } from '@/dates'
-import editHighlightAsset from '@/assets/images/edit-highlight.png'
-import editAsset from '@/assets/images/edit.png'
-import deleteHighlightAsset from '@/assets/images/delete-highlight.png'
-import deleteAsset from '@/assets/images/delete.png'
-import rssHighlightAsset from '@/assets/images/rss-highlight.png'
-import rssAsset from '@/assets/images/rss.png'
+import editAsset from '@/assets/images/icons/edit.svg'
+import deleteAsset from '@/assets/images/icons/delete.svg'
+import rssAsset from '@/assets/images/icons/rss.svg'
 import BlogsEditor from '@/blogs/BlogsEditor.vue'
 import router from '@/index'
 

@@ -5,7 +5,7 @@ import EntityViewDecorator from '@/ui/EntityViewDecorator.vue'
 import InputWrapper from '@/ui/input/InputWrapper.vue'
 import InputTools from '@/ui/InputTools.vue'
 import { dateTimeToString } from '@/dates'
-import blogIcon from '@/assets/images/navbar/blogs-icon.png'
+import blogIcon from '@/assets/images/icons/rss.svg'
 import CompositionComponent from '@/compositions/CompositionComponent.vue'
 import PublicationsSectionComponent from '@/publications/PublicationsSectionComponent.vue'
 import { useI18n } from 'vue-i18n'
@@ -15,8 +15,8 @@ import Ayrshare from '@/blogs/publications/Ayrshare.vue'
 import InputWrapperChild from '@/ui/input/InputWrapperChild.vue'
 import transcriptAsset from '@/assets/images/icons/transcript.svg'
 import Icon from '@/ui/Icon.vue'
-import privacy from '@/assets/images/privacy-preview-highlight.png'
-import privacyHighlight from '@/assets/images/privacy-preview.png'
+import eyeAsset from '@/assets/images/icons/eye.svg'
+import eyeOffAsset from '@/assets/images/icons/eye-off.svg'
 
 const { t } = useI18n()
 
@@ -221,16 +221,16 @@ const cancel = async () => {
               <Icon
                 v-if="visible"
                 :alt="t('blogs.posts.post.visible')"
-                :icon-hover="privacy"
-                :icon="privacy"
+                :icon-hover="eyeAsset"
+                :icon="eyeAsset"
                 class="icon"
                 sticky
               />
               <Icon
                 v-else
                 :alt="t('blogs.posts.post.not-visible')"
-                :icon-hover="privacyHighlight"
-                :icon="privacyHighlight"
+                :icon-hover="eyeOffAsset"
+                :icon="eyeOffAsset"
                 class="icon"
                 sticky
               />

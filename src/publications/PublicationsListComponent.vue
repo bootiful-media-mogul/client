@@ -20,7 +20,7 @@
           <Icon
             v-if="unpublishable"
             :disabled="withdrawn(publication)"
-            :icon="deleteHighlightAsset"
+            :icon="deleteAsset"
             :icon-hover="deleteAsset"
             class="delete-icon"
             @click.prevent="emit('unpublish', publication.id)"
@@ -46,7 +46,7 @@
           </div>
           <div class="success">
             <Icon v-if="outcome.success" :icon="checkmarkAsset" :icon-hover="checkmarkAsset" />
-            <Icon v-else :icon="errorAsset" :icon-hover="errorHighlightAsset" />
+            <Icon v-else :icon="errorAsset" :icon-hover="errorAsset" class="failed-outcome" />
           </div>
           <div class="key">
             {{ t('publications.outcomes.keys.' + outcome.key) }}
@@ -71,6 +71,11 @@
 </template>
 
 <style scoped>
+/* svg icons take the text color, so a failure is tinted rather than drawn in red */
+.failed-outcome {
+  color: #e24b4a;
+}
+
 .publications {
   --icon-column: 40px;
   /* fits the longest outcome label, "X (formerly known as Twitter)", with room to spare. */
@@ -198,11 +203,9 @@ import { useI18n } from 'vue-i18n'
 import { PanelSlotIcon } from '@/publications/input'
 import { Publication } from '@/services'
 import { dateTimeToString } from '@/dates'
-import deleteHighlightAsset from '@/assets/images/delete-highlight.png'
-import deleteAsset from '@/assets/images/delete.png'
-import errorAsset from '@/assets/images/error.png'
-import errorHighlightAsset from '@/assets/images/error-highlight.png'
-import checkmarkAsset from '@/assets/images/checkbox.png'
+import deleteAsset from '@/assets/images/icons/delete.svg'
+import errorAsset from '@/assets/images/icons/error.svg'
+import checkmarkAsset from '@/assets/images/icons/checkbox.svg'
 
 const { t } = useI18n()
 

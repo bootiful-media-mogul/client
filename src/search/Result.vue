@@ -2,13 +2,11 @@
 import Icon from '@/ui/Icon.vue'
 
 import noteIconAsset from '@/assets/images/icons/notes.svg'
-import segmentIconAsset from '@/assets/images/entity-badges/segment-icon.png'
-import postIconAsset from '@/assets/images/entity-badges/post-icon.png'
+import segmentIconAsset from '@/assets/images/icons/podcast.svg'
+import postIconAsset from '@/assets/images/icons/rss.svg'
 
-import editAsset from '@/assets/images/edit-highlight.png'
-import editHighlightAsset from '@/assets/images/edit.png'
-import deleteHighlightAsset from '@/assets/images/delete.png'
-import deleteAsset from '@/assets/images/delete-highlight.png'
+import editAsset from '@/assets/images/icons/edit.svg'
+import deleteAsset from '@/assets/images/icons/delete.svg'
 
 import { useRouter } from 'vue-router'
 import { results, type ResultType, utils } from '@/services'
@@ -67,17 +65,13 @@ function sourceFor(type: string): string {
   <div class="result-container">
     <div class="result">
       <div class="edit-button">
-        <Icon
-          @click.prevent="navigateToEntity()"
-          :icon="editHighlightAsset"
-          :icon-hover="editAsset"
-        />
+        <Icon @click.prevent="navigateToEntity()" :icon="editAsset" :icon-hover="editAsset" />
       </div>
       <div class="id-column">#{{ id }}</div>
       <div class="delete-button">
         <Icon
           v-if="props.allowDeletion"
-          :icon="deleteHighlightAsset"
+          :icon="deleteAsset"
           :icon-hover="deleteAsset"
           @click.prevent="deleteEntity()"
         />

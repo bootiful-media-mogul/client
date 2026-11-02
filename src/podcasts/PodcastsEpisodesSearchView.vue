@@ -8,13 +8,11 @@ import router from '@/index'
 import { useI18n } from 'vue-i18n'
 import Result from '@/search/Result.vue'
 import EntityViewDecorator from '@/ui/EntityViewDecorator.vue'
-// import editAsset from '@/assets/images/edit-highlight.png'
 
-import segmentAsset from '@/assets/images/entity-badges/segment-icon.png'
+import segmentAsset from '@/assets/images/icons/podcast.svg'
 import Icon from '@/ui/Icon.vue'
 
-import plusIcon from '@/assets/images/plus-icon.png'
-import plusIconHighlight from '@/assets/images/plus-icon-highlight.png'
+import plusIcon from '@/assets/images/icons/plus.svg'
 
 // Props
 const props = defineProps<{ podcastId: number }>()
@@ -78,7 +76,7 @@ async function newEpisode() {
           {{ t('podcasts.episodes.title', { title: currentPodcast?.title }) }}
         </legend>
         <div class="toolbar">
-          <Icon :icon-hover="plusIconHighlight" :icon="plusIcon" @click="newEpisode()" />
+          <Icon :icon-hover="plusIcon" :icon="plusIcon" @click="newEpisode()" />
         </div>
         <div v-for="episode in episodes" v-bind:key="episode.id">
           <Result

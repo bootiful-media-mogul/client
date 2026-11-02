@@ -72,13 +72,19 @@ img.icon-disabled {
   height: var(--icon-width);
 }
 
-span.icon {
+/* :where() drops these defaults to the weakest specificity, so the rules parents
+   already use to size and space png icons win over them */
+:where(span.icon) {
   display: inline-block;
   vertical-align: middle;
   cursor: pointer;
   width: var(--icon-width);
   aspect-ratio: 1;
   background-color: currentColor;
+  mask-origin: content-box;
+  mask-clip: content-box;
+  -webkit-mask-origin: content-box;
+  -webkit-mask-clip: content-box;
   mask-size: contain;
   mask-repeat: no-repeat;
   mask-position: center;
@@ -88,12 +94,12 @@ span.icon {
 }
 
 /* the png icons swap to a hollow variant on hover; one-color svgs dim instead */
-span.icon:hover {
+:where(span.icon):hover {
   opacity: 0.6;
 }
 
-span.icon-disabled,
-span.icon-disabled:hover {
+:where(span.icon-disabled),
+:where(span.icon-disabled):hover {
   cursor: unset;
   opacity: 0.2;
 }

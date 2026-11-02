@@ -231,60 +231,55 @@ body {
   opacity: 70%;
 }
 
-.panel-window-button-icon {
-  height: var(--icon-width);
-  display: inline-block;
-  width: var(--icon-width);
-  background-size: var(--icon-width) var(--icon-width);
-}
-
 .delete-icon {
 }
 
 .transcript-icon {
 }
 
-.up-arrow-icon.disabled {
-  background: url('../assets/images/up.png');
+/* css-only icons draw the same svgs Icon.vue does: a mask over the text color, so
+   they follow the theme. each class below just names its svg */
+.close-icon,
+.preview-icon,
+.folder-icon,
+.link-icon {
   height: var(--icon-width);
   display: inline-block;
   width: var(--icon-width);
-  background-size: var(--icon-width) var(--icon-width);
+  background-color: currentColor;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
 }
 
-.down-arrow-icon.disabled {
-  background: url('../assets/images/down.png');
-  height: var(--icon-width);
-  display: inline-block;
-  width: var(--icon-width);
-  background-size: var(--icon-width) var(--icon-width);
-}
-
-.up-arrow-icon {
-  background: url('../assets/images/up-highlight.png');
-  height: var(--icon-width);
-  display: inline-block;
-  width: var(--icon-width);
-  background-size: var(--icon-width) var(--icon-width);
-}
-
-.up-arrow-icon:hover {
-  background: url('../assets/images/up.png');
-  height: var(--icon-width);
-  display: inline-block;
-  width: var(--icon-width);
-  background-size: var(--icon-width) var(--icon-width);
-}
-
-.edit-icon {
+.close-icon:hover,
+.preview-icon:hover:not(.disabled),
+.folder-icon:hover,
+.link-icon:hover {
+  opacity: 0.6;
 }
 
 .close-icon {
-  background: url('../assets/images/panel-close-highlight.png');
-  height: var(--icon-width);
-  display: inline-block;
-  width: var(--icon-width);
-  background-size: var(--icon-width) var(--icon-width);
+  mask-image: url('../assets/images/icons/close.svg');
+  -webkit-mask-image: url('../assets/images/icons/close.svg');
+}
+
+.preview-icon {
+  mask-image: url('../assets/images/icons/preview.svg');
+  -webkit-mask-image: url('../assets/images/icons/preview.svg');
+}
+
+.folder-icon {
+  mask-image: url('../assets/images/icons/folder.svg');
+  -webkit-mask-image: url('../assets/images/icons/folder.svg');
+}
+
+.link-icon {
+  mask-image: url('../assets/images/icons/link.svg');
+  -webkit-mask-image: url('../assets/images/icons/link.svg');
 }
 
 input,
@@ -309,60 +304,6 @@ textarea {
   -webkit-user-select: none; /* For Safari */
   -moz-user-select: none; /* For older Firefox versions */
   -ms-user-select: none; /* For older IE/Edge versions */
-}
-
-.close-icon:hover {
-  background: url('../assets/images/panel-close.png');
-  height: var(--icon-width);
-  display: inline-block;
-  width: var(--icon-width);
-  background-size: var(--icon-width) var(--icon-width);
-}
-
-.edit-icon:hover {
-  background: url('../assets/images/edit.png');
-  height: var(--icon-width);
-  display: inline-block;
-  width: var(--icon-width);
-  background-size: var(--icon-width) var(--icon-width);
-}
-
-/* the same svg Icon.vue draws: a mask over the text color, so it follows the theme */
-.preview-icon {
-  height: var(--icon-width);
-  display: inline-block;
-  width: var(--icon-width);
-  background-color: currentColor;
-  mask: url('../assets/images/icons/preview.svg') center / contain no-repeat;
-  -webkit-mask: url('../assets/images/icons/preview.svg') center / contain no-repeat;
-}
-
-.preview-icon:hover:not(.disabled) {
-  opacity: 0.6;
-}
-
-.checkbox-icon {
-  background: url('../assets/images/checkbox.png');
-  height: var(--icon-width);
-  display: inline-block;
-  width: var(--icon-width);
-  background-size: var(--icon-width) var(--icon-width);
-}
-
-.folder-icon {
-  background: url('../assets/images/folder-highlight.png');
-  height: var(--icon-width);
-  display: inline-block;
-  width: var(--icon-width);
-  background-size: var(--icon-width) var(--icon-width);
-}
-
-.folder-icon:hover {
-  background: url('../assets/images/folder.png');
-  height: var(--icon-width);
-  display: inline-block;
-  width: var(--icon-width);
-  background-size: var(--icon-width) var(--icon-width);
 }
 
 .notifications {

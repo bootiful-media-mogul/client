@@ -140,21 +140,21 @@
               :label="t('writingassistant.buttons.proofread')"
               @click="proofread"
             >
-              <Icon :icon-hover="proofreadAssetHighlight" :icon="proofreadAsset" />
+              <Icon :icon-hover="proofreadAsset" :icon="proofreadAsset" />
             </WritingAssistantButton>
             <WritingAssistantButton
               :class="rewriteToolsClasses"
               :label="t('writingassistant.buttons.rewrite')"
               @click="toggleRewriteTools"
             >
-              <Icon :icon-hover="rewriteAssetHighlight" :icon="rewriteAsset" />
+              <Icon :icon-hover="rewriteAsset" :icon="rewriteAsset" />
             </WritingAssistantButton>
             <WritingAssistantButton
               :class="aiToolsClasses"
               :label="t('writingassistant.buttons.generate-with-ai')"
               @click="toggleAiTools"
             >
-              <Icon :icon-hover="aiAssetHighlight" :icon="aiAsset" />
+              <Icon :icon-hover="aiAsset" :icon="aiAsset" />
             </WritingAssistantButton>
             <div v-if="aiToolsVisible" class="ai">
               <textarea
@@ -186,7 +186,7 @@
             >
               <img
                 :alt="t('writingassistant.alt.friendly')"
-                src="../../assets/images/writing-tools/friendly.png"
+                src="../../assets/images/icons/friendly.svg"
               />
             </WritingAssistantButton>
 
@@ -197,7 +197,7 @@
             >
               <img
                 :alt="t('writingassistant.alt.concise')"
-                src="../../assets/images/writing-tools/concise.png"
+                src="../../assets/images/icons/concise.svg"
               />
             </WritingAssistantButton>
 
@@ -208,7 +208,7 @@
             >
               <img
                 :alt="t('writingassistant.alt.professional')"
-                src="../../assets/images/writing-tools/professional.png"
+                src="../../assets/images/icons/professional.svg"
               />
             </WritingAssistantButton>
           </div>
@@ -220,19 +220,16 @@
       </div>
     </template>
     <template v-slot:icon>
-      <Icon :icon="rewriteAssetHighlight" :icon-hover="rewriteAsset" />
+      <Icon :icon="rewriteAsset" :icon-hover="rewriteAsset" />
     </template>
   </InputWrapperChild>
 </template>
 <script lang="ts" setup>
-import proofreadAsset from '@/assets/images/writing-tools/proofread.png'
-import proofreadAssetHighlight from '@/assets/images/writing-tools/proofread-highlight.png'
+import proofreadAsset from '@/assets/images/icons/proofread.svg'
 
-import rewriteAsset from '@/assets/images/writing-tools/rewrite.png'
-import rewriteAssetHighlight from '@/assets/images/writing-tools/rewrite-highlight.png'
+import rewriteAsset from '@/assets/images/icons/rewrite.svg'
 
-import aiAsset from '@/assets/images/writing-tools/ai.png'
-import aiAssetHighlight from '@/assets/images/writing-tools/ai-highlight.png'
+import aiAsset from '@/assets/images/icons/ai.svg'
 
 import { ai } from '@/services'
 import InputWrapperChild from '@/ui/input/InputWrapperChild.vue'

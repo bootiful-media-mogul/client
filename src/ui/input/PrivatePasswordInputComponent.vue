@@ -7,8 +7,8 @@
 <template>
   <Icon
     ref="icon"
-    :icon="privacy"
-    :icon-hover="privacyHighlight"
+    :icon="eyeAsset"
+    :icon-hover="eyeOffAsset"
     class="icon"
     sticky
     @click.prevent="togglePreview"
@@ -24,8 +24,8 @@ import {
   ref
 } from 'vue'
 
-import privacyHighlight from '@/assets/images/privacy-preview.png'
-import privacy from '@/assets/images/privacy-preview-highlight.png'
+import eyeOffAsset from '@/assets/images/icons/eye-off.svg'
+import eyeAsset from '@/assets/images/icons/eye.svg'
 
 import Icon from '@/ui/Icon.vue'
 

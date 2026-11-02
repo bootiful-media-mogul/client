@@ -81,8 +81,8 @@
       <div v-if="visible">
         <Icon
           ref="icon"
-          :icon-hover="privacy"
-          :icon="privacy"
+          :icon-hover="eyeAsset"
+          :icon="eyeAsset"
           class="icon"
           sticky
           @click.prevent="visible = false"
@@ -91,8 +91,8 @@
       <div v-else>
         <Icon
           ref="icon"
-          :icon-hover="privacyHighlight"
-          :icon="privacyHighlight"
+          :icon-hover="eyeOffAsset"
+          :icon="eyeOffAsset"
           class="icon"
           sticky
           @click.prevent="visible = true"
@@ -134,11 +134,11 @@
 import axios from 'axios'
 import { managedFiles, previewManagedFile } from '@/services'
 import { onMounted, ref, watch } from 'vue'
-import checkmarkAsset from '@/assets/images/checkbox.png'
+import checkmarkAsset from '@/assets/images/icons/checkbox.svg'
 import Icon from '@/ui/Icon.vue'
 import { useI18n } from 'vue-i18n'
-import privacy from '@/assets/images/privacy-preview-highlight.png'
-import privacyHighlight from '@/assets/images/privacy-preview.png'
+import eyeAsset from '@/assets/images/icons/eye.svg'
+import eyeOffAsset from '@/assets/images/icons/eye-off.svg'
 
 const { t } = useI18n()
 

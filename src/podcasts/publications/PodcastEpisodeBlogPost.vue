@@ -26,7 +26,7 @@
   </PublicationPanelComponent>
 </template>
 <script lang="ts" setup>
-import blogIcon from '@/assets/images/publications/podcasts/publish-as-mogul-blog.png'
+import blogIcon from '@/assets/images/icons/rss.svg'
 import PublicationPanelComponent from '@/publications/PublicationPanelComponent.vue'
 import BlogsSelect from '@/blogs/BlogsSelect.vue'
 import { computed, inject, ref } from 'vue'

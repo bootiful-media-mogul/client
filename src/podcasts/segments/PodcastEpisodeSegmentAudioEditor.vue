@@ -13,9 +13,8 @@ import { loadAudio, loadWaveform, type Waveform } from '@/composables/segmentAud
 import { useNotificationListeners } from '@/composables/useNotificationListeners'
 import Icon from '@/ui/Icon.vue'
 import TrackEditor from '@/podcasts/segments/TrackEditor.vue'
-import closeAsset from '@/assets/images/panel-close.png'
-import closeHighlightAsset from '@/assets/images/panel-close-highlight.png'
-import audioEditorAsset from '@/assets/images/audio-editor.svg'
+import closeAsset from '@/assets/images/icons/close.svg'
+import audioEditorAsset from '@/assets/images/icons/audio-editor.svg'
 
 const { t } = useI18n()
 const { listenForCategory } = useNotificationListeners()
@@ -276,7 +275,7 @@ onBeforeUnmount(() => {
       </button>
       <Icon
         :icon="closeAsset"
-        :icon-hover="closeHighlightAsset"
+        :icon-hover="closeAsset"
         :alt="t('podcasts.episodes.episode.segments.audio-editor.close')"
         :title="t('podcasts.episodes.episode.segments.audio-editor.close')"
         @click.prevent="emit('close')"

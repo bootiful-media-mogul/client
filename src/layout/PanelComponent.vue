@@ -122,8 +122,8 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
-import minimize from '@/assets/images/panel/simple-panel-collapse.png'
-import open from '@/assets/images/panel/simple-panel-maximize.png'
+import minimize from '@/assets/images/icons/collapse.svg'
+import open from '@/assets/images/icons/maximize.svg'
 import { events } from '@/services'
 
 const element = ref<HTMLElement>()

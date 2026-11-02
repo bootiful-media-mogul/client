@@ -7,16 +7,13 @@ import Icon from '@/ui/Icon.vue'
 import { durationToString } from '@/dates'
 
 // files
-import imageTypeIcon from '@/assets/images/files/image-file.png'
-import mediaTypeIcon from '@/assets/images/files/music-file.png'
-import upHighlightAsset from '@/assets/images/up-highlight.png'
-import upAsset from '@/assets/images/up.png'
-import downHighlightAsset from '@/assets/images/down-highlight.png'
-import downAsset from '@/assets/images/down.png'
-import deleteHighlightAsset from '@/assets/images/delete-highlight.png'
-import deleteAsset from '@/assets/images/delete.png'
+import imageTypeIcon from '@/assets/images/icons/image-file.svg'
+import mediaTypeIcon from '@/assets/images/icons/music-file.svg'
+import upAsset from '@/assets/images/icons/up.svg'
+import downAsset from '@/assets/images/icons/down.svg'
+import deleteAsset from '@/assets/images/icons/delete.svg'
 import transcriptAsset from '@/assets/images/icons/transcript.svg'
-import audioEditorAsset from '@/assets/images/audio-editor.svg'
+import audioEditorAsset from '@/assets/images/icons/audio-editor.svg'
 
 //
 function fileTypeIconFor(type: string): string {
@@ -114,7 +111,7 @@ const emit = defineEmits<{
         v-if="showReorder"
         class="up"
         :disabled="!canMoveUp"
-        :icon="upHighlightAsset"
+        :icon="upAsset"
         :icon-hover="upAsset"
         @click.prevent="emit('moveUp')"
       />
@@ -122,7 +119,7 @@ const emit = defineEmits<{
         v-if="showReorder"
         class="down"
         :disabled="!canMoveDown"
-        :icon="downHighlightAsset"
+        :icon="downAsset"
         :icon-hover="downAsset"
         @click.prevent="emit('moveDown')"
       />
@@ -164,7 +161,7 @@ const emit = defineEmits<{
       <div class="delete-button">
         <Icon
           :disabled="!showDelete"
-          :icon="deleteHighlightAsset"
+          :icon="deleteAsset"
           :icon-hover="deleteAsset"
           class="delete-icon"
           @click.prevent="emit('delete')"
@@ -207,9 +204,6 @@ const emit = defineEmits<{
     .segment-controls-icon {
       grid-area: icon;
       padding-top: var(--radius);
-      & img {
-        filter: invert(1);
-      }
     }
   }
   .buttons {

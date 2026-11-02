@@ -28,23 +28,6 @@
     </fieldset>
   </form>
 </template>
-<style>
-.link-icon {
-  background: url('../assets/images/link-highlight.png');
-  height: var(--icon-width);
-  display: inline-block;
-  width: var(--icon-width);
-  background-size: var(--icon-width) var(--icon-width);
-}
-
-.link-icon:hover {
-  background: url('../assets/images/link.png');
-  height: var(--icon-width);
-  display: inline-block;
-  width: var(--icon-width);
-  background-size: var(--icon-width) var(--icon-width);
-}
-</style>
 <script lang="ts" setup>
 import { events, managedFiles } from '@/services'
 import { useI18n } from 'vue-i18n'

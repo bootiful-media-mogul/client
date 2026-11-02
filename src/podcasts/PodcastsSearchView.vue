@@ -8,7 +8,7 @@
       <form class="pure-form">
         <fieldset>
           <div class="toolbar">
-            <Icon :icon-hover="plusIconHighlight" :icon="plusIcon" @click="createPodcast" />
+            <Icon :icon-hover="plusIcon" :icon="plusIcon" @click="createPodcast" />
           </div>
 
           <legend>{{ t('podcasts.all', { user: mogulName }) }}</legend>
@@ -31,14 +31,14 @@
             </div>
             <div class="edit">
               <Icon
-                :icon="editHighlightAsset"
+                :icon="editAsset"
                 :icon-hover="editAsset"
                 @click.prevent="editPodcast(podcast)"
               />
             </div>
             <div class="rss">
               <Icon
-                :icon="rssHighlightAsset"
+                :icon="rssAsset"
                 :icon-hover="rssAsset"
                 @click.prevent="openRssFeed(podcast.id, podcastRssFeedUrl(podcast))"
               />
@@ -46,7 +46,7 @@
             <div class="delete">
               <Icon
                 :disabled="all.length == 1"
-                :icon="deleteHighlightAsset"
+                :icon="deleteAsset"
                 :icon-hover="deleteAsset"
                 @click.prevent="deletePodcast(podcast)"
               />
@@ -113,8 +113,7 @@
 }
 </style>
 <script lang="ts" setup>
-import editHighlightAsset from '@/assets/images/edit-highlight.png'
-import editAsset from '@/assets/images/edit.png'
+import editAsset from '@/assets/images/icons/edit.svg'
 import { useRouter } from 'vue-router'
 
 import { loadNotesForNotable, mogul, Podcast, podcasts, utils } from '@/services'
@@ -123,18 +122,15 @@ import { dateTimeToString } from '@/dates'
 import { onMounted, ref } from 'vue'
 import Icon from '@/ui/Icon.vue'
 
-import rssHighlightAsset from '@/assets/images/rss-highlight.png'
-import rssAsset from '@/assets/images/rss.png'
+import rssAsset from '@/assets/images/icons/rss.svg'
 
-import deleteHighlightAsset from '@/assets/images/delete-highlight.png'
-import deleteAsset from '@/assets/images/delete.png'
+import deleteAsset from '@/assets/images/icons/delete.svg'
 import PodcastsEditor from '@/podcasts/PodcastsEditor.vue'
 import { useI18n } from 'vue-i18n'
 import EntityViewDecorator from '@/ui/EntityViewDecorator.vue'
 
-import segmentAsset from '@/assets/images/entity-badges/segment-icon.png'
-import plusIconHighlight from '@/assets/images/plus-icon-highlight.png'
-import plusIcon from '@/assets/images/plus-icon.png'
+import segmentAsset from '@/assets/images/icons/podcast.svg'
+import plusIcon from '@/assets/images/icons/plus.svg'
 
 const router = useRouter()
 const title = ref<string>('')

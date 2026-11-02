@@ -39,7 +39,8 @@
   height: var(--writing-tools-panel-icon-size);
 }
 
-.writing-tools-button-content-icon img {
+.writing-tools-button-content-icon img,
+.writing-tools-button-content-icon .icon {
   width: var(--writing-tools-panel-icon-size);
 }
 </style>

@@ -5,8 +5,7 @@ import { events, mogul, Note, notes } from '@/services'
 import InputWrapper from '@/ui/input/InputWrapper.vue'
 import InputTools from '@/ui/InputTools.vue'
 import { useI18n } from 'vue-i18n'
-import plusIconHighlight from '@/assets/images/plus-icon-highlight.png'
-import plusIcon from '@/assets/images/plus-icon.png'
+import plusIcon from '@/assets/images/icons/plus.svg'
 import Icon from '@/ui/Icon.vue'
 
 const { t } = useI18n()
@@ -187,11 +186,7 @@ onMounted(async () => {
         </label>
         <div class="panel-menu-subtitle notes-section section-header">
           <span>{{ t('notes.system-wide.title') }}</span>
-          <Icon
-            :icon-hover="plusIconHighlight"
-            :icon="plusIcon"
-            @click="showComposerFor('mogul')"
-          />
+          <Icon :icon-hover="plusIcon" :icon="plusIcon" @click="showComposerFor('mogul')" />
         </div>
         <div class="note" v-for="note in mogulNotes" :key="note.id">
           <NoteEditor
@@ -214,11 +209,7 @@ onMounted(async () => {
             t('notes.entity.title', { entityName: entityName })
           }}</span>
 
-          <Icon
-            :icon-hover="plusIconHighlight"
-            :icon="plusIcon"
-            @click="showComposerFor('entity')"
-          />
+          <Icon :icon-hover="plusIcon" :icon="plusIcon" @click="showComposerFor('entity')" />
         </div>
         <div class="note" v-for="note in entityNotes" :key="note.id">
           <NoteEditor

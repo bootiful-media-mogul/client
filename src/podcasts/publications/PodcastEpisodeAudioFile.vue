@@ -31,7 +31,7 @@
   </PublicationPanelComponent>
 </template>
 <script lang="ts" setup>
-import downloadAudioIcon from '@/assets/images/publications/podcasts/publish-download-produced-audio.png'
+import downloadAudioIcon from '@/assets/images/icons/audio-file.svg'
 import PublicationPanelComponent from '@/publications/PublicationPanelComponent.vue'
 import { useI18n } from 'vue-i18n'
 const { t } = useI18n()

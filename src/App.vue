@@ -13,20 +13,15 @@ import TabBar from '@/layout/TabBar.vue'
 import Tab from '@/layout/Tab.vue'
 import Icon from '@/ui/Icon.vue'
 
-import homeIconAsset from '@/assets/images/navbar/home-icon.png'
-import homeIconAssetHighlight from '@/assets/images/navbar/home-icon-highlight.png'
+import homeIconAsset from '@/assets/images/icons/home.svg'
 
-import settingsIconAsset from '@/assets/images/navbar/settings-icon.png'
-import settingsIconAssetHighlight from '@/assets/images/navbar/settings-icon-highlight.png'
+import settingsIconAsset from '@/assets/images/icons/settings.svg'
 
-import podcastIconAsset from '@/assets/images/navbar/podcast-icon.png'
-import podcastIconAssetHighlight from '@/assets/images/navbar/podcast-icon-highlight.png'
+import podcastIconAsset from '@/assets/images/icons/podcast.svg'
 
-import blogIconAsset from '@/assets/images/navbar/blogs-icon.png'
-import blogIconAssetHighlight from '@/assets/images/navbar/blogs-icon-highlight.png'
+import blogIconAsset from '@/assets/images/icons/rss.svg'
 
-import jobsIconAsset from '@/assets/images/navbar/jobs-icon.png'
-import jobsIconAssetHighlight from '@/assets/images/navbar/jobs-icon-highlight.png'
+import jobsIconAsset from '@/assets/images/icons/jobs.svg'
 
 import notesPanelIconAsset from '@/assets/images/icons/notes.svg'
 import previewPanelIconAsset from '@/assets/images/icons/preview.svg'
@@ -78,8 +73,8 @@ onMounted(async () => {
   place-self: center;
 
   gap: var(--gutter-space);
-  & img {
-    max-height: calc(3 * var(--gutter-space));
+  & .icon {
+    height: calc(3 * var(--gutter-space));
     width: auto;
   }
 }
@@ -119,12 +114,13 @@ onMounted(async () => {
   justify-content: center;
 }
 
-.toolbar-container img {
-  filter: invert(0.5);
+/* the svg icons take the text color: grey on the floating black bar, white on hover */
+.toolbar-container .icon {
+  color: grey;
 }
 
-.toolbar-container img:hover {
-  filter: invert(1);
+.toolbar-container .icon:hover {
+  color: white;
 }
 
 .page-content-buffer {
@@ -171,12 +167,9 @@ onMounted(async () => {
     place-self: center;
   }
 
-  .toolbar-container img {
-    filter: none;
-  }
-
-  .toolbar-container img:hover {
-    filter: none;
+  .toolbar-container .icon,
+  .toolbar-container .icon:hover {
+    color: inherit;
   }
 
   /* the buffer exists to clear the floating toolbar, which is only fixed on mobile.
@@ -199,31 +192,19 @@ onMounted(async () => {
             <Search />
           </div>
           <div class="global-toolbar">
-            <Icon
-              @click.prevent="go('home')"
-              :icon-hover="homeIconAssetHighlight"
-              :icon="homeIconAsset"
-            />
+            <Icon @click.prevent="go('home')" :icon-hover="homeIconAsset" :icon="homeIconAsset" />
             <Icon
               @click.prevent="goPodcasts"
-              :icon-hover="podcastIconAssetHighlight"
+              :icon-hover="podcastIconAsset"
               :icon="podcastIconAsset"
             />
-            <Icon
-              @click.prevent="go('blogs')"
-              :icon-hover="blogIconAssetHighlight"
-              :icon="blogIconAsset"
-            />
+            <Icon @click.prevent="go('blogs')" :icon-hover="blogIconAsset" :icon="blogIconAsset" />
             <Icon
               @click.prevent="go('settings')"
-              :icon-hover="settingsIconAssetHighlight"
+              :icon-hover="settingsIconAsset"
               :icon="settingsIconAsset"
             />
-            <Icon
-              @click.prevent="go('jobs')"
-              :icon-hover="jobsIconAssetHighlight"
-              :icon="jobsIconAsset"
-            />
+            <Icon @click.prevent="go('jobs')" :icon-hover="jobsIconAsset" :icon="jobsIconAsset" />
           </div>
         </div>
 

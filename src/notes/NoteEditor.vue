@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import deleteHighlightAsset from '@/assets/images/delete-highlight.png'
-import deleteAsset from '@/assets/images/delete.png'
+import deleteAsset from '@/assets/images/icons/delete.svg'
 import Icon from '@/ui/Icon.vue'
-import editHighlightAsset from '@/assets/images/edit-highlight.png'
-import editAsset from '@/assets/images/edit.png'
+import editAsset from '@/assets/images/icons/edit.svg'
 import { dateTimeToString } from '@/dates'
 import { notes } from '@/services'
 import { useI18n } from 'vue-i18n'
@@ -50,15 +48,11 @@ const props = defineProps<{
         :title="t('notes.done')"
         @change="setDone"
       />
-      <Icon
-        :icon="editAsset"
-        :icon-hover="editHighlightAsset"
-        @click.prevent="$emit('update', id, type)"
-      />
+      <Icon :icon="editAsset" :icon-hover="editAsset" @click.prevent="$emit('update', id, type)" />
       <Icon
         @click.prevent="deleteNote"
         :icon="deleteAsset"
-        :icon-hover="deleteHighlightAsset"
+        :icon-hover="deleteAsset"
         class="delete-icon"
       />
     </div>

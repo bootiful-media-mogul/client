@@ -9,11 +9,9 @@ import type {
   UpdateValueFunction
 } from '@/ui/input/input'
 import InputWrapperChild from '@/ui/input/InputWrapperChild.vue'
-import asset from '@/assets/images/compositions/attachments.png'
-import assetHighlight from '@/assets/images/compositions/attachments.png'
+import asset from '@/assets/images/icons/attachment.svg'
 import Icon from '@/ui/Icon.vue'
-import deleteHighlightAsset from '@/assets/images/delete-highlight.png'
-import deleteAsset from '@/assets/images/delete.png'
+import deleteAsset from '@/assets/images/icons/delete.svg'
 
 import { useNotificationListeners } from '@/composables/useNotificationListeners'
 
@@ -185,7 +183,7 @@ async function addCompositionAttachment(compositionId: number) {
 <template>
   <InputWrapperChild>
     <template v-slot:icon>
-      <Icon :icon="asset" :icon-hover="assetHighlight" />
+      <Icon :icon="asset" :icon-hover="asset" />
     </template>
     <template v-slot:panel>
       <div>
@@ -210,7 +208,7 @@ async function addCompositionAttachment(compositionId: number) {
             </div>
             <div class="delete-icon">
               <Icon
-                :icon="deleteHighlightAsset"
+                :icon="deleteAsset"
                 :icon-hover="deleteAsset"
                 @click.prevent="deleteCompositionAttachment(attachment.id)"
               />
