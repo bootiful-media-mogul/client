@@ -28,9 +28,9 @@ import blogIconAssetHighlight from '@/assets/images/navbar/blogs-icon-highlight.
 import jobsIconAsset from '@/assets/images/navbar/jobs-icon.png'
 import jobsIconAssetHighlight from '@/assets/images/navbar/jobs-icon-highlight.png'
 
-import notesPanelIconAsset from '@/assets/images/entity-badges/note-icon.png'
-import previewPanelIconAsset from '@/assets/images/preview.png'
-import transcriptsPanelIconAsset from '@/assets/images/transcript.png'
+import notesPanelIconAsset from '@/assets/images/panel/notes.svg'
+import previewPanelIconAsset from '@/assets/images/panel/preview.svg'
+import transcriptsPanelIconAsset from '@/assets/images/panel/transcript.svg'
 
 import router from '@/index'
 import { usePendingAction } from '@/composables/usePendingAction'

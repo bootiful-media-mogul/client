@@ -58,13 +58,10 @@
 }
 
 .panel-menu-title-icon {
-  /* the icons are drawn black, same as the ones that open the panel; inverted they sit
-     quietly in the black header without needing a second, white set of assets */
-  filter: invert(100%);
-  opacity: 0.85;
-  width: calc(var(--gutter-space) * 0.8);
-  height: calc(var(--gutter-space) * 0.8);
-  object-fit: contain;
+  /* white, bold redraws of the icons that open each panel: the originals are thin
+     black line art that turns to mush at header size */
+  width: calc(var(--font-size-sm) * 1.4);
+  height: calc(var(--font-size-sm) * 1.4);
 }
 
 .panel-maximized {
