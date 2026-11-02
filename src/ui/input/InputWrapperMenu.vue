@@ -28,8 +28,13 @@
   grid-area: down;
 }
 
+/* centered as a box: laid out as inline content, the icon sat on the text baseline and
+   hung below the arrows */
 .icons {
   grid-area: icons;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .arrow.up {
