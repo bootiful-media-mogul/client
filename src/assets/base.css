@@ -6,10 +6,10 @@
   --gutter-space-third: calc(var(--gutter-space) / 3);
   --main-toolbar-gutter: var(--gutter-space);
   --sidebar-width: 40vw;
-  /* the widest the page (main content and sidebar together) gets; past it the page is
-     centered. the @container app (min-width: 1700px) queries carry the matching break:
-     this width plus enough margin that the page visibly floats when it kicks in */
-  --wide-layout-width: 1600px;
+  /* how much of the window the page (main content and sidebar together) takes in the
+     wide layout, the @container app (min-width: 1700px) queries; the rest is split
+     evenly as margin on the left and right */
+  --wide-layout-width: 80%;
   --radius: 0.5em;
   --button-radius: var(--radius);
   --small-gutter-space: calc(0.5 * var(--gutter-space));
