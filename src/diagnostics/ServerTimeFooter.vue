@@ -1,6 +1,4 @@
 <template>
-  <!-- deliberately always rendered: this exists to be read, so a failed lookup has to
-       say so rather than disappear -->
   <div class="server-time-footer">
     <span class="label">{{ t('diagnostics.server-time.browser') }}</span>
     <code>{{ browserLocalTime }}</code>
@@ -47,6 +45,10 @@
 </style>
 
 <script lang="ts" setup>
+// deliberately always rendered: this exists to be read, so a failed lookup has to
+// say so rather than disappear
+// (said here, not in the template: a comment beside the root element makes the
+// component a fragment in dev builds, and a parent's class stops reaching it)
 import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { diagnostics, type ServerTime } from '@/services'

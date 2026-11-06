@@ -87,31 +87,19 @@
         highlight="rest"
       />
     </a>
-    <a class="visible" href="#">
-      <div v-if="visible">
-        <Icon
-          :alt="t('icons.hide-file')"
-          highlight="always"
-          ref="icon"
-          :icon-hover="eyeAsset"
-          :icon="eyeAsset"
-          class="icon"
-          sticky
-          @click.prevent="visible = false"
-        />
-      </div>
-      <div v-else>
-        <Icon
-          :alt="t('icons.show-file')"
-          ref="icon"
-          :icon-hover="eyeOffAsset"
-          :icon="eyeOffAsset"
-          class="icon"
-          sticky
-          @click.prevent="visible = true"
-        />
-      </div>
-    </a>
+    <!-- one icon whose picture and name follow the state, so keyboard focus stays on it
+         when it is pressed. not inside a link: the icon is the control -->
+    <div class="visible">
+      <Icon
+        :alt="visible ? t('icons.hide-file') : t('icons.show-file')"
+        :highlight="visible ? 'always' : undefined"
+        ref="icon"
+        :icon-hover="visible ? eyeAsset : eyeOffAsset"
+        :icon="visible ? eyeAsset : eyeOffAsset"
+        class="icon"
+        @click.prevent="visible = !visible"
+      />
+    </div>
 
     <div class="written">
       <span v-if="uploading"> 🕒 </span>

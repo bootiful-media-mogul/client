@@ -82,8 +82,14 @@ const handleTextChange = (e: Event) => {
 // Handle the drop event
 const handleDrop = (e: DragEvent) => {
   e.preventDefault()
+  insertAtCaret(e.dataTransfer!!.getData('text'))
+}
 
-  const droppedText = e.dataTransfer!!.getData('text')
+// the keyboard's way to do what a drag does: the handle is a button that puts the
+// attachment where the caret was left in the text
+const insertAttachment = (attachment: Attachment) => insertAtCaret(attachment.markdown)
+
+const insertAtCaret = (droppedText: string) => {
   const dropPosition = textareaRef.value!!.selectionStart!!
   const newText =
     readValue()!!.slice(0, dropPosition) + droppedText + readValue()!!.slice(dropPosition)
@@ -191,21 +197,29 @@ async function addCompositionAttachment(compositionId: number) {
           {{ t('compositions.attachments.drag-and-drop-attachments') }}
         </div>
         <div v-for="attachment in attachments" :key="attachment.id">
+          <!-- eslint-disable-next-line vuejs-accessibility/no-static-element-interactions -- the hover only reveals the handle, which is a button of its own -->
           <div
             :class="attachmentClasses(attachment)"
             draggable="true"
             @dragstart="handleDragStart($event, attachment)"
             @mouseenter="handleMouseEnter($event, attachment)"
             @mouseleave="handleMouseLeave()"
+            @focusin="handleMouseEnter($event, attachment)"
+            @focusout="handleMouseLeave()"
           >
-            <div class="draggable-handle dot-grid">
-              <div class="dot"></div>
-              <div class="dot"></div>
-              <div class="dot"></div>
-              <div class="dot"></div>
-              <div class="dot"></div>
-              <div class="dot"></div>
-            </div>
+            <button
+              type="button"
+              class="draggable-handle dot-grid"
+              :aria-label="t('compositions.attachments.insert', { id: attachment.id })"
+              @click="insertAttachment(attachment)"
+            >
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </button>
             <div class="delete-icon">
               <Icon
                 :alt="t('icons.delete-attachment')"
@@ -267,16 +281,25 @@ async function addCompositionAttachment(compositionId: number) {
   pointer-events: auto;
 }
 
+/* a button (it inserts the attachment at the caret), so undo what the browser and
+   base.css give one. faded out rather than hidden until the row is hovered or focused:
+   a hidden button can't take focus, so the keyboard could never reach it */
 .draggable-handle {
   width: 30px;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  background: none;
+  cursor: grab;
 
   grid-area: draggable-handle;
-  visibility: hidden;
+  opacity: 0;
   background-size: 30px auto;
 }
 
-.attachment-row-active > .draggable-handle {
-  visibility: visible;
+.attachment-row-active > .draggable-handle,
+.draggable-handle:focus-visible {
+  opacity: 1;
 }
 
 .dot-grid {

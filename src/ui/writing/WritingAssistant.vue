@@ -144,6 +144,7 @@
             </WritingAssistantButton>
             <WritingAssistantButton
               :class="rewriteToolsClasses"
+              :expanded="activeTool === 'rewrite'"
               :label="t('writingassistant.buttons.rewrite')"
               @click="toggleRewriteTools"
             >
@@ -151,6 +152,7 @@
             </WritingAssistantButton>
             <WritingAssistantButton
               :class="aiToolsClasses"
+              :expanded="activeTool === 'ai'"
               :label="t('writingassistant.buttons.generate-with-ai')"
               @click="toggleAiTools"
             >
@@ -185,10 +187,7 @@
               :label="t('writingassistant.buttons.friendly')"
               @click="rewriteFriendly"
             >
-              <img
-                :alt="t('writingassistant.alt.friendly')"
-                src="../../assets/images/icons/friendly.svg"
-              />
+              <img alt="" src="../../assets/images/icons/friendly.svg" />
             </WritingAssistantButton>
 
             <WritingAssistantButton
@@ -196,10 +195,7 @@
               :label="t('writingassistant.buttons.concise')"
               @click="rewriteConcise"
             >
-              <img
-                :alt="t('writingassistant.alt.concise')"
-                src="../../assets/images/icons/concise.svg"
-              />
+              <img alt="" src="../../assets/images/icons/concise.svg" />
             </WritingAssistantButton>
 
             <WritingAssistantButton
@@ -207,10 +203,7 @@
               :label="t('writingassistant.buttons.professional')"
               @click="rewriteProfessional"
             >
-              <img
-                :alt="t('writingassistant.alt.professional')"
-                src="../../assets/images/icons/professional.svg"
-              />
+              <img alt="" src="../../assets/images/icons/professional.svg" />
             </WritingAssistantButton>
           </div>
         </div>

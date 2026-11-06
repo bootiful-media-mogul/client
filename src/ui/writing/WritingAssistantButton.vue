@@ -1,15 +1,25 @@
 <template>
-  <div class="writing-tools-button unselectable">
-    <div class="writing-tools-button-content">
-      <div class="writing-tools-button-content-icon">
+  <button
+    type="button"
+    class="writing-tools-button unselectable"
+    :aria-expanded="expanded === undefined ? undefined : expanded"
+  >
+    <span class="writing-tools-button-content">
+      <span class="writing-tools-button-content-icon">
         <slot />
-      </div>
-      <div class="writing-tools-button-content-label">{{ label }}</div>
-    </div>
-  </div>
+      </span>
+      <span class="writing-tools-button-content-label">{{ label }}</span>
+    </span>
+  </button>
 </template>
 <style>
 .writing-tools-button {
+  /* a button, so undo what the browser and base.css give one */
+  border: 0;
+  margin: 0;
+  font-family: inherit;
+  line-height: inherit;
+  text-align: center;
   cursor: pointer;
   display: grid;
   grid-template-areas: '   content  ';
@@ -50,8 +60,10 @@ import { ref } from 'vue'
 
 interface Props {
   readonly label: string
+  // for a button that opens more tools below it: whether they are open
+  readonly expanded?: boolean
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), { expanded: undefined })
 const label = ref<string>(props.label)
 </script>

@@ -1,12 +1,28 @@
 <template>
   <div class="menu">
-    <div ref="up" :class="'unselectable arrow up ' + upArrowCss()" @click="emit('up')">◀</div>
+    <button
+      ref="up"
+      type="button"
+      :class="'unselectable arrow up ' + upArrowCss()"
+      :disabled="upArrowCss() === 'disabled'"
+      :aria-label="t('components.inputWrapper.previous-tool')"
+      @click="emit('up')"
+    >
+      <span aria-hidden="true">◀</span>
+    </button>
     <div class="unselectable icons">
       <slot>{{ t('inputWrapperMenu.default-content') }}</slot>
     </div>
-    <div ref="down" :class="'unselectable arrow down ' + downArrowCss()" @click="emit('down')">
-      ▶
-    </div>
+    <button
+      ref="down"
+      type="button"
+      :class="'unselectable arrow down ' + downArrowCss()"
+      :disabled="downArrowCss() === 'disabled'"
+      :aria-label="t('components.inputWrapper.next-tool')"
+      @click="emit('down')"
+    >
+      <span aria-hidden="true">▶</span>
+    </button>
   </div>
 </template>
 <style scoped>
@@ -20,6 +36,13 @@
 }
 
 .arrow {
+  /* a button, so undo what the browser and base.css give one */
+  border: 0;
+  margin: 0;
+  padding: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
   text-align: center;
   cursor: pointer;
 }
@@ -79,8 +102,8 @@ const upArrowCss = () => {
 const disable = function (r: HTMLElement) {
   r.classList.add('disabled')
 }
-const up = ref<HTMLElement>()
-const down = ref<HTMLElement>()
+const up = ref<HTMLButtonElement>()
+const down = ref<HTMLButtonElement>()
 
 watch(
   () => props.disabled,

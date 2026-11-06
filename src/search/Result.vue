@@ -90,11 +90,7 @@ function sourceFor(type: string): string {
       <div class="title">{{ props.title }}</div>
     </div>
     <div class="watermark">
-      <WatermarkedImage
-        class="watermark-image"
-        :invert="false"
-        :watermark-image="sourceFor(type)"
-      />
+      <WatermarkedImage class="watermark-image" :watermark-image="sourceFor(type)" />
     </div>
   </div>
 </template>
@@ -151,9 +147,6 @@ function sourceFor(type: string): string {
     grid-area: watermark;
     align-items: start;
     .watermark-image {
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
       width: var(--watermark-image-dimension);
       height: var(--watermark-image-dimension);
     }

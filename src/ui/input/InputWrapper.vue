@@ -22,24 +22,28 @@
         @down="down"
         @up="up"
       >
-        <div
-          v-for="(slot, index) in childSlots"
-          :key="index"
-          class="icon unselectable"
-          @click="togglePanel(slot)"
-        >
-          <div v-if="panelVisible && slot.iconVisible">
-            <Icon
-              :alt="t('icons.close')"
-              :icon="closeAsset"
-              :icon-hover="closeAsset"
-              highlight="rest"
-            />
-          </div>
-          <div v-else>
-            <component :is="slot.icon" v-if="slot.iconVisible"></component>
-          </div>
-        </div>
+        <template v-for="(slot, index) in childSlots" :key="index">
+          <!-- only the tool on show gets a button; the arrows either side pick another -->
+          <button
+            v-if="slot.iconVisible"
+            type="button"
+            class="icon unselectable tool-toggle"
+            :aria-expanded="panelVisible"
+            @click="togglePanel(slot)"
+          >
+            <span v-if="panelVisible">
+              <Icon
+                :alt="t('icons.close')"
+                :icon="closeAsset"
+                :icon-hover="closeAsset"
+                highlight="rest"
+              />
+            </span>
+            <span v-else>
+              <component :is="slot.icon"></component>
+            </span>
+          </button>
+        </template>
       </InputWrapperMenu>
     </div>
     <div v-if="panelVisible" class="input-panel">
@@ -251,6 +255,16 @@ provide('setInputDisabled', setInputDisabled)
   margin-bottom: calc(-1 * var(--icon-width));
   border-radius: 8px;
   --writing-tools-panel-padding: calc(var(--gutter-space) / 3);
+}
+
+.tool-toggle {
+  /* a button, so undo what the browser and base.css give one */
+  border: 0;
+  margin: 0;
+  padding: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
 }
 
 .icon-column-menu {

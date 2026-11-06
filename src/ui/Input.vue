@@ -19,7 +19,6 @@ const value = ref<string | null>(props.modelValue)
 </script>
 
 <template>
-  <!-- eslint-disable-next-line vuejs-accessibility/form-control-has-label -- the label is the caller's, tied to this input by the id it passes down -->
   <input
     type="text"
     @change="onChange"
