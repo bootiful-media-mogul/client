@@ -258,7 +258,10 @@ function iconFor(plugin: string): PanelSlotIcon | undefined {
 
 function withdrawn(publication: Publication) {
   return (
-    publication.url === '' || publication.state == 'draft' || publication.state == 'unpublished'
+    publication.url === '' ||
+    publication.state == 'pending' ||
+    publication.state == 'draft' ||
+    publication.state == 'unpublished'
   )
 }
 

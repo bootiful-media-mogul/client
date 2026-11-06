@@ -219,7 +219,8 @@ async function publishAndAwait(
   // has the publication as it now stands; if it's already done, there is no event left
   // to wait for.
   const published = existingPublications.value.find(
-    (p) => p.id === publicationId && p.state === 'PUBLISHED'
+    // the server sends states in lower case; comparing against 'PUBLISHED' never matched
+    (p) => p.id === publicationId && p.state === 'published'
   )
   if (published) return published
   return new Promise((resolve) => pendingPublications.set(publicationId, resolve))

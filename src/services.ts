@@ -768,6 +768,10 @@ export class Publication {
     this.published = published
     this.state = state
     this.outcomes = outcomes
+    // every publication now waits its turn on the server's job queue, and comes back
+    // from it 'pending' until it's done. a reload, or the refresh that follows the
+    // publish mutation, would otherwise drop the clock the started-event put up.
+    this.publishing = state === 'pending'
   }
 }
 
