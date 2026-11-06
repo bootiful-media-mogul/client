@@ -1573,20 +1573,23 @@ export class Publications {
     publishableType: string,
     id: number,
     contextJson: string,
-    plugin: string
+    plugin: string,
+    scheduled: Date | null = null
   ): Promise<number> {
     const q = `
         mutation ( 
              $publishableId: Int ,
              $publishableType: String, 
              $contextJson: String,
-             $plugin: String
+             $plugin: String,
+             $scheduled: DateTime
           ) {
            publish (  
              publishableId: $publishableId, 
              publishableType: $publishableType,
              contextJson: $contextJson, 
-             plugin: $plugin 
+             plugin: $plugin,
+             scheduled: $scheduled
            )   
         }
         `
@@ -1594,7 +1597,9 @@ export class Publications {
       publishableType: publishableType,
       publishableId: id,
       contextJson: contextJson,
-      plugin: plugin
+      plugin: plugin,
+      // null publishes as soon as the server's job queue gets to it
+      scheduled: scheduled ? scheduled.toISOString() : null
     })
     return (await result.data['publish']) as number
   }

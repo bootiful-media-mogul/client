@@ -85,10 +85,17 @@ const translations = {
       }
     },
     publications: {
+      schedule: {
+        schedule: 'Schedule',
+        when: 'Publish at',
+        confirm: 'Schedule',
+        cancel: 'Cancel'
+      },
       outcomes: {
         'error-message': 'see error message',
         'no-error-message': '(no error message given)',
         keys: {
+          mock : 'Mock',
           wordpress: 'Wordpress',
           podcastEpisodeToBlogPost: 'Blog Post',
           blogPostMarkdownFile: 'Blog Post Markdown File',

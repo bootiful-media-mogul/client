@@ -1,7 +1,10 @@
 <template>
   <div class="publications">
     <div v-for="publication in publications" v-bind:key="publication.id">
-      <div class="publications-row row">
+      <div
+        :class="{ 'publications-row-without-outcomes': !publication.outcomes?.length }"
+        class="publications-row row"
+      >
         <div class="plugin-column">
           <div class="plugin-icon-container">
             <Icon
@@ -171,6 +174,14 @@
 
 .publications .publications-outcome:last-child {
   margin-bottom: calc(var(--radius) * 1);
+}
+
+/* a publication still pending has no outcomes yet, so nothing above holds it off the
+   next publication; it gets the same space its last outcome would have. and its bottom
+   rule, there to sit the outcomes under, has nothing to sit under it */
+.publications .publications-row-without-outcomes {
+  margin-bottom: calc(var(--radius) * 1);
+  border-bottom: none;
 }
 
 .publications .publications-outcome:first-child {

@@ -88,6 +88,10 @@
   --bg-color-light: oklch(from var(--bg-color) calc(l + 0.5) c h);
   /* svg icons draw their highlight in this; Icon.vue falls back to white without it */
   --icon-paper-color: var(--raised-color);
+  /* a publication panel and its tab: a shade off the panel it sits in, which it used to
+     match exactly. mixed toward the ink, so it's a touch darker by day and a touch lighter
+     in the dark palettes */
+  --publication-panel-bg-color: color-mix(in srgb, var(--ink-color) 7%, var(--panel-bg-color));
   /* a faint wash of ink, for a hovered row or a shaded region */
   --hover-tint: color-mix(in srgb, var(--ink-color) 8%, transparent);
   /* the keyboard focus ring. the accent reads against the page and the panels in every
@@ -429,6 +433,15 @@ a.pure-button-selected {
   color: var(--chrome-ink-color);
   font-weight: 600;
   /* pure's gradient overlay reads as grime on a flat accent */
+  background-image: none;
+}
+
+/* pure lays its gradient back over a button that's hovered or focused, and its
+   selectors there outrank the plain .pure-button above, so the flat look lasted only
+   until the first click. same selectors, later in the cascade, so these win */
+.pure-button-hover,
+.pure-button:hover,
+.pure-button:focus {
   background-image: none;
 }
 

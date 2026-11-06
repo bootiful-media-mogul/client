@@ -11,12 +11,9 @@ import {
   type PublishFunction
 } from '@/publications/input'
 
-import { useI18n } from 'vue-i18n'
-
 import { useNotificationListeners } from '@/composables/useNotificationListeners'
 
 const { listenForCategory } = useNotificationListeners()
-const { t } = useI18n()
 
 const isPluginReadyFunction = inject<IsPluginReadyFunction>('isPluginReady')!
 
@@ -48,29 +45,27 @@ listenForCategory('podcast-episode-completed-event', async () => {
 })
 
 // resolves with the id of the publication that was started, not with its success.
-async function publish(): Promise<number> {
+async function publish(scheduled: Date | null): Promise<number> {
   const publicationContext: PublicationContext = getPublicationContextFunction()
   const clientContext: any = {}
   return await publishFunction(
     publicationContext.type,
     publicationContext.publishableId,
     clientContext,
-    pluginName
+    pluginName,
+    scheduled
   )
 }
 </script>
 
 <template>
-  <PublicationPanelComponent :icon="mockIcon" :icon-hover="mockIcon" :plugin="pluginName">
-    <template v-slot:panel>
-      <button
-        :disabled="disabled"
-        class="pure-button pure-button-primary publish-button"
-        type="button"
-        @click.prevent="publish()"
-      >
-        {{ t('publications.plugins.publish') }}
-      </button>
-    </template>
+  <PublicationPanelComponent
+    :enabled="!disabled"
+    :icon="mockIcon"
+    :icon-hover="mockIcon"
+    :plugin="pluginName"
+    :publish="publish"
+  >
+    <template v-slot:panel></template>
   </PublicationPanelComponent>
 </template>

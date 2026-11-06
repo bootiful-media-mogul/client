@@ -1,17 +1,12 @@
 <template>
-  <PublicationPanelComponent :icon="podbeanIcon" :icon-hover="podbeanIcon" plugin="podbean">
-    <template v-slot:panel>
-      <div>
-        <button
-          :disabled="disabled"
-          class="pure-button pure-button-primary publish-button"
-          type="button"
-          @click.prevent="publish()"
-        >
-          {{ t('publications.plugins.publish') }}
-        </button>
-      </div>
-    </template>
+  <PublicationPanelComponent
+    :enabled="!disabled"
+    :icon="podbeanIcon"
+    :icon-hover="podbeanIcon"
+    :publish="publish"
+    plugin="podbean"
+  >
+    <template v-slot:panel></template>
   </PublicationPanelComponent>
 </template>
 <script lang="ts" setup>
@@ -23,12 +18,10 @@ import type {
   IsPluginReadyFunction,
   PublishFunction
 } from '@/publications/input'
-import { useI18n } from 'vue-i18n'
 
 import { useNotificationListeners } from '@/composables/useNotificationListeners'
 
 const { listenForCategory } = useNotificationListeners()
-const { t } = useI18n()
 
 const pluginName = 'podbean'
 
@@ -38,14 +31,15 @@ const getPublicationContextFunction =
   inject<GetPublicationContextFunction>('getPublicationContext')!
 
 // resolves with the id of the publication that was started, not with its success.
-async function publish(): Promise<number> {
+async function publish(scheduled: Date | null): Promise<number> {
   const clientContext = {}
   const publicationContext = getPublicationContextFunction()
   return await publishFunction(
     publicationContext.type,
     publicationContext.publishableId,
     clientContext,
-    pluginName
+    pluginName,
+    scheduled
   )
 }
 

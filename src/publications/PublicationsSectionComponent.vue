@@ -32,6 +32,7 @@
           {{ t('publications.plugins.' + slot.plugin + '.description') }}
         </div>
         <component :is="slot.panel" />
+        <PublicationActionsComponent v-if="slot.action" :action="slot.action" />
       </div>
     </div>
   </div>
@@ -66,21 +67,21 @@
 }
 
 .toolbar-icon-selected {
-  background-color: var(--panel-bg-color);
+  background-color: var(--publication-panel-bg-color);
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
 }
 
 .publication-panel {
   border-radius: var(--radius);
-  background-color: var(--panel-bg-color);
+  background-color: var(--publication-panel-bg-color);
   padding: calc(var(--gutter-space) / 2);
   margin: 0;
   overflow: hidden;
 }
 
 .publication-panel .plugin {
-  background-color: var(--panel-bg-color);
+  background-color: var(--publication-panel-bg-color);
   padding: var(--gutter-space-half);
   border-bottom-right-radius: var(--radius);
   border-top-right-radius: var(--radius);
@@ -111,6 +112,7 @@
 <script lang="ts" setup>
 import Icon from '@/ui/Icon.vue'
 import PublicationsListComponent from '@/publications/PublicationsListComponent.vue'
+import PublicationActionsComponent from '@/publications/PublicationActionsComponent.vue'
 import { onMounted, onUnmounted, provide, ref } from 'vue'
 import { type PanelSlot, PanelSlotIcon, PublicationContext } from '@/publications/input'
 import { Notification, Publication, publications } from '@/services'
@@ -200,9 +202,16 @@ async function publish(
   type: string,
   id: number,
   context: Map<string, any>,
-  plugin: string
+  plugin: string,
+  scheduled: Date | null = null
 ): Promise<number> {
-  const publicationId = await publications.publish(type, id, JSON.stringify(context), plugin)
+  const publicationId = await publications.publish(
+    type,
+    id,
+    JSON.stringify(context),
+    plugin,
+    scheduled
+  )
   await refresh()
   return publicationId
 }
@@ -211,9 +220,13 @@ async function publishAndAwait(
   type: string,
   id: number,
   context: Map<string, any>,
-  plugin: string
+  plugin: string,
+  scheduled: Date | null = null
 ): Promise<Publication | null> {
-  const publicationId = await publish(type, id, context, plugin)
+  const publicationId = await publish(type, id, context, plugin, scheduled)
+  // nobody should be left waiting days for a scheduled one; it's pending, and that's
+  // as finished as it's going to get for now
+  if (scheduled) return existingPublications.value.find((p) => p.id === publicationId) ?? null
   // a plugin with nothing to render finishes in milliseconds, so the notification can
   // have been and gone before the mutation even returned. the refresh inside publish()
   // has the publication as it now stands; if it's already done, there is no event left

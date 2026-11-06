@@ -1,23 +1,20 @@
 <template>
+  <!-- a download is for right now: there's nothing to schedule -->
   <PublicationPanelComponent
+    :enabled="!disabled && !producing"
     :icon="downloadMarkdownIcon"
     :icon-hover="downloadMarkdownIcon"
+    :label="
+      producing
+        ? t('publications.plugins.blogPostMarkdownFile.producing')
+        : t('publications.plugins.blogPostMarkdownFile.download')
+    "
     :plugin="pluginName"
+    :publish="downloadMarkdown"
+    :schedulable="false"
   >
     <template v-slot:panel>
-      <div>
-        <button
-          :disabled="disabled || producing"
-          class="pure-button pure-button-primary publish-button"
-          type="button"
-          @click.prevent="downloadMarkdown()"
-        >
-          {{
-            producing
-              ? t('publications.plugins.blogPostMarkdownFile.producing')
-              : t('publications.plugins.blogPostMarkdownFile.download')
-          }}
-        </button>
+      <div v-if="readyUrl">
         <!--
           the auto-open below is a popup as far as the browser is concerned, and the click
           that started it stops counting as a gesture once we've waited on the server, so
@@ -104,6 +101,6 @@ onMounted(async () => {
 <style scoped>
 .ready-link {
   display: inline-block;
-  margin-left: 1em;
+  margin-bottom: var(--gutter-space-half);
 }
 </style>

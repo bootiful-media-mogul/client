@@ -1,23 +1,20 @@
 <template>
+  <!-- a download is for right now: there's nothing to schedule -->
   <PublicationPanelComponent
+    :enabled="!disabled && !producing"
     :icon="downloadAudioIcon"
     :icon-hover="downloadAudioIcon"
+    :label="
+      producing
+        ? t('publications.plugins.audioFile.producing')
+        : t('publications.plugins.audioFile.download')
+    "
+    :publish="downloadAudio"
+    :schedulable="false"
     plugin="audioFile"
   >
     <template v-slot:panel>
-      <div>
-        <button
-          :disabled="disabled || producing"
-          class="pure-button pure-button-primary publish-button"
-          type="button"
-          @click.prevent="downloadAudio()"
-        >
-          {{
-            producing
-              ? t('publications.plugins.audioFile.producing')
-              : t('publications.plugins.audioFile.download')
-          }}
-        </button>
+      <div v-if="readyUrl">
         <!--
           the auto-open below is a popup as far as the browser is concerned, and a render
           takes long enough that the click that started it no longer counts as a gesture,
@@ -114,6 +111,6 @@ onMounted(async () => {
 <style scoped>
 .ready-link {
   display: inline-block;
-  margin-left: 1em;
+  margin-bottom: var(--gutter-space-half);
 }
 </style>

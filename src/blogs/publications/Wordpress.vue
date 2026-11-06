@@ -1,5 +1,12 @@
 <template>
-  <PublicationPanelComponent :icon="wordpressIcon" :icon-hover="wordpressIcon" :plugin="pluginName">
+  <PublicationPanelComponent
+    :enabled="!publishDisabled"
+    :icon="wordpressIcon"
+    :icon-hover="wordpressIcon"
+    :label="t('publications.plugins.wordpress.publish')"
+    :plugin="pluginName"
+    :publish="publishToWordpress"
+  >
     <template v-slot:panel>
       <div>
         <button
@@ -13,14 +20,6 @@
               ? t('publications.plugins.wordpress.connected')
               : t('publications.plugins.wordpress.connect')
           }}
-        </button>
-        <button
-          :disabled="publishDisabled"
-          class="pure-button pure-button-primary publish-button"
-          type="button"
-          @click.prevent="publishToWordpress()"
-        >
-          {{ t('publications.plugins.wordpress.publish') }}
         </button>
       </div>
     </template>
@@ -87,14 +86,15 @@ async function readyToPublish(): Promise<boolean> {
   return configured.value && connected.value
 }
 
-async function publishToWordpress() {
+async function publishToWordpress(scheduled: Date | null) {
   const publicationContext = getPublicationContextFunction()
   const clientContext = {}
   await publishFunction(
     publicationContext.type,
     publicationContext.publishableId,
     clientContext,
-    pluginName
+    pluginName,
+    scheduled
   )
 }
 

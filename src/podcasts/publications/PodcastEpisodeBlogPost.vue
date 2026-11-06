@@ -1,26 +1,19 @@
 <template>
   <PublicationPanelComponent
+    :enabled="!disabled"
     :icon="blogIcon"
     :icon-hover="blogIcon"
+    :label="
+      publishing
+        ? t('publications.plugins.podcastEpisodeToBlogPost.creating')
+        : t('publications.plugins.podcastEpisodeToBlogPost.create')
+    "
+    :publish="publish"
     plugin="podcastEpisodeToBlogPost"
   >
     <template v-slot:panel>
       <div class="blog-post-panel">
         <BlogsSelect v-model="blogId" />
-        <div>
-          <button
-            :disabled="disabled"
-            class="pure-button pure-button-primary publish-button"
-            type="button"
-            @click.prevent="publish()"
-          >
-            {{
-              publishing
-                ? t('publications.plugins.podcastEpisodeToBlogPost.creating')
-                : t('publications.plugins.podcastEpisodeToBlogPost.create')
-            }}
-          </button>
-        </div>
       </div>
     </template>
   </PublicationPanelComponent>
@@ -51,9 +44,10 @@ const disabled = computed(() => blogId.value === null || publishing.value)
  * the publish mutation returns as soon as the work is queued, so awaiting that alone
  * cleared `publishing` within milliseconds and the button went live again while the post
  * was still being written -- two clicks, two posts. wait for the publication itself to
- * finish instead.
+ * finish instead. (a scheduled one isn't waited on; publishAndAwait returns once it's
+ * scheduled.)
  */
-async function publish(): Promise<void> {
+async function publish(scheduled: Date | null): Promise<void> {
   if (blogId.value === null) return
   publishing.value = true
   try {
@@ -65,7 +59,8 @@ async function publish(): Promise<void> {
       publicationContext.type,
       publicationContext.publishableId,
       clientContext,
-      pluginName
+      pluginName,
+      scheduled
     )
   } finally {
     publishing.value = false

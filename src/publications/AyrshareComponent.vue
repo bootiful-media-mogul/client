@@ -39,7 +39,13 @@
 }
 </style>
 <template>
-  <PublicationPanelComponent :icon="icon" :icon-hover="icon" :plugin="pluginName">
+  <PublicationPanelComponent
+    :enabled="!disabled && !publishing"
+    :icon="icon"
+    :icon-hover="icon"
+    :plugin="pluginName"
+    :publish="publish"
+  >
     <template v-slot:panel>
       <div class="platform-panels">
         <div
@@ -80,16 +86,6 @@
             </div>
           </div>
         </div>
-      </div>
-      <div>
-        <button
-          :disabled="disabled"
-          class="pure-button pure-button-primary publish-button"
-          type="button"
-          @click.prevent="publish()"
-        >
-          {{ t('publications.plugins.publish') }}
-        </button>
       </div>
     </template>
   </PublicationPanelComponent>
@@ -161,7 +157,7 @@ const getPublicationContextFunction =
   inject<GetPublicationContextFunction>('getPublicationContext')!
 
 // resolves with the id of the publication that was started, not with its success.
-async function publish(): Promise<number> {
+async function publish(scheduled: Date | null): Promise<number> {
   publishing.value = true
   const publicationContext: PublicationContext = getPublicationContextFunction()
 
@@ -175,12 +171,19 @@ async function publish(): Promise<number> {
     }
   })
 
-  return await publishFunction(
-    publicationContext.type,
-    publicationContext.publishableId,
-    clientContext,
-    pluginName
-  )
+  try {
+    return await publishFunction(
+      publicationContext.type,
+      publicationContext.publishableId,
+      clientContext,
+      pluginName,
+      scheduled
+    )
+  } finally {
+    // a post for right now holds the panel until ayrshare says it's out. one for later
+    // would hold it for days, so the panel comes back once it's been scheduled.
+    if (scheduled) publishing.value = false
+  }
 }
 
 async function reset(post: EnableAyrsharePublicationComposition) {
