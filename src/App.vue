@@ -47,6 +47,15 @@ function go(view: string) {
   router.push({ name: view })
 }
 
+// the sections of the global toolbar, in order. each shows its name under its icon
+const menu = [
+  { label: 'app.menu.home', icon: homeIconAsset, go: () => go('home') },
+  { label: 'app.menu.podcasts', icon: podcastIconAsset, go: goPodcasts },
+  { label: 'app.menu.blogs', icon: blogIconAsset, go: () => go('blogs') },
+  { label: 'app.menu.settings', icon: settingsIconAsset, go: () => go('settings') },
+  { label: 'app.menu.jobs', icon: jobsIconAsset, go: () => go('jobs') }
+]
+
 const main = ref<HTMLElement>()
 
 function focusMain() {
@@ -99,11 +108,61 @@ onMounted(async () => {
   place-self: center;
 
   gap: var(--gutter-space);
+  /* square, and both sides spelled out: left to work the width out from the height,
+     safari sizes an inline svg's wrapper by the svg's default width, so the icons spread */
   & .icon {
     height: calc(3 * var(--gutter-space));
-    width: auto;
+    width: calc(3 * var(--gutter-space));
+    display: block;
   }
 }
+/* the section's name, in small capitals under its icon. a pointer reveals it on hover
+   (or keyboard focus); a touch screen has no hover, so there it is always shown. either
+   way it is out of the flow: a long name never pushes the icons apart. the item keeps a
+   strip under the icon for it instead, so the bar always has room below the letters */
+.nav-item {
+  --nav-label-room: calc(var(--font-size-xs) + var(--gutter-space-half));
+  position: relative;
+  padding-bottom: var(--nav-label-room);
+}
+
+.nav-label {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, -2px);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  line-height: 1;
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    opacity 120ms ease,
+    transform 120ms ease;
+}
+
+.nav-item:hover .nav-label,
+.nav-item:focus-within .nav-label {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+@media (hover: none) {
+  .nav-label {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-label {
+    transition: none;
+  }
+}
+
 /* Mobile-first: Default styles for mobile */
 .toolbar-container {
   color: var(--chrome-ink-color);
@@ -269,41 +328,17 @@ onMounted(async () => {
             <div class="brand-slot"><BrandMark /></div>
             <div class="hello">{{ t('hello', { mogul: mogulUsername }) }}</div>
             <nav class="global-toolbar" :aria-label="t('app.menu.label')">
-              <Icon
-                highlight="hover"
-                :alt="t('app.menu.home')"
-                @click.prevent="go('home')"
-                :icon-hover="homeIconAsset"
-                :icon="homeIconAsset"
-              />
-              <Icon
-                highlight="hover"
-                :alt="t('app.menu.podcasts')"
-                @click.prevent="goPodcasts"
-                :icon-hover="podcastIconAsset"
-                :icon="podcastIconAsset"
-              />
-              <Icon
-                highlight="hover"
-                :alt="t('app.menu.blogs')"
-                @click.prevent="go('blogs')"
-                :icon-hover="blogIconAsset"
-                :icon="blogIconAsset"
-              />
-              <Icon
-                highlight="hover"
-                :alt="t('app.menu.settings')"
-                @click.prevent="go('settings')"
-                :icon-hover="settingsIconAsset"
-                :icon="settingsIconAsset"
-              />
-              <Icon
-                highlight="hover"
-                :alt="t('app.menu.jobs')"
-                @click.prevent="go('jobs')"
-                :icon-hover="jobsIconAsset"
-                :icon="jobsIconAsset"
-              />
+              <div v-for="item in menu" :key="item.label" class="nav-item">
+                <Icon
+                  highlight="hover"
+                  :alt="t(item.label)"
+                  @click.prevent="item.go"
+                  :icon-hover="item.icon"
+                  :icon="item.icon"
+                />
+                <!-- the icon already carries the name for a screen reader -->
+                <span class="nav-label" aria-hidden="true">{{ t(item.label) }}</span>
+              </div>
             </nav>
           </div>
           <div class="search" role="search">
