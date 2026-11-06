@@ -116,54 +116,19 @@ onMounted(async () => {
     display: block;
   }
 }
-/* the section's name, in small capitals under its icon. a pointer reveals it on hover
-   (or keyboard focus); a touch screen has no hover, so there it is always shown. either
-   way it is out of the flow: a long name never pushes the icons apart. the item keeps a
-   strip under the icon for it instead, so the bar always has room below the letters */
+/* the section's name, in small capitals, on a tab that drops out of the bottom of the
+   black bar while a pointer (or the keyboard focus) is on its icon. it takes no room in
+   the bar, so the icons stay centered with the wordmark and the greeting. it only exists
+   on desktop: the floating mobile bar has no bar edge to hang it from, and no hover */
 .nav-item {
-  --nav-label-room: calc(var(--font-size-xs) + var(--gutter-space-half));
   position: relative;
-  padding-bottom: var(--nav-label-room);
 }
 
 .nav-label {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translate(-50%, -2px);
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  line-height: 1;
-  pointer-events: none;
-  opacity: 0;
-  transition:
-    opacity 120ms ease,
-    transform 120ms ease;
+  display: none;
 }
 
-.nav-item:hover .nav-label,
-.nav-item:focus-within .nav-label {
-  opacity: 1;
-  transform: translate(-50%, 0);
-}
-
-@media (hover: none) {
-  .nav-label {
-    transform: translate(-50%, 0);
-    opacity: 1;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .nav-label {
-    transition: none;
-  }
-}
-
-/* Mobile-first: Default styles for mobile */
+/* Mobile-first: Default styles for mobile */ /* Mobile-first: Default styles for mobile */
 .toolbar-container {
   color: var(--chrome-ink-color);
   border-radius: var(--radius);
@@ -264,6 +229,9 @@ onMounted(async () => {
     padding: 0 calc(2 * var(--gutter-space));
     background-color: var(--topbar-color);
     color: var(--chrome-ink-color);
+    /* above the search, so a name's tab drops over it rather than under it */
+    position: relative;
+    z-index: 2;
   }
 
   .toolbar-container .hello {
@@ -279,7 +247,9 @@ onMounted(async () => {
   .toolbar-container .search {
     width: 50%;
     justify-self: center;
-    padding: var(--gutter-space) 0;
+    /* above, the room a name's tab drops into (about a gutter and a half), then a
+       gutter between the tab and the box */
+    padding: calc(2.5 * var(--gutter-space)) 0 var(--gutter-space);
   }
 
   .toolbar-container .global-toolbar {
@@ -295,6 +265,49 @@ onMounted(async () => {
 
   .toolbar-container .icon:hover {
     color: var(--brand-color);
+  }
+
+  /* the tab starts at the foot of the icon, in the bar's own color, so it reads as part
+     of the bar; its top padding is the bar's margin under the icons, which puts the name
+     just below the bar's edge. the tab keeps the inherited font size so --radius (in em)
+     rounds it as it does every other panel; only the name inside is small */
+  .nav-label {
+    display: block;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    z-index: 1;
+    translate: -50% 0;
+    padding: calc(var(--gutter-space) + var(--small-gutter-space) / 2) var(--gutter-space)
+      var(--small-gutter-space);
+    background-color: var(--topbar-color);
+    /* the hovered icon's color, so the name reads as part of it */
+    color: var(--brand-color);
+    border-radius: 0 0 var(--radius) var(--radius);
+    pointer-events: none;
+    clip-path: inset(0 0 100% 0);
+    transition: clip-path 140ms ease;
+  }
+
+  .nav-label-text {
+    display: block;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    line-height: 1;
+  }
+
+  .nav-item:hover .nav-label,
+  .nav-item:focus-within .nav-label {
+    clip-path: inset(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav-label {
+      transition: none;
+    }
   }
 
   /* the buffer exists to clear the floating toolbar, which is only fixed on mobile.
@@ -337,7 +350,9 @@ onMounted(async () => {
                   :icon="item.icon"
                 />
                 <!-- the icon already carries the name for a screen reader -->
-                <span class="nav-label" aria-hidden="true">{{ t(item.label) }}</span>
+                <span class="nav-label" aria-hidden="true"
+                  ><span class="nav-label-text">{{ t(item.label) }}</span></span
+                >
               </div>
             </nav>
           </div>
