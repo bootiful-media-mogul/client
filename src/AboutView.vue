@@ -1,8 +1,5 @@
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
-import { useRoute } from 'vue-router'
-
-const route = useRoute()
 
 const { t } = useI18n()
 

@@ -61,8 +61,12 @@
 </style>
 
 <template>
+  <!-- off screen, and out of the tab order: the choose link below opens it -->
+  <!-- eslint-disable-next-line vuejs-accessibility/form-control-has-label -- hidden; the choose link is the control -->
   <input
     ref="realFileUploadInputField"
+    tabindex="-1"
+    aria-hidden="true"
     :accept="accept ? accept : '*/*'"
     class="managed-file-file-upload"
     type="file"
@@ -76,6 +80,7 @@
 
     <a class="choose" href="#" @click="launchFileUpload">
       <Icon
+        :alt="t('managedfiles.upload')"
         :icon="folderAsset"
         :icon-hover="folderAsset"
         :title="t('managedfiles.upload')"
@@ -85,6 +90,7 @@
     <a class="visible" href="#">
       <div v-if="visible">
         <Icon
+          :alt="t('icons.hide-file')"
           highlight="always"
           ref="icon"
           :icon-hover="eyeAsset"
@@ -96,6 +102,7 @@
       </div>
       <div v-else>
         <Icon
+          :alt="t('icons.show-file')"
           ref="icon"
           :icon-hover="eyeOffAsset"
           :icon="eyeOffAsset"
@@ -109,7 +116,12 @@
     <div class="written">
       <span v-if="uploading"> 🕒 </span>
       <span v-else>
-        <Icon v-if="written" :icon="checkmarkAsset" :icon-hover="checkmarkAsset" />
+        <Icon
+          :alt="t('icons.uploaded')"
+          v-if="written"
+          :icon="checkmarkAsset"
+          :icon-hover="checkmarkAsset"
+        />
       </span>
     </div>
     <div class="preview">
@@ -120,6 +132,7 @@
         @click.prevent="preview"
       >
         <Icon
+          :alt="t('managedfiles.preview')"
           :icon="previewAsset"
           :icon-hover="previewAsset"
           :highlight="written ? 'rest' : 'always'"
@@ -205,7 +218,7 @@ watch(
 
 watch(
   () => props.managedFileId,
-  async (o: any, n: any) => {
+  async () => {
     await loadManagedFileIntoEditor()
   }
 )

@@ -25,6 +25,7 @@
         :value="search"
         class="search-input"
         :placeholder="t('search.prompt')"
+        :aria-label="t('search.prompt')"
         @keydown.enter.prevent="openSearchPage"
       />
     </form>

@@ -354,9 +354,9 @@ onMounted(async () => {
             <label for="episodeCreated">
               {{ t('podcasts.episodes.episode.created') }}
             </label>
-            <VDatePicker id="episodeCreated" v-model="createdDate" mode="dateTime" is24hr>
+            <VDatePicker v-model="createdDate" mode="dateTime" is24hr>
               <template #default="{ inputValue, inputEvents }">
-                <input :value="inputValue" type="text" v-on="inputEvents" />
+                <input id="episodeCreated" :value="inputValue" type="text" v-on="inputEvents" />
               </template>
             </VDatePicker>
           </div>
@@ -385,6 +385,7 @@ onMounted(async () => {
           <div class="form-section-title">{{ t('podcasts.episodes.segments') }}</div>
           <div class="toolbar">
             <Icon
+              :alt="t('icons.new-segment')"
               highlight="hover"
               :icon-hover="plusIcon"
               :icon="plusIcon"

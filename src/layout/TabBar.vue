@@ -1,22 +1,29 @@
 <template>
   <div class="tab-bar-wrapper">
     <!-- Tab Bar UI (visible on mobile only) -->
-    <div class="tab-bar-container">
+    <nav class="tab-bar-container" :aria-label="t('app.tabs.label')">
       <div v-if="$slots.header" class="tab-bar-header">
         <slot name="header"></slot>
       </div>
-      <div class="tab-bar">
-        <a
-          href="#"
+      <!-- eslint-disable-next-line vuejs-accessibility/interactive-supports-focus -- the tabs inside it take focus, not the list -->
+      <div class="tab-bar" role="tablist" @keydown="onKeydown">
+        <button
           v-for="tab in registeredTabs"
+          :id="tabIdFor(tab.id)"
           :key="tab.id"
+          type="button"
+          role="tab"
+          :aria-selected="activeTab === tab.id"
+          :aria-controls="panelIdFor(tab.id)"
+          :tabindex="activeTab === tab.id ? 0 : -1"
           :class="['tab', { 'tab-active': activeTab === tab.id }]"
-          @click.prevent="selectTab(tab.id)"
-          >{{ tab.label }}</a
+          @click="selectTab(tab.id)"
         >
+          {{ tab.label }}
+        </button>
       </div>
       <div class="tab-bar-bumper"><div class="tab-bar-bumper-corners"></div></div>
-    </div>
+    </nav>
     <slot></slot>
   </div>
 </template>
@@ -59,6 +66,10 @@
 }
 
 .tab {
+  /* a button, so undo what the browser and base.css give one */
+  border: 0;
+  margin: 0;
+  line-height: inherit;
   background-color: transparent;
   cursor: pointer;
   text-align: center;
@@ -97,9 +108,13 @@
 </style>
 
 <script lang="ts" setup>
-import { provide, ref, watch } from 'vue'
+import { onUnmounted, provide, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import type { TabRegistration } from '@/layout/tabbar'
+import { panelIdFor, tabIdFor } from '@/layout/tabbar'
+
+const { t } = useI18n()
 
 const route = useRoute()
 const registeredTabs = ref<TabRegistration[]>([])
@@ -147,6 +162,44 @@ watch(
   }
 )
 
+// the tabs only exist below the desktop break; above it every tab's content is on screen
+// at once, and calling them tab panels would describe a widget nobody can see. .frame
+// fills the window, so the window's width stands in for the container's
+const narrowQuery = window.matchMedia('(max-width: 899.98px)')
+const narrow = ref(narrowQuery.matches)
+const onNarrowChange = (e: MediaQueryListEvent) => (narrow.value = e.matches)
+narrowQuery.addEventListener('change', onNarrowChange)
+onUnmounted(() => narrowQuery.removeEventListener('change', onNarrowChange))
+
+// the arrow keys move between tabs, as they do in any tab strip; only the active tab is
+// in the tab order, so tab leaves the strip rather than walking through it
+function onKeydown(event: KeyboardEvent) {
+  const tabs = registeredTabs.value
+  const current = tabs.findIndex((tab) => tab.id === activeTab.value)
+  if (current < 0) return
+  let next: number
+  switch (event.key) {
+    case 'ArrowRight':
+      next = (current + 1) % tabs.length
+      break
+    case 'ArrowLeft':
+      next = (current - 1 + tabs.length) % tabs.length
+      break
+    case 'Home':
+      next = 0
+      break
+    case 'End':
+      next = tabs.length - 1
+      break
+    default:
+      return
+  }
+  event.preventDefault()
+  selectTab(tabs[next].id)
+  document.getElementById(tabIdFor(tabs[next].id))?.focus()
+}
+
+provide('tabsNarrow', narrow)
 provide('registerTab', registerTab)
 provide('getActiveTab', getActiveTab)
 provide('setActiveTab', setActiveTab)

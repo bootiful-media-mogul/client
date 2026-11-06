@@ -34,8 +34,9 @@ function pickPalette(palette: DarkPalette) {
       <legend>{{ t('settings.appearance.title') }}</legend>
 
       <div class="pure-control-group">
-        <label>{{ t('settings.appearance.mode') }}</label>
-        <div class="modes" role="radiogroup">
+        <!-- eslint-disable-next-line vuejs-accessibility/label-has-for -- names the group below, not one control -->
+        <label id="appearance-mode-label">{{ t('settings.appearance.mode') }}</label>
+        <div class="modes" role="radiogroup" aria-labelledby="appearance-mode-label">
           <label v-for="mode in modes" :key="mode" class="pure-radio">
             <input
               type="radio"
@@ -66,6 +67,7 @@ function pickPalette(palette: DarkPalette) {
         <div class="window">
           <span>{{ t('settings.appearance.evening-from') }}</span>
           <select
+            :aria-label="t('settings.appearance.evening-start')"
             :value="preferences.evening"
             @change="
               setThemePreferences({ evening: Number(($event.target as HTMLSelectElement).value) })
@@ -75,6 +77,7 @@ function pickPalette(palette: DarkPalette) {
           </select>
           <span>{{ t('settings.appearance.evening-until') }}</span>
           <select
+            :aria-label="t('settings.appearance.evening-end')"
             :value="preferences.morning"
             @change="
               setThemePreferences({ morning: Number(($event.target as HTMLSelectElement).value) })
@@ -86,8 +89,9 @@ function pickPalette(palette: DarkPalette) {
       </div>
 
       <div v-if="preferences.mode !== 'light'" class="pure-control-group">
-        <label>{{ t('settings.appearance.dark-palette') }}</label>
-        <div class="palettes">
+        <!-- eslint-disable-next-line vuejs-accessibility/label-has-for -- names the group below, not one control -->
+        <label id="appearance-palette-label">{{ t('settings.appearance.dark-palette') }}</label>
+        <div class="palettes" role="group" aria-labelledby="appearance-palette-label">
           <button
             v-for="palette in darkPalettes"
             :key="palette"

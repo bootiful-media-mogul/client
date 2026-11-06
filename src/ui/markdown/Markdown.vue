@@ -62,42 +62,49 @@
       <div class="formatting-menu-toolbar">
         <div class="formatting-menu">
           <Icon
+            :alt="t('icons.bold')"
             highlight="hover"
             :icon="boldAsset"
             :icon-hover="boldAsset"
             @click.prevent="formatText('strong')"
           />
           <Icon
+            :alt="t('icons.italic')"
             highlight="hover"
             :icon="italicAsset"
             :icon-hover="italicAsset"
             @click.prevent="formatText('em')"
           />
           <Icon
+            :alt="t('icons.link')"
             highlight="hover"
             :icon="linkAsset"
             :icon-hover="linkAsset"
             @click.prevent="formatText('link')"
           />
           <Icon
+            :alt="t('icons.list')"
             highlight="hover"
             :icon="listAsset"
             :icon-hover="listAsset"
             @click.prevent="formatText('list')"
           />
           <Icon
+            :alt="t('icons.h1')"
             highlight="hover"
             :icon="h1Asset"
             :icon-hover="h1Asset"
             @click.prevent="formatText('h1')"
           />
           <Icon
+            :alt="t('icons.h2')"
             highlight="hover"
             :icon="h2Asset"
             :icon-hover="h2Asset"
             @click.prevent="formatText('h2')"
           />
           <Icon
+            :alt="t('icons.h3')"
             highlight="hover"
             :icon="h3Asset"
             :icon-hover="h3Asset"
@@ -105,6 +112,7 @@
           />
 
           <Icon
+            :alt="t('icons.image')"
             highlight="hover"
             :icon="imageAsset"
             :icon-hover="imageAsset"
@@ -114,7 +122,7 @@
       </div>
     </template>
     <template v-slot:icon>
-      <Icon highlight="rest" :icon="asset" :icon-hover="asset" />
+      <Icon :alt="t('icons.markdown')" highlight="rest" :icon="asset" :icon-hover="asset" />
     </template>
   </InputWrapperChild>
 </template>
@@ -171,7 +179,7 @@ const formatText = (format: string) => {
   const selection = getSelection()
   if (!selection) return
 
-  const { text, start, end } = selection
+  const { text, start } = selection
 
   const handleListificationOf = function () {
     // several scenarios:
@@ -276,7 +284,7 @@ onUnmounted(() => {
 
 watch(
   () => props.modelValue,
-  (o: string, n: string) => {
+  () => {
     debouncingRender()
   }
 )

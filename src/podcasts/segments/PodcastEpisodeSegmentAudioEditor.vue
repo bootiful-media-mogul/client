@@ -266,6 +266,7 @@ onBeforeUnmount(() => {
         @click.prevent="listen"
       >
         <Icon
+          :alt="t('icons.listen')"
           :icon="previewAsset"
           :icon-hover="previewAsset"
           :highlight="canListen ? 'rest' : 'always'"

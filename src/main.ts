@@ -10,13 +10,13 @@ import '@fontsource/ibm-plex-mono/500.css'
 import './assets/base.css'
 import { startTheme } from './theme'
 
-import { createApp } from 'vue'
+import { createApp, watch } from 'vue'
 import { createI18n } from 'vue-i18n'
 import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from './index'
-import VCalendar, { Calendar, DatePicker, setupCalendar } from 'v-calendar'
+import { Calendar, DatePicker, setupCalendar } from 'v-calendar'
 // import { setupCalendar } from 'v-calendar'
 
 import 'v-calendar/style.css'
@@ -317,6 +317,15 @@ const translations = {
 
     // app
     'app.tabs.main': 'Main',
+    'app.title': 'Mogul Studio',
+    'app.skip-to-content': 'Skip to content',
+    'app.menu.label': 'Main menu',
+    'app.panels.label': 'Panels',
+    'app.tabs.label': 'Sections',
+    'app.pages.episodes': 'Episodes',
+    'app.pages.episode': 'Episode',
+    'app.pages.posts': 'Posts',
+    'app.pages.post': 'Post',
     'app.menu.home': 'Home',
     'app.menu.search': 'Search',
     'app.menu.settings': 'Settings',
@@ -358,8 +367,8 @@ This is NOT reversible! `,
     // blogs
     'blogs.title': 'Blogs',
     'blogs.all': "{user}'s blogs",
-    'panel.alt.open': 'Open',
-    'panel.alt.minimize': 'Minimize',
+    'panel.alt.open': 'Open {panel}',
+    'panel.alt.minimize': 'Minimize {panel}',
 
     'popup.default-content': 'default panel content',
     'popup.close': 'Close',
@@ -378,6 +387,47 @@ This is NOT reversible! `,
     'home.history.nothing': 'Nothing here yet.',
 
     'icon.alt.default': 'an image, #{image}',
+    'icons.new-blog': 'New blog',
+    'icons.new-podcast': 'New podcast',
+    'icons.new-post': 'New post',
+    'icons.new-episode': 'New episode',
+    'icons.new-segment': 'New segment',
+    'icons.new-note': 'New note',
+    'icons.edit': 'Edit {name}',
+    'icons.delete': 'Delete {name}',
+    'icons.rss': 'RSS feed for {name}',
+    'icons.edit-note': 'Edit note',
+    'icons.delete-note': 'Delete note',
+    'icons.delete-segment': 'Delete segment',
+    'icons.delete-attachment': 'Delete attachment',
+    'icons.attachments': 'Attachments',
+    'icons.transcript': 'Transcript',
+    'icons.audio-editor': 'Audio editor',
+    'icons.move-up': 'Move up',
+    'icons.move-down': 'Move down',
+    'icons.segment-type.audio': 'Audio segment',
+    'icons.segment-type.graphic': 'Image segment',
+    'icons.segment-type.segment': 'Segment',
+    'icons.hide-file': 'Hide file',
+    'icons.show-file': 'Show file',
+    'icons.uploaded': 'Uploaded',
+    'icons.open-link': 'Open link',
+    'icons.listen': 'Listen',
+    'icons.withdraw': 'Withdraw publication',
+    'icons.succeeded': 'Succeeded',
+    'icons.failed': 'Failed',
+    'icons.close': 'Close',
+    'icons.show-password': 'Show or hide password',
+    'icons.bold': 'Bold',
+    'icons.italic': 'Italic',
+    'icons.link': 'Link',
+    'icons.list': 'List',
+    'icons.h1': 'Heading 1',
+    'icons.h2': 'Heading 2',
+    'icons.h3': 'Heading 3',
+    'icons.image': 'Image',
+    'icons.markdown': 'Markdown',
+    'icons.writing-assistant': 'Writing assistant',
 
     'inputWrapperMenu.default-content':
       'the buttons should go here otherwise this will look like crap!',
@@ -499,6 +549,8 @@ This is NOT reversible! `,
         'follow-system': "Go dark whenever this computer's appearance is dark",
         'evening-from': 'and every evening from',
         'evening-until': 'until',
+        'evening-start': 'Evening starts at',
+        'evening-end': 'Evening ends at',
         'dark-palette': 'Dark theme',
         palettes: {
           light: 'Daylight',
@@ -533,6 +585,10 @@ const i18n = createI18n({
   legacy: false, // why is this defaulted to true?
   warnHtmlInMessage: 'off'
 })
+
+// a screen reader picks its voice from <html lang>, so it follows the i18n locale
+document.documentElement.lang = i18n.global.locale.value
+watch(i18n.global.locale, (locale) => (document.documentElement.lang = locale))
 
 // index.html already picked the palette for the first paint; this keeps it current
 startTheme()

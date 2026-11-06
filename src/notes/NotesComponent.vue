@@ -114,7 +114,7 @@ onMounted(async () => {
   mogulName.value = m.givenName
   mogulId.value = m.id
 
-  events.on('reset-notes-for-notable-event', async (event: any) => {
+  events.on('reset-notes-for-notable-event', async () => {
     notableId.value = -1
     type.value = 'mogul'
     entityNotes.value = []
@@ -147,7 +147,7 @@ onMounted(async () => {
           </label>
 
           <InputWrapper v-model="noteText">
-            <textarea id="transcript" v-model="noteText" required rows="10" />
+            <textarea id="note" v-model="noteText" required rows="10" />
             <InputTools v-model="noteText" />
           </InputWrapper>
         </div>
@@ -187,6 +187,7 @@ onMounted(async () => {
         <div class="panel-menu-subtitle notes-section section-header">
           <span>{{ t('notes.system-wide.title') }}</span>
           <Icon
+            :alt="t('icons.new-note')"
             highlight="hover"
             :icon-hover="plusIcon"
             :icon="plusIcon"
@@ -215,6 +216,7 @@ onMounted(async () => {
           }}</span>
 
           <Icon
+            :alt="t('icons.new-note')"
             highlight="hover"
             :icon-hover="plusIcon"
             :icon="plusIcon"

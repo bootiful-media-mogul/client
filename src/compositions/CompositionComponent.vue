@@ -110,7 +110,7 @@ const handleDragOver = (e: Event) => {
 // how else could this be achieved?
 const activeAttachment = ref<Attachment | null>()
 
-const handleMouseLeave = (e: Event, attachment: Attachment) => {
+const handleMouseLeave = () => {
   activeAttachment.value = null
 }
 
@@ -183,7 +183,7 @@ async function addCompositionAttachment(compositionId: number) {
 <template>
   <InputWrapperChild>
     <template v-slot:icon>
-      <Icon :icon="asset" :icon-hover="asset" />
+      <Icon :alt="t('icons.attachments')" :icon="asset" :icon-hover="asset" />
     </template>
     <template v-slot:panel>
       <div>
@@ -196,7 +196,7 @@ async function addCompositionAttachment(compositionId: number) {
             draggable="true"
             @dragstart="handleDragStart($event, attachment)"
             @mouseenter="handleMouseEnter($event, attachment)"
-            @mouseleave="handleMouseLeave($event, attachment)"
+            @mouseleave="handleMouseLeave()"
           >
             <div class="draggable-handle dot-grid">
               <div class="dot"></div>
@@ -208,6 +208,7 @@ async function addCompositionAttachment(compositionId: number) {
             </div>
             <div class="delete-icon">
               <Icon
+                :alt="t('icons.delete-attachment')"
                 highlight="rest"
                 :icon="deleteAsset"
                 :icon-hover="deleteAsset"

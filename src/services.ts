@@ -113,15 +113,15 @@ export class Results {
       function (ctx: Map<string, number>): NavigationContext {
         return new NavigationContext('podcasts/episodes/episode', ctx)
       },
-      function (ctx: Map<string, number>) {}
+      function () {}
     )
 
     this.entry(
       ResultType.Mogul,
-      function (ctx: Map<string, number>) {
+      function () {
         return new NavigationContext('home', new Map<string, number>())
       },
-      function (ctx: Map<string, number>) {}
+      function () {}
     )
 
     this.entry(
@@ -367,7 +367,7 @@ export class Podcasts {
       created: created ? created.toISOString() : null
     })
 
-    const res = await result.data['updatePodcastEpisode']
+    await result.data['updatePodcastEpisode']
     return await this.podcastEpisodeById(podcastEpisodeId)
   }
 
@@ -428,7 +428,7 @@ export class Podcasts {
       podcastId: podcastId,
       title: title
     })
-    const res = (await result.data['updatePodcast']) as boolean
+    await result.data['updatePodcast']
     return await this.podcastById(podcastId)
   }
 
@@ -572,7 +572,7 @@ export class Podcasts {
         `
     // todo for some reason these are showing up as `strings` and causing issues when i send them to the server-side.
     //
-    const result = await this.client.mutation(mutation, {
+    await this.client.mutation(mutation, {
       podcastEpisodeId: episodeId,
       podcastEpisodeSegmentId: episodeSegmentId
     })
@@ -590,7 +590,7 @@ export class Podcasts {
            )  
          }
         `
-    const result = await this.client.mutation(mutation, {
+    await this.client.mutation(mutation, {
       podcastEpisodeId: episodeId,
       podcastEpisodeSegmentId: episodeSegmentId
     })
@@ -1123,7 +1123,7 @@ export class Ai {
   }
 
   /** todo renders images given a prompt */
-  render(prompt: string): string {
+  render(_prompt: string): string {
     return ''
   }
 
@@ -1131,7 +1131,7 @@ export class Ai {
    * i think we'd have a little drag-and-drop panel in the AiClient where we'd be allowed to drop {@code .mp3} or
    * {@code .mp4} or {@code .wav} files,
    * */
-  transcribe(path: string): string {
+  transcribe(_path: string): string {
     return ''
   }
 }
@@ -1152,7 +1152,7 @@ export class Compositions {
     const result = await this.client.mutation(mutation, {
       compositionAttachmentId: compositionAttachmentId
     })
-    const idBag = (await result.data['deleteCompositionAttachment']) as Number
+    await result.data['deleteCompositionAttachment']
     return true
   }
 
@@ -1167,7 +1167,7 @@ export class Compositions {
     const result = await this.client.mutation(mutation, {
       compositionId: compositionId
     })
-    const res = (await result.data['createCompositionAttachment'])['id']
+    await result.data['createCompositionAttachment']
     return true
   }
 

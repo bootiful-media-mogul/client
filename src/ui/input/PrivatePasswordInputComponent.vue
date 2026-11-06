@@ -6,6 +6,7 @@
 </style>
 <template>
   <Icon
+    :alt="t('icons.show-password')"
     highlight="rest"
     ref="icon"
     :icon="eyeAsset"
@@ -29,7 +30,9 @@ import eyeOffAsset from '@/assets/images/icons/eye-off.svg'
 import eyeAsset from '@/assets/images/icons/eye.svg'
 
 import Icon from '@/ui/Icon.vue'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const icon = ref<ComponentPublicInstance>()
 const input = ref<HTMLInputElement>()
 
@@ -55,7 +58,7 @@ function positionIcon(parent: HTMLElement, icon: HTMLElement) {
   window.addEventListener('scroll', resizeFunction)
 }
 
-const togglePreview = function (e: Event) {
+const togglePreview = function () {
   input.value!!.type = input.value!!.type.toLowerCase() === 'password' ? 'text' : 'password'
 }
 

@@ -187,7 +187,12 @@ const cancel = async () => {
                 -->
                 <InputWrapperChild>
                   <template v-slot:icon>
-                    <Icon highlight="hover" :icon="transcriptAsset" :icon-hover="transcriptAsset" />
+                    <Icon
+                      :alt="t('icons.transcript')"
+                      highlight="hover"
+                      :icon="transcriptAsset"
+                      :icon-hover="transcriptAsset"
+                    />
                   </template>
                   <template v-slot:panel>
                     <button
@@ -209,13 +214,14 @@ const cancel = async () => {
           </div>
           <div v-if="draftPost.id" class="form-row">
             <label for="postCreated">{{ t('blogs.posts.post.created') }}</label>
-            <VDatePicker id="postCreated" v-model="createdDate" mode="dateTime" is24hr>
+            <VDatePicker v-model="createdDate" mode="dateTime" is24hr>
               <template #default="{ inputValue, inputEvents }">
-                <input :value="inputValue" type="text" v-on="inputEvents" />
+                <input id="postCreated" :value="inputValue" type="text" v-on="inputEvents" />
               </template>
             </VDatePicker>
           </div>
           <div class="form-row">
+            <!-- eslint-disable-next-line vuejs-accessibility/label-has-for -- the toggle names itself, from its icon -->
             <label>{{ t('blogs.posts.post.visible') }}</label>
             <a class="visibility-toggle" href="#" @click.prevent="toggleVisibility">
               <Icon

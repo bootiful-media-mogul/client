@@ -24,37 +24,44 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
+      meta: { title: 'app.menu.home' },
       component: HomeView
     },
     {
       path: '/jobs',
       name: 'jobs',
+      meta: { title: 'app.menu.jobs' },
       component: JobsView
     },
     {
       path: '/test',
       name: 'test',
+      meta: { title: 'app.menu.test' },
       component: TestView
     },
     {
       path: '/podcasts',
       name: 'podcasts',
+      meta: { title: 'app.menu.podcasts' },
       component: PodcastsSearchView
     },
     {
       path: '/blogs',
       name: 'blogs',
+      meta: { title: 'app.menu.blogs' },
       component: BlogsSearchView
     },
 
     {
       path: '/search',
       name: 'search',
+      meta: { title: 'app.menu.search' },
       component: SearchView
     },
     {
       path: '/settings',
       name: 'settings',
+      meta: { title: 'app.menu.settings' },
       component: SettingsView
     },
 
@@ -96,11 +103,13 @@ const router = createRouter({
       },
       path: '/blogs/:blogId/posts/:postId',
       name: 'blogs/posts/post',
+      meta: { title: 'app.pages.post' },
       component: BlogsPostEditor
     },
     {
       path: '/blogs/:blogId/posts',
       name: 'blogs/posts',
+      meta: { title: 'app.pages.posts' },
       component: BlogsPostsSearchView,
       props(route) {
         return {
@@ -120,11 +129,13 @@ const router = createRouter({
       },
       path: '/podcasts/:podcastId/episodes/:episodeId',
       name: 'podcasts/episodes/episode',
+      meta: { title: 'app.pages.episode' },
       component: PodcastsEpisodesEditor
     },
     {
       path: '/podcasts/:podcastId/episodes',
       name: 'podcasts/episodes',
+      meta: { title: 'app.pages.episodes' },
       component: PodcastsEpisodesSearchView,
       props(route) {
         return {
@@ -135,6 +146,7 @@ const router = createRouter({
     {
       path: '/about',
       name: 'about',
+      meta: { title: 'app.menu.about' },
       component: AboutView,
       props: true
     }

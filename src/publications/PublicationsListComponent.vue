@@ -5,6 +5,7 @@
         <div class="plugin-column">
           <div class="plugin-icon-container">
             <Icon
+              :alt="pluginTitle(publication.plugin)"
               highlight="always"
               v-if="iconFor(publication.plugin)"
               :icon="iconFor(publication.plugin)!.icon"
@@ -19,6 +20,7 @@
         </div>
         <div class="delete-column">
           <Icon
+            :alt="t('icons.withdraw')"
             highlight="rest"
             v-if="unpublishable"
             :disabled="withdrawn(publication)"
@@ -41,6 +43,7 @@
           <div class="uri">
             <a :class="{ disabled: withdrawn(publication) }" :href="outcome.url" target="_blank">
               <Icon
+                :alt="t('icons.open-link')"
                 :icon="previewAsset"
                 :icon-hover="previewAsset"
                 :highlight="withdrawn(publication) ? 'always' : 'rest'"
@@ -48,8 +51,14 @@
             </a>
           </div>
           <div class="success">
-            <Icon v-if="outcome.success" :icon="checkmarkAsset" :icon-hover="checkmarkAsset" />
             <Icon
+              :alt="t('icons.succeeded')"
+              v-if="outcome.success"
+              :icon="checkmarkAsset"
+              :icon-hover="checkmarkAsset"
+            />
+            <Icon
+              :alt="t('icons.failed')"
               highlight="hover"
               v-else
               :icon="errorAsset"
@@ -217,7 +226,13 @@ import errorAsset from '@/assets/images/icons/error.svg'
 import previewAsset from '@/assets/images/icons/preview.svg'
 import checkmarkAsset from '@/assets/images/icons/checkbox.svg'
 
-const { t } = useI18n()
+const { t, te } = useI18n()
+
+// a plugin's own name where it has one, else its id
+function pluginTitle(plugin: string): string {
+  const key = `publications.plugins.${plugin}.title`
+  return te(key) ? t(key) : plugin
+}
 
 /**
  * renders publications that already happened. deliberately dumb: it owns no fetching

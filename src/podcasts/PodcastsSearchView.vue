@@ -9,6 +9,7 @@
         <fieldset>
           <div class="toolbar">
             <Icon
+              :alt="t('icons.new-podcast')"
               highlight="hover"
               :icon-hover="plusIcon"
               :icon="plusIcon"
@@ -36,6 +37,7 @@
             </div>
             <div class="edit">
               <Icon
+                :alt="t('icons.edit', { name: podcast.title })"
                 highlight="rest"
                 :icon="editAsset"
                 :icon-hover="editAsset"
@@ -44,6 +46,7 @@
             </div>
             <div class="rss">
               <Icon
+                :alt="t('icons.rss', { name: podcast.title })"
                 highlight="rest"
                 :icon="rssAsset"
                 :icon-hover="rssAsset"
@@ -52,6 +55,7 @@
             </div>
             <div class="delete">
               <Icon
+                :alt="t('icons.delete', { name: podcast.title })"
                 highlight="rest"
                 :disabled="all.length == 1"
                 :icon="deleteAsset"

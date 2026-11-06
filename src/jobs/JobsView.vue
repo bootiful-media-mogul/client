@@ -16,6 +16,7 @@
           >
             <div class="form-row">
               <label
+                :for="`job-${job.job.name}-${attribute}`"
                 :class="{
                   'attribute-label': true,
                   'required-field': !job.selections[attribute].valid
@@ -27,6 +28,7 @@
               <div class="attribute-input">
                 <component
                   :is="resolveComponent(attribute)"
+                  :id="`job-${job.job.name}-${attribute}`"
                   v-model="job.selections[attribute].value"
                   @validated="(valid: boolean) => onValidated(job, attribute, valid)"
                 />

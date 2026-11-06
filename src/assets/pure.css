@@ -429,10 +429,6 @@ html {
   background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.1));
 }
 
-.pure-button:focus {
-  outline: 0;
-}
-
 .pure-button-active,
 .pure-button:active {
   box-shadow:
@@ -538,7 +534,6 @@ since IE8 won't execute CSS that contains a CSS3 selector.
 .pure-form input[type='color']:focus,
 .pure-form select:focus,
 .pure-form textarea:focus {
-  outline: 0;
   border-color: var(--accent-color);
 }
 
@@ -547,7 +542,6 @@ Need to separate out the :not() selector from the rest of the CSS 2.1 selectors
 since IE8 won't execute CSS that contains a CSS3 selector.
 */
 .pure-form input:not([type]):focus {
-  outline: 0;
   border-color: var(--accent-color);
 }
 

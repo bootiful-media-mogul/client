@@ -66,6 +66,7 @@ function sourceFor(type: string): string {
     <div class="result">
       <div class="edit-button">
         <Icon
+          :alt="t('icons.edit', { name: props.title })"
           highlight="hover"
           @click.prevent="navigateToEntity()"
           :icon="editAsset"
@@ -75,6 +76,7 @@ function sourceFor(type: string): string {
       <div class="id-column">#{{ id }}</div>
       <div class="delete-button">
         <Icon
+          :alt="t('icons.delete', { name: props.title })"
           highlight="hover"
           v-if="props.allowDeletion"
           :icon="deleteAsset"

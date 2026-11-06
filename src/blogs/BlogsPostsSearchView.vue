@@ -68,7 +68,13 @@ async function newPost() {
       <fieldset>
         <legend>{{ t('blogs.posts.posts-for', { title: currentBlog?.title }) }}</legend>
         <div class="toolbar">
-          <Icon highlight="hover" :icon-hover="plusIcon" :icon="plusIcon" @click="newPost()" />
+          <Icon
+            :alt="t('icons.new-post')"
+            highlight="hover"
+            :icon-hover="plusIcon"
+            :icon="plusIcon"
+            @click="newPost()"
+          />
         </div>
         <div v-for="post in posts" v-bind:key="post.id">
           <Result

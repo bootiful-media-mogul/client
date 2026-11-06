@@ -1,4 +1,5 @@
 <template>
+  <!-- eslint-disable-next-line vuejs-accessibility/form-control-has-label -- Select labels its own select, from its label or placeholder -->
   <Select v-model="model" :options="podcastSelections" :placeholder="t('selections.blogs')" />
 </template>
 

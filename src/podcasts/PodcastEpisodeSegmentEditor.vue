@@ -4,6 +4,7 @@ import { podcasts } from '@/services'
 import ManagedFileComponent from '@/managedfiles/ManagedFileComponent.vue'
 import PodcastEpisodeSegmentAudioEditor from '@/podcasts/segments/PodcastEpisodeSegmentAudioEditor.vue'
 import Icon from '@/ui/Icon.vue'
+import { useI18n } from 'vue-i18n'
 import { durationToString } from '@/dates'
 
 // files
@@ -50,6 +51,8 @@ interface Props {
   type: string
   duration?: number
 }
+
+const { t } = useI18n()
 
 const props = withDefaults(defineProps<Props>(), {
   showReorder: false,
@@ -101,13 +104,18 @@ const emit = defineEmits<{
   <div v-else class="row segment-row">
     <div class="type">
       <div class="segment-controls-icon">
-        <Icon :icon-hover="fileTypeIconFor(props.type)" :icon="fileTypeIconFor(props.type)" />
+        <Icon
+          :alt="t('icons.segment-type.' + props.type)"
+          :icon-hover="fileTypeIconFor(props.type)"
+          :icon="fileTypeIconFor(props.type)"
+        />
       </div>
       <div class="segment-controls-label">{{ label }}</div>
     </div>
     <!-- Reorder arrows (if enabled) -->
     <div class="arrows">
       <Icon
+        :alt="t('icons.move-up')"
         highlight="rest"
         v-if="showReorder"
         class="up"
@@ -117,6 +125,7 @@ const emit = defineEmits<{
         @click.prevent="emit('moveUp')"
       />
       <Icon
+        :alt="t('icons.move-down')"
         highlight="rest"
         v-if="showReorder"
         class="down"
@@ -135,6 +144,7 @@ const emit = defineEmits<{
       <!-- Transcript action (if enabled) -->
       <div class="transcript-button">
         <Icon
+          :alt="t('icons.transcript')"
           highlight="rest"
           v-if="showTranscript"
           :icon="transcriptAsset"
@@ -147,6 +157,7 @@ const emit = defineEmits<{
       <!-- Audio editor action (if enabled) -->
       <div class="audio-editor-button">
         <Icon
+          :alt="t('icons.audio-editor')"
           v-if="showAudioEditor"
           :icon="audioEditorAsset"
           :icon-hover="audioEditorAsset"
@@ -163,6 +174,7 @@ const emit = defineEmits<{
       <!-- Delete action (if enabled) -->
       <div class="delete-button">
         <Icon
+          :alt="t('icons.delete-segment')"
           highlight="rest"
           :disabled="!showDelete"
           :icon="deleteAsset"

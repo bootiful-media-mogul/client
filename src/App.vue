@@ -2,7 +2,7 @@
 import { mogul } from '@/services'
 import PreviewComponent from '@/managedfiles/PreviewComponent.vue'
 import NotificationBoxComponent from '@/notifications/NotificationBoxComponent.vue'
-import { onMounted, ref } from 'vue'
+import { nextTick, onMounted, onUnmounted, ref } from 'vue'
 import TranscriptComponent from '@/transcripts/TranscriptComponent.vue'
 import PanelComponent from '@/layout/PanelComponent.vue'
 import Search from '@/search/Search.vue'
@@ -47,6 +47,31 @@ function go(view: string) {
   router.push({ name: view })
 }
 
+const main = ref<HTMLElement>()
+
+function focusMain() {
+  main.value?.focus()
+}
+
+// a single page app never reloads, so a screen reader hears nothing when the view
+// changes. naming the page in the title and moving focus to the top of the new view
+// is what a page load would have done. a change of query alone (a search as you type,
+// the podcasts link's cache buster) is not a new page, so focus stays where it is.
+function titleFor(key: unknown): string {
+  const app = t('app.title')
+  return typeof key === 'string' ? `${t(key)} - ${app}` : app
+}
+
+const removeAfterEach = router.afterEach(async (to, from, failure) => {
+  if (failure) return
+  document.title = titleFor(to.meta.title)
+  if (from.matched.length && to.path !== from.path) {
+    await nextTick()
+    main.value?.focus({ preventScroll: true })
+  }
+})
+onUnmounted(removeAfterEach)
+
 const { resume } = usePendingAction()
 onMounted(async () => await resume())
 
@@ -90,6 +115,8 @@ onMounted(async () => {
   left: var(--gutter-space);
   right: var(--gutter-space);
   z-index: 1000;
+  /* the floating bar is chrome, where the day accent barely shows */
+  --focus-color: var(--brand-color);
   display: grid;
   grid-template-areas:
     'hello'
@@ -147,6 +174,7 @@ onMounted(async () => {
 /* Desktop overrides */
 @container app (min-width: 900px) {
   .toolbar-container {
+    --focus-color: var(--accent-color);
     color: var(--ink-color);
     background-color: transparent;
     position: static;
@@ -231,49 +259,57 @@ onMounted(async () => {
 <template>
   <div v-if="mogulUsername" class="app-wrapper">
     <NotificationBoxComponent ref="notifications" />
+    <a class="skip-link" href="#main-content" @click.prevent="focusMain">{{
+      t('app.skip-to-content')
+    }}</a>
     <div class="frame">
       <div class="page">
-        <div class="toolbar-container">
+        <header class="toolbar-container">
           <div class="top-bar">
             <div class="brand-slot"><BrandMark /></div>
             <div class="hello">{{ t('hello', { mogul: mogulUsername }) }}</div>
-            <div class="global-toolbar">
+            <nav class="global-toolbar" :aria-label="t('app.menu.label')">
               <Icon
                 highlight="hover"
+                :alt="t('app.menu.home')"
                 @click.prevent="go('home')"
                 :icon-hover="homeIconAsset"
                 :icon="homeIconAsset"
               />
               <Icon
                 highlight="hover"
+                :alt="t('app.menu.podcasts')"
                 @click.prevent="goPodcasts"
                 :icon-hover="podcastIconAsset"
                 :icon="podcastIconAsset"
               />
               <Icon
                 highlight="hover"
+                :alt="t('app.menu.blogs')"
                 @click.prevent="go('blogs')"
                 :icon-hover="blogIconAsset"
                 :icon="blogIconAsset"
               />
               <Icon
                 highlight="hover"
+                :alt="t('app.menu.settings')"
                 @click.prevent="go('settings')"
                 :icon-hover="settingsIconAsset"
                 :icon="settingsIconAsset"
               />
               <Icon
                 highlight="hover"
+                :alt="t('app.menu.jobs')"
                 @click.prevent="go('jobs')"
                 :icon-hover="jobsIconAsset"
                 :icon="jobsIconAsset"
               />
-            </div>
+            </nav>
           </div>
-          <div class="search">
+          <div class="search" role="search">
             <Search />
           </div>
-        </div>
+        </header>
 
         <!-- Tab Bar with Provider/Inject Pattern
         -->
@@ -281,13 +317,13 @@ onMounted(async () => {
           <template #header><BrandMark /></template>
           <!-- Main content tab -->
           <Tab :label="t('app.tabs.main')">
-            <div class="view">
+            <main id="main-content" ref="main" class="view" tabindex="-1">
               <router-view :key="route.fullPath"></router-view>
-            </div>
+            </main>
           </Tab>
 
           <!-- Sidebar panels grouped together -->
-          <div class="sidebar">
+          <aside class="sidebar" :aria-label="t('app.panels.label')">
             <Tab :label="t('app.panels.notes')">
               <PanelComponent :title="t('app.panels.notes')" :icon="notesPanelIconAsset">
                 <NotesComponent />
@@ -308,7 +344,7 @@ onMounted(async () => {
                 <TranscriptComponent />
               </PanelComponent>
             </Tab>
-          </div>
+          </aside>
         </TabBar>
 
         <!--        <ServerTimeFooter />-->

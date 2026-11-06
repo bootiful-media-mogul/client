@@ -1,8 +1,14 @@
 <template>
   <div class="select">
-    <label v-if="label">{{ label }}</label>
+    <label v-if="label" :for="id">{{ label }}</label>
 
-    <select :disabled="disabled" :value="selectedKey" @change="onChange">
+    <select
+      :id="id"
+      :aria-label="label ? undefined : placeholder"
+      :disabled="disabled"
+      :value="selectedKey"
+      @change="onChange"
+    >
       <option v-if="placeholder" disabled value="">
         {{ placeholder }}
       </option>
@@ -15,10 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
-
-const { t } = useI18n()
+import { computed, useId } from 'vue'
 
 export type SelectOption = { label: string; value: string | number }
 
@@ -29,14 +32,19 @@ const props = withDefaults(
     placeholder?: string
     label?: string
     disabled?: boolean
+    // the select's own id, so a label outside this component can point at it
+    id?: string
   }>(),
   {
     modelValue: null,
     placeholder: undefined,
     label: undefined,
-    disabled: false
+    disabled: false,
+    id: undefined
   }
 )
+
+const id = props.id ?? useId()
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: SelectOption | null): void

@@ -7,7 +7,13 @@
       <form class="pure-form">
         <fieldset>
           <div class="toolbar">
-            <Icon highlight="hover" :icon-hover="plusIcon" :icon="plusIcon" @click="createBlog" />
+            <Icon
+              :alt="t('icons.new-blog')"
+              highlight="hover"
+              :icon-hover="plusIcon"
+              :icon="plusIcon"
+              @click="createBlog"
+            />
           </div>
           <legend>{{ t('blogs.all', { user: mogulName }) }}</legend>
           <div v-for="blog in blogResults" v-bind:key="blog.id" class="row blogs-row">
@@ -28,6 +34,7 @@
 
             <div class="edit-column">
               <Icon
+                :alt="t('icons.edit', { name: blog.title })"
                 highlight="rest"
                 :icon="editAsset"
                 :icon-hover="editAsset"
@@ -36,6 +43,7 @@
             </div>
             <div class="rss-column">
               <Icon
+                :alt="t('icons.rss', { name: blog.title })"
                 highlight="rest"
                 :icon="rssAsset"
                 :icon-hover="rssAsset"
@@ -44,6 +52,7 @@
             </div>
             <div class="delete-column">
               <Icon
+                :alt="t('icons.delete', { name: blog.title })"
                 highlight="rest"
                 :disabled="blogResults.length <= 1"
                 :icon="deleteAsset"
@@ -112,7 +121,7 @@
       <form class="pure-form">
         <fieldset>
           <div class="toolbar">
-            <Icon highlight="hover" :icon-hover="plusIcon" :icon="plusIcon" @click="createPodcast" />
+            <Icon :alt="t('icons.new-podcast')" highlight="hover" :icon-hover="plusIcon" :icon="plusIcon" @click="createPodcast" />
           </div>
 
           <legend>{{ t('blogs.all', { user: mogulName }) }}</legend>
@@ -134,21 +143,21 @@
               </a>
             </div>
             <div class="edit">
-              <Icon highlight="rest"
+              <Icon :alt="t('icons.edit', { name: podcast.title })" highlight="rest"
                 :icon="editAsset"
                 :icon-hover="editAsset"
                 @click.prevent="editPodcast(podcast)"
               />
             </div>
             <div class="rss">
-              <Icon highlight="rest"
+              <Icon :alt="t('icons.rss', { name: podcast.title })" highlight="rest"
                 :icon="rssAsset"
                 :icon-hover="rssAsset"
                 @click.prevent="openRssFeed(podcast.id, podcastRssFeedUrl(podcast))"
               />
             </div>
             <div class="delete">
-              <Icon highlight="rest"
+              <Icon :alt="t('icons.delete', { name: podcast.title })" highlight="rest"
                 :disabled="all.length == 1"
                 :icon="deleteAsset"
                 :icon-hover="deleteAsset"

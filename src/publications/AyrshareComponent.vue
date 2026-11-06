@@ -48,7 +48,13 @@
           class="platform-panel"
         >
           <div class="platform-enabled">
-            <input v-model="p.enabled" :disabled="publishing" type="checkbox" @change="reset(p)" />
+            <input
+              v-model="p.enabled"
+              :aria-label="getPlatformLabel(p.ayrsharePublicationComposition.platform)"
+              :disabled="publishing"
+              type="checkbox"
+              @change="reset(p)"
+            />
           </div>
           <div class="platform-name">
             {{ getPlatformLabel(p.ayrsharePublicationComposition.platform) }}
@@ -59,7 +65,13 @@
           <div class="platform-post">
             <div v-if="p.enabled">
               <InputWrapper v-model="p.post">
-                <textarea v-model="p.post" :disabled="publishing" required rows="5" />
+                <textarea
+                  v-model="p.post"
+                  :aria-label="getPlatformLabel(p.ayrsharePublicationComposition.platform)"
+                  :disabled="publishing"
+                  required
+                  rows="5"
+                />
                 <CompositionComponent
                   :composition-id="p.ayrsharePublicationComposition.composition.id"
                 />
@@ -179,12 +191,12 @@ async function reset(post: EnableAyrsharePublicationComposition) {
 }
 
 if (props.readyEventCategory) {
-  listenForCategory(props.readyEventCategory, async (evt) => {
+  listenForCategory(props.readyEventCategory, async () => {
     disabled.value = await isPluginDisabled()
   })
 }
 
-listenForCategory('ayrshare-publication-completion-event', async (evt) => {
+listenForCategory('ayrshare-publication-completion-event', async () => {
   publishing.value = false
   await refresh()
 })

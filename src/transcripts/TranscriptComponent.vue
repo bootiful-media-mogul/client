@@ -61,7 +61,7 @@ const refresh = async () => {
 
 watch(
   () => transcript.value,
-  (o: string, n: string) => {
+  () => {
     if (fresh.value) {
       fresh.value = false
     } //

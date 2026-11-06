@@ -46,15 +46,18 @@ const props = defineProps<{
         type="checkbox"
         :checked="done !== null"
         :title="t('notes.done')"
+        :aria-label="t('notes.done')"
         @change="setDone"
       />
       <Icon
+        :alt="t('icons.edit-note')"
         highlight="hover"
         :icon="editAsset"
         :icon-hover="editAsset"
         @click.prevent="$emit('update', id, type)"
       />
       <Icon
+        :alt="t('icons.delete-note')"
         highlight="hover"
         @click.prevent="deleteNote"
         :icon="deleteAsset"

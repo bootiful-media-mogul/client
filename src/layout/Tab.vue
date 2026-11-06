@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import { inject, onMounted, useSlots, computed, ref } from 'vue'
+import type { Ref } from 'vue'
+import { panelIdFor, tabIdFor } from '@/layout/tabbar'
 import type {
   RegisterTabFunction,
   GetActiveTabFunction,
@@ -17,6 +19,7 @@ const element = ref<HTMLElement>()
 const registerTab = inject<RegisterTabFunction>('registerTab')
 const getActiveTab = inject<GetActiveTabFunction>('getActiveTab')
 const setActiveTab = inject<SetActiveTabFunction>('setActiveTab')
+const narrow = inject<Ref<boolean>>('tabsNarrow', ref(false))
 
 // Generate a unique ID based on the label
 const tabId = computed(() => {
@@ -47,7 +50,14 @@ events.on('sidebar-panel-opened', (event: any) => {
 </script>
 
 <template>
-  <div ref="element" class="tab-wrapper" :class="{ 'tab-hidden': !isActive }">
+  <div
+    ref="element"
+    :id="panelIdFor(tabId)"
+    class="tab-wrapper"
+    :class="{ 'tab-hidden': !isActive }"
+    :role="narrow ? 'tabpanel' : undefined"
+    :aria-labelledby="narrow ? tabIdFor(tabId) : undefined"
+  >
     <slot></slot>
   </div>
 </template>

@@ -9,6 +9,7 @@
           class="managed-file-preview-image"
         />
 
+        <!-- eslint-disable-next-line vuejs-accessibility/media-has-caption -- uploaded audio has no captions; the transcripts panel is its text -->
         <audio v-if="isAudio" :src="url" class="managed-file-preview-audio" controls></audio>
       </div>
       <div>
@@ -23,7 +24,12 @@
         </div>
         <div v-if="url">
           <a :href="url" :title="url" @click.prevent="launchPublicUrl">
-            <Icon :icon="linkAsset" :icon-hover="linkAsset" highlight="rest" />
+            <Icon
+              :alt="t('icons.open-link')"
+              :icon="linkAsset"
+              :icon-hover="linkAsset"
+              highlight="rest"
+            />
           </a>
         </div>
       </div>
@@ -92,7 +98,7 @@ onMounted(async () => {
 
 watch(
   () => props.managedFileId,
-  async (o: any, n: any) => {
+  async () => {
     await load()
   }
 )

@@ -87,7 +87,7 @@ const emit = defineEmits<{
   done: []
 }>()
 
-const updateBlog = async function (e: Event) {
+const updateBlog = async function () {
   await blogs.update(props.blog.id, title.value, description.value, optionalValue(rssUrl.value))
   updateKey()
 }

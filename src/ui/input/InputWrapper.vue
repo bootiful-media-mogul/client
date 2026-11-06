@@ -29,7 +29,12 @@
           @click="togglePanel(slot)"
         >
           <div v-if="panelVisible && slot.iconVisible">
-            <Icon :icon="closeAsset" :icon-hover="closeAsset" highlight="rest" />
+            <Icon
+              :alt="t('icons.close')"
+              :icon="closeAsset"
+              :icon-hover="closeAsset"
+              highlight="rest"
+            />
           </div>
           <div v-else>
             <component :is="slot.icon" v-if="slot.iconVisible"></component>

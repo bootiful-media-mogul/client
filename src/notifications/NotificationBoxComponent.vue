@@ -1,23 +1,31 @@
 <template>
-  <div v-if="showModalNotification">
-    <div class="body-overlay"></div>
-    <div class="modal-notification-panel">
-      {{ latestNotification }}
-      <div class="buttons">
-        <button type="submit" @click.prevent="dismiss">
-          {{ t('ok') }}
-        </button>
-      </div>
+  <!-- a native modal dialog: the browser moves focus into it, keeps focus there, closes
+       it on escape, and puts focus back where it was when it closes -->
+  <dialog
+    ref="modal"
+    class="modal-notification-panel"
+    aria-labelledby="modal-notification-message"
+    @close="dismiss"
+  >
+    <p id="modal-notification-message">{{ latestNotification }}</p>
+    <div class="buttons">
+      <!-- eslint-disable-next-line vuejs-accessibility/no-autofocus -- a modal dialog should hand focus to its button -->
+      <button type="button" autofocus @click="modal?.close()">
+        {{ t('ok') }}
+      </button>
     </div>
-  </div>
+  </dialog>
 
-  <div v-if="showToasterNotification" :class="toasterNotificationCss">
+  <!-- the toast is seen, the live region is heard. the region is always in the page,
+       since a screen reader only speaks the changes to a region it already knows -->
+  <div v-if="showToasterNotification" :class="toasterNotificationCss" aria-hidden="true">
     {{ latestNotification }}
   </div>
+  <div class="visually-hidden" role="status" aria-live="polite">{{ announcement }}</div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { nextTick, onMounted, ref, watch } from 'vue'
 import { Notification, notifications } from '@/services'
 import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
@@ -25,6 +33,20 @@ const { t } = useI18n()
 const showToasterNotification = ref(false)
 const showModalNotification = ref(false)
 const latestNotification = ref('')
+const announcement = ref('')
+const modal = ref<HTMLDialogElement>()
+
+watch(showModalNotification, (open) => {
+  if (open && !modal.value?.open) modal.value?.showModal()
+  else if (!open && modal.value?.open) modal.value.close()
+})
+
+// emptied first, so the same message twice in a row is still read out twice
+async function announce(message: string) {
+  announcement.value = ''
+  await nextTick()
+  announcement.value = message
+}
 const toasterNotificationCss = ref<Record<string, boolean>>({
   'toaster-notification-panel': true,
   'animated-element-hidden': true
@@ -77,6 +99,10 @@ function processNotification(notification: Notification) {
 
   const displayForNMilliseconds = 5000
 
+  if (showToasterNotification.value && !showModalNotification.value) {
+    announce(latestNotification.value)
+  }
+
   if (showToasterNotification.value) {
     show()
     clearTimeout(nextTimeoutId)
@@ -115,27 +141,23 @@ onMounted(() => {
   transform: translateY(-100px);
 }
 
-.body-overlay {
-  height: 100%;
-  background-color: var(--raised-color);
-  width: 100%;
-  z-index: 1000;
-  position: fixed;
+/* a modal dialog sits in the top layer, above everything, and the browser centers it */
+.modal-notification-panel::backdrop {
+  /* older browsers don't let a backdrop inherit custom properties */
+  background-color: var(--raised-color, white);
   opacity: 0.7;
-  top: 0;
-  left: 0;
 }
 
 .modal-notification-panel {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 20001;
+  border: none;
   border-radius: var(--gutter-space);
   color: var(--chrome-ink-color);
   padding: var(--gutter-space);
   background-color: var(--chrome-color);
+}
+
+.modal-notification-panel p {
+  margin: 0;
 }
 
 .modal-notification-panel .buttons a {

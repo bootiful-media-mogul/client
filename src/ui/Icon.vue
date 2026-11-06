@@ -86,17 +86,16 @@ const clickDelegate = (e: MouseEvent): void => {
   emit('click', e)
 }
 
-const altText = ref<string>()
+// an empty alt marks the icon as decorative, for one that sits beside text saying the
+// same thing: a screen reader skips it rather than reading the label twice
+const decorative = computed(() => props.alt === '')
+const altText = computed(() =>
+  decorative.value ? '' : props.alt || t('icon.alt.default', { image: src.value ?? props.icon })
+)
 
 onMounted(() => {
   src.value = props.icon
   if (props.width) element.value!!.style.width = props.width + 'px'
-
-  if (props.alt) {
-    altText.value = props.alt
-  } else {
-    altText.value = t('icon.alt.default', { image: src.value })
-  }
 })
 </script>
 <style scoped>
@@ -149,9 +148,10 @@ img.icon-disabled {
   <span
     v-if="svg"
     ref="element"
-    :aria-label="altText"
+    :aria-label="decorative ? undefined : altText"
+    :aria-hidden="decorative ? 'true' : undefined"
     :class="svgClasses"
-    role="img"
+    :role="decorative ? undefined : 'img'"
     @click="disabled ? undefined : clickDelegate($event)"
     @mouseout="disabled ? undefined : mouseSwap()"
     @mouseover="disabled ? undefined : mouseSwap()"

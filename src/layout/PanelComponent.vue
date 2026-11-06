@@ -40,6 +40,17 @@
   display: block;
 }
 
+.panel-toggle {
+  /* a button, so undo what the browser and base.css give one */
+  display: grid;
+  place-items: center;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+}
+
 .panel-menu-buttons-img {
   /* the svgs are black ink; invert makes them white, the opacity brings that to the ink */
   filter: invert(100%);
@@ -115,15 +126,19 @@
         {{ props.title }}
       </div>
       <div class="panel-menu-buttons">
-        <div v-if="!visible" class="open" @click.prevent="toggleVisible">
-          <img :src="open" :alt="t('panel.alt.open')" class="panel-menu-buttons-img" />
-        </div>
-        <div v-else class="close" @click.prevent="toggleVisible">
-          <img :src="minimize" :alt="t('panel.alt.minimize')" class="panel-menu-buttons-img" />
-        </div>
+        <button
+          type="button"
+          :class="['panel-toggle', visible ? 'close' : 'open']"
+          :aria-expanded="visible"
+          :aria-controls="contentId"
+          :aria-label="t(visible ? 'panel.alt.minimize' : 'panel.alt.open', { panel: props.title })"
+          @click="toggleVisible"
+        >
+          <img :src="visible ? minimize : open" alt="" class="panel-menu-buttons-img" />
+        </button>
       </div>
     </div>
-    <div :class="{ 'panel-content': true, 'panel-content-visible': visible }">
+    <div :id="contentId" :class="{ 'panel-content': true, 'panel-content-visible': visible }">
       <slot />
     </div>
   </div>
@@ -146,6 +161,8 @@ const element = ref<HTMLElement>()
 const visible = ref<boolean>(false)
 
 const props = defineProps<{ title: string; icon?: string }>()
+
+const contentId = `panel-content-${props.title.toLowerCase().replace(/\W+/g, '-')}`
 
 function toggleVisible() {
   visible.value = !visible.value

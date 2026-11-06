@@ -140,27 +140,28 @@
               :label="t('writingassistant.buttons.proofread')"
               @click="proofread"
             >
-              <Icon highlight="hover" :icon-hover="proofreadAsset" :icon="proofreadAsset" />
+              <Icon alt="" highlight="hover" :icon-hover="proofreadAsset" :icon="proofreadAsset" />
             </WritingAssistantButton>
             <WritingAssistantButton
               :class="rewriteToolsClasses"
               :label="t('writingassistant.buttons.rewrite')"
               @click="toggleRewriteTools"
             >
-              <Icon highlight="hover" :icon-hover="rewriteAsset" :icon="rewriteAsset" />
+              <Icon alt="" highlight="hover" :icon-hover="rewriteAsset" :icon="rewriteAsset" />
             </WritingAssistantButton>
             <WritingAssistantButton
               :class="aiToolsClasses"
               :label="t('writingassistant.buttons.generate-with-ai')"
               @click="toggleAiTools"
             >
-              <Icon highlight="hover" :icon-hover="aiAsset" :icon="aiAsset" />
+              <Icon alt="" highlight="hover" :icon-hover="aiAsset" :icon="aiAsset" />
             </WritingAssistantButton>
             <div v-if="aiToolsVisible" class="ai">
               <textarea
                 v-model="prompt"
                 :disabled="generating"
                 :placeholder="placeholder"
+                :aria-label="placeholder"
                 rows="3"
               />
               <div class="generate-row">
@@ -220,7 +221,12 @@
       </div>
     </template>
     <template v-slot:icon>
-      <Icon highlight="rest" :icon="rewriteAsset" :icon-hover="rewriteAsset" />
+      <Icon
+        :alt="t('icons.writing-assistant')"
+        highlight="rest"
+        :icon="rewriteAsset"
+        :icon-hover="rewriteAsset"
+      />
     </template>
   </InputWrapperChild>
 </template>
@@ -283,7 +289,6 @@ const rewriteToolsClasses = computed<string>(() =>
 const aiToolsClasses = computed<string>(() =>
   activeTool.value === 'ai' ? 'ai-button active' : 'ai-button'
 )
-const generateClasses = computed<string>(() => (generating.value ? 'disabled' : ''))
 
 function reset() {
   proposalApprovalRequired.value = false
