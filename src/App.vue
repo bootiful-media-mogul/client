@@ -175,7 +175,7 @@ onMounted(async () => {
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
     padding: 0 calc(2 * var(--gutter-space));
-    background-color: var(--ink-color);
+    background-color: var(--topbar-color);
     color: var(--chrome-ink-color);
   }
 
@@ -200,14 +200,14 @@ onMounted(async () => {
     place-self: center;
   }
 
-  /* light glyphs on the bar, its own black as their highlight; sky blue on hover */
+  /* light glyphs on the bar, its own color as their highlight; the brand hue on hover */
   .toolbar-container .icon {
     color: var(--chrome-ink-color);
-    --icon-paper-color: var(--ink-color);
+    --icon-paper-color: var(--topbar-color);
   }
 
   .toolbar-container .icon:hover {
-    color: var(--bg-color);
+    color: var(--brand-color);
   }
 
   /* the buffer exists to clear the floating toolbar, which is only fixed on mobile.
@@ -224,7 +224,7 @@ onMounted(async () => {
    paints the black out to the window edges (.frame clips the overflow) */
 @container app (min-width: 1700px) {
   .toolbar-container .top-bar {
-    border-image: conic-gradient(var(--ink-color) 0 0) fill 0 / /0 100vmax;
+    border-image: conic-gradient(var(--topbar-color) 0 0) fill 0 / /0 100vmax;
   }
 }
 </style>

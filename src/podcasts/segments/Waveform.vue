@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { appliedTheme } from '@/theme'
 
 const props = defineProps<{
   peaks: number[]
@@ -48,6 +49,8 @@ onMounted(() => {
 })
 onBeforeUnmount(() => observer?.disconnect())
 watch(() => [props.peaks, props.sourceStart, props.sourceEnd, props.sourceDuration], draw)
+// the canvas holds pixels, not css, so a change of palette has to be drawn again
+watch(appliedTheme, draw, { flush: 'post' })
 </script>
 
 <template><canvas ref="canvas" class="waveform" aria-hidden="true" /></template>

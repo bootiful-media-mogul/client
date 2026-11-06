@@ -30,6 +30,24 @@
   --font-size-base: 1rem;
   --font-size-lg: 1.25rem;
 
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --icon-column: calc(var(--gutter-space) * 1.5);
+  --id-column: calc(var(--gutter-space) * 5);
+  --footer-height: calc(var(--gutter-space) * 3);
+  --date-column: calc(11em);
+  --datetime-column: calc(2 * var(--date-column));
+  --icon-size: 2.5em;
+  --icon-column-width: calc(var(--gutter-space) + var(--icon-width) + var(--icon-width));
+  --row-height: 2em;
+  --global-toolbar-height: calc(var(--gutter-space) * 10);
+  --box-shadow: 0 calc(var(--gutter-space) * 1) 40px rgba(0, 0, 0, 0.5);
+}
+
+:root,
+[data-theme='light'] {
   /* the studio palette: a sky blue page, white panels, navy where there used to be black,
      and near-black ink. every color in the app should come from here, so a component
      never has to know which palette it is drawn in.
@@ -54,25 +72,112 @@
   --accent-hover-color: #1f3d70;
   --accent-ink-color: #ffffff;
   --disabled-color: #8fa2bd;
+  --disabled-ink-color: #f2f6fc;
   --danger-color: #c0392b;
+  /* the band across the top of the page (and the mobile tab bar): darker than the
+     chrome, and it stays dark in every palette */
+  --topbar-color: #0a0f1a;
+  /* the wordmark's second word and a top-bar icon's hover: the palette's signature hue */
+  --brand-color: #9ccbe8;
+}
+
+/* tokens derived from a palette. declared on every element that names a palette, so that
+   they are worked out from that palette's colors and not inherited from the page's */
+:root,
+[data-theme] {
   --bg-color-light: oklch(from var(--bg-color) calc(l + 0.5) c h);
   /* svg icons draw their highlight in this; Icon.vue falls back to white without it */
   --icon-paper-color: var(--raised-color);
+  /* a faint wash of ink, for a hovered row or a shaded region */
+  --hover-tint: color-mix(in srgb, var(--ink-color) 8%, transparent);
+}
 
-  --font-display: 'Space Grotesk', system-ui, sans-serif;
-  --font-body: 'IBM Plex Sans', system-ui, sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+/* the dark palettes. theme.ts (and the boot script in index.html) put one of these names
+   on <html data-theme>; 'light' is the day palette above. any element can name a palette
+   the same way, which is how the settings page previews them. each redefines only the
+   colors, so everything that reads a token follows along.
+   the chrome (panel headers, legends, buttons) sits *lighter* than the panels here, the
+   reverse of the day theme, so a bar still reads as a bar on a dark page. */
 
-  --icon-column: calc(var(--gutter-space) * 1.5);
-  --id-column: calc(var(--gutter-space) * 5);
-  --footer-height: calc(var(--gutter-space) * 3);
-  --date-column: calc(11em);
-  --datetime-column: calc(2 * var(--date-column));
-  --icon-size: 2.5em;
-  --icon-column-width: calc(var(--gutter-space) + var(--icon-width) + var(--icon-width));
-  --row-height: 2em;
-  --global-toolbar-height: calc(var(--gutter-space) * 10);
-  --box-shadow: 0 calc(var(--gutter-space) * 1) 40px rgba(0, 0, 0, 0.5);
+/* midnight: the day theme after sunset. the same navy family, deepened, with the sky
+   blue kept as the signature */
+[data-theme='midnight'] {
+  color-scheme: dark;
+  --bg-color: #0b1424;
+  --panel-bg-color: #131f36;
+  --raised-color: #1b2a47;
+  --chrome-color: #24467c;
+  --chrome-hover-color: #2e5592;
+  --chrome-ink-color: #eef3fb;
+  --chrome-muted-color: #a9bcdc;
+  --ink-color: #e3ebf7;
+  --muted-color: #93a5c2;
+  --label-color: #c6d4ea;
+  --rule-color: rgba(227, 235, 247, 0.16);
+  --field-bg-color: #0d1729;
+  --field-border-color: #34496e;
+  --accent-color: #74aef5;
+  --accent-hover-color: #93c1f8;
+  --accent-ink-color: #0a0f1a;
+  --disabled-color: #1e2a40;
+  --disabled-ink-color: #5f7192;
+  --danger-color: #ff7a6b;
+  --topbar-color: #050a14;
+  --brand-color: #9ccbe8;
+}
+
+/* graphite: a neutral console grey with almost no hue, so the media (cover art, video
+   thumbnails, the waveform) carries the color */
+[data-theme='graphite'] {
+  color-scheme: dark;
+  --bg-color: #111316;
+  --panel-bg-color: #1a1d21;
+  --raised-color: #24282e;
+  --chrome-color: #333a44;
+  --chrome-hover-color: #3f4854;
+  --chrome-ink-color: #eceff3;
+  --chrome-muted-color: #a6aebb;
+  --ink-color: #e5e7ea;
+  --muted-color: #99a0aa;
+  --label-color: #c8ccd3;
+  --rule-color: rgba(229, 231, 234, 0.14);
+  --field-bg-color: #141619;
+  --field-border-color: #3a414b;
+  --accent-color: #7cc4ee;
+  --accent-hover-color: #9dd3f3;
+  --accent-ink-color: #0a0f1a;
+  --disabled-color: #24282e;
+  --disabled-ink-color: #646b76;
+  --danger-color: #ff7a6b;
+  --topbar-color: #08090b;
+  --brand-color: #7cc4ee;
+}
+
+/* ember: warm and low in blue, for late nights in the booth. the accent is the amber of
+   an on-air lamp */
+[data-theme='ember'] {
+  color-scheme: dark;
+  --bg-color: #16110e;
+  --panel-bg-color: #201915;
+  --raised-color: #2b221d;
+  --chrome-color: #4a3426;
+  --chrome-hover-color: #5a3f2e;
+  --chrome-ink-color: #f7ede4;
+  --chrome-muted-color: #d0b39d;
+  --ink-color: #efe4da;
+  --muted-color: #b09e90;
+  --label-color: #ddcbbc;
+  --rule-color: rgba(239, 228, 218, 0.14);
+  --field-bg-color: #18120f;
+  --field-border-color: #4d3c31;
+  --accent-color: #f0a04b;
+  --accent-hover-color: #f5b46c;
+  --accent-ink-color: #1a1008;
+  --disabled-color: #2c231d;
+  --disabled-ink-color: #76655a;
+  --danger-color: #ff7a6b;
+  --topbar-color: #0e0a08;
+  --brand-color: #f0a04b;
 }
 
 label.required-field::after {
@@ -288,7 +393,7 @@ a.pure-button:hover {
   opacity: 1;
   background-color: var(--disabled-color);
   border-color: var(--disabled-color);
-  color: var(--chrome-ink-color);
+  color: var(--disabled-ink-color);
 }
 
 .pure-form-stacked select {

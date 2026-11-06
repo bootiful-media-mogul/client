@@ -53,8 +53,9 @@
 
 .toolbar-icon {
   border-radius: var(--radius);
-  /* the page's icon ink, so the tiles match the icons around them */
-  background-color: var(--ink-color);
+  /* the near-black of the top bar in every palette: the logos are drawn light, so a
+     tile in the (light, in the dark palettes) ink would wash them out */
+  background-color: var(--topbar-color);
   /* not a line box: a png logo is an inline <img> and sat on the text baseline, which
      left the line's descender below it and made its tile taller than an svg icon's */
   display: flex;

@@ -5,6 +5,25 @@
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
   <title> Mogul Studio </title>
   <script src="/config.js"></script>
+  <!-- picks the palette before the first paint, so an evening load never flashes the day
+       theme. a copy of resolveTheme() in src/theme.ts, which takes over once the app runs -->
+  <script>
+    (function () {
+      var p = {}
+      try { p = JSON.parse(localStorage.getItem('mogul.theme')) || {} } catch (e) {}
+      var mode = p.mode || 'auto'
+      var palette = ['midnight', 'graphite', 'ember'].indexOf(p.dark) >= 0 ? p.dark : 'midnight'
+      var evening = typeof p.evening === 'number' ? p.evening : 19
+      var morning = typeof p.morning === 'number' ? p.morning : 7
+      var follow = p.followSystem !== false
+      var h = new Date().getHours()
+      var night = evening === morning ? false
+        : evening < morning ? h >= evening && h < morning : h >= evening || h < morning
+      var os = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+      var dark = mode === 'dark' || (mode === 'auto' && ((follow && os) || night))
+      document.documentElement.dataset.theme = dark ? palette : 'light'
+    })()
+  </script>
 </head>
 <body>
 <div id="app"></div>

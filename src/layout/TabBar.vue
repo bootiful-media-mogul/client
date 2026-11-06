@@ -23,7 +23,7 @@
 
 <style scoped>
 .tab-bar-bumper {
-  background-color: var(--ink-color);
+  background-color: var(--topbar-color);
   position: relative;
   margin-bottom: var(--gutter-space);
 }
@@ -42,7 +42,7 @@
 /* the same near-black as the wide layout's top bar, with the header (the wordmark)
    centered above the tabs */
 .tab-bar-header {
-  background-color: var(--ink-color);
+  background-color: var(--topbar-color);
   display: flex;
   justify-content: center;
   padding: var(--gutter-space-half) var(--gutter-space) var(--gutter-space-third);
@@ -51,7 +51,7 @@
 
 .tab-bar {
   display: flex;
-  background-color: var(--ink-color);
+  background-color: var(--topbar-color);
   padding-left: var(--gutter-space);
   gap: var(--gutter-space-half);
   padding-top: var(--gutter-space-third);

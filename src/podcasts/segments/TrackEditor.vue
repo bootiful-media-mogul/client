@@ -844,13 +844,13 @@ onBeforeUnmount(() => {
   --te-surface: var(--field-bg-color);
   /* the toolbar, sidebar, ruler and footer show the containing panel through */
   --te-chrome: transparent;
-  --te-hover: rgba(15, 37, 38, 0.08);
+  --te-hover: var(--hover-tint);
   --te-accent: var(--accent-color);
-  --te-accent-light: color-mix(in srgb, var(--te-accent) 16%, white);
+  --te-accent-light: color-mix(in srgb, var(--te-accent) 16%, var(--field-bg-color));
   --te-accent-dark: var(--accent-color);
   --te-disabled: var(--disabled-color);
-  --te-grid: rgba(15, 37, 38, 0.06);
-  --te-shade: rgba(15, 37, 38, 0.18);
+  --te-grid: color-mix(in srgb, var(--ink-color) 6%, transparent);
+  --te-shade: color-mix(in srgb, var(--ink-color) 18%, transparent);
 }
 .editor,
 .editor * {

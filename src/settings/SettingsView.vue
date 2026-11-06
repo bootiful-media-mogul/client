@@ -1,5 +1,6 @@
 <template>
   <h1 v-if="mogul">{{ t('settings.title') }}</h1>
+  <AppearanceSettings />
   <div v-for="settingsPage in settingsRef" v-bind:key="settingsPage.category">
     <form class="pure-form pure-form-stacked" @submit.prevent="save(settingsPage.category)">
       <fieldset>
@@ -80,6 +81,7 @@ import {
   settings as settingsService,
   SettingsPage
 } from '@/services'
+import AppearanceSettings from '@/settings/AppearanceSettings.vue'
 import PrivatePasswordInputComponent from '@/ui/input/PrivatePasswordInputComponent.vue'
 import { useI18n } from 'vue-i18n'
 const { t, te } = useI18n()

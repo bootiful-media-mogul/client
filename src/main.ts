@@ -8,6 +8,7 @@ import '@fontsource/ibm-plex-sans/600.css'
 import '@fontsource/ibm-plex-mono/400.css'
 import '@fontsource/ibm-plex-mono/500.css'
 import './assets/base.css'
+import { startTheme } from './theme'
 
 import { createApp } from 'vue'
 import { createI18n } from 'vue-i18n'
@@ -486,6 +487,31 @@ This is NOT reversible! `,
     // settings
     settings: {
       title: 'Settings',
+      appearance: {
+        title: 'Appearance',
+        mode: 'Theme',
+        modes: {
+          auto: 'Automatic',
+          light: 'Always light',
+          dark: 'Always dark'
+        },
+        showing: 'Showing {theme} now.',
+        'follow-system': "Go dark whenever this computer's appearance is dark",
+        'evening-from': 'and every evening from',
+        'evening-until': 'until',
+        'dark-palette': 'Dark theme',
+        palettes: {
+          light: 'Daylight',
+          midnight: 'Midnight',
+          graphite: 'Graphite',
+          ember: 'Ember'
+        },
+        blurbs: {
+          midnight: 'The day theme after sunset: deep navy, sky blue accents.',
+          graphite: 'Neutral console grey, so your artwork carries the color.',
+          ember: 'Warm and low in blue for late nights, with an on-air amber.'
+        }
+      },
       'save-button': 'Save configuration changes for {plugin}',
       'no-configuration-for-plugin': 'No configuration settings for the {plugin} plugin',
       categories: {
@@ -507,6 +533,9 @@ const i18n = createI18n({
   legacy: false, // why is this defaulted to true?
   warnHtmlInMessage: 'off'
 })
+
+// index.html already picked the palette for the first paint; this keeps it current
+startTheme()
 
 const app = createApp(App)
 

@@ -35,7 +35,7 @@
   font-size: max(0.625rem, calc(var(--size) * 0.375));
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: var(--bg-color);
+  color: var(--brand-color);
 }
 </style>
 
