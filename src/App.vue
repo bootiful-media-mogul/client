@@ -285,8 +285,9 @@ onMounted(async () => {
     color: var(--brand-color);
     border-radius: 0 0 var(--radius) var(--radius);
     pointer-events: none;
-    clip-path: inset(0 0 100% 0);
-    transition: clip-path 140ms ease;
+    /* shown and hidden instantly: a wipe reveals the square top first, so the tab reads
+       as a plain rectangle until the rounded corners arrive */
+    visibility: hidden;
   }
 
   .nav-label-text {
@@ -301,13 +302,7 @@ onMounted(async () => {
 
   .nav-item:hover .nav-label,
   .nav-item:focus-within .nav-label {
-    clip-path: inset(0);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .nav-label {
-      transition: none;
-    }
+    visibility: visible;
   }
 
   /* the buffer exists to clear the floating toolbar, which is only fixed on mobile.
