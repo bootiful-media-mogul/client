@@ -1,5 +1,10 @@
 <template>
   <div class="publications">
+    <div v-if="publications.length > 0" class="publications-header">
+      <div class="created-column">{{ t('publications.dates.created') }}</div>
+      <div class="scheduled-column">{{ t('publications.dates.scheduled') }}</div>
+      <div class="published-column">{{ t('publications.dates.published') }}</div>
+    </div>
     <div v-for="publication in publications" v-bind:key="publication.id">
       <div
         :class="{ 'publications-row-without-outcomes': !publication.outcomes?.length }"
@@ -17,7 +22,12 @@
             />
           </div>
         </div>
-        <div class="created-column">{{ dateTimeToString(publication.created) }}</div>
+        <div class="created-column">
+          {{ dateTimeToString(publication.created) }}
+        </div>
+        <div class="scheduled-column">
+          {{ dateTimeToString(publication.scheduled) ?? t('publications.dates.now') }}
+        </div>
         <div class="published-column">
           {{ dateTimeToString(publication.published) }}
         </div>
@@ -101,15 +111,50 @@
   --icon-column: 40px;
   /* fits the longest outcome label, "X (formerly known as Twitter)", with room to spare. */
   --key-column: 15em;
+  /* the publication rows and the outcome rows under them share these, so their columns
+     line up: delete over the outcome's link, the pending clock over its success or
+     failure, and the created date over its label */
+  --outcome-indent: var(--gutter-space);
+  --outcome-gap: var(--gutter-space-half);
   margin-top: var(--gutter-space);
 }
 
+/* the header and the publication rows lay out on the one grid, so a heading sits over
+   its dates */
+.publications .publications-header,
 .publications .publications-row {
   display: grid;
-  grid-template-areas: ' plugin . delete   url  created published   ';
+  grid-template-areas: ' plugin . delete . url . created scheduled published ';
   grid-template-columns:
-    min-content var(--gutter-space) var(--icon-column) var(--icon-column) var(--date-column)
-    auto;
+    var(--icon-column) var(--outcome-indent) var(--icon-column) var(--outcome-gap)
+    var(--icon-column) var(--outcome-gap) var(--date-column) var(--date-column) auto;
+}
+
+/* glanceable, not read: names the three dates and gets out of the way. the smaller type
+   goes on the labels, not the header: the date columns are measured in em, and a header
+   in smaller type would have narrower columns than the rows under it */
+.publications .publications-header {
+  color: var(--muted-color);
+  padding-bottom: var(--gutter-space-third);
+}
+
+.publications .publications-header > div {
+  font-size: var(--font-size-xs);
+}
+
+.publications .publications-header .created-column {
+  grid-area: created;
+}
+
+.publications .publications-header .scheduled-column {
+  grid-area: scheduled;
+}
+
+.publications .publications-header .published-column {
+  grid-area: published;
+}
+
+.publications .publications-row {
   padding-top: calc(var(--radius) * 1);
   padding-bottom: var(--gutter-space-half);
   border-top: 1px solid var(--rule-color);
@@ -122,6 +167,10 @@
 
 .publications .publications-row .created-column {
   grid-area: created;
+}
+
+.publications .publications-row .scheduled-column {
+  grid-area: scheduled;
 }
 
 .publications .publications-row .published-column {
@@ -150,7 +199,7 @@
   height: var(--row-height);
   border-radius: var(--radius);
   border-top-left-radius: 0;
-  padding-left: var(--gutter-space);
+  padding-left: var(--outcome-indent);
   padding-top: var(--radius);
   border: 1px solid var(--rule-color);
   border-top: 0;
@@ -159,7 +208,7 @@
   border-bottom-right-radius: 0;
   display: grid;
   grid-template-areas: ' uri success key detail ';
-  grid-column-gap: calc(var(--gutter-space) / 2);
+  grid-column-gap: var(--outcome-gap);
   /*
    * every track before the detail column is a fixed width, which is the whole point:
    * each outcome row is its own grid, so a key column that sized itself to its own text

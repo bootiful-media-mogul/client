@@ -81,34 +81,37 @@
 </template>
 
 <style>
-.id-column {
+/* this block isn't scoped, so every rule in it reaches the whole app. the generic names
+   in it -- .created-column, .delete -- were landing in other views (indenting the first
+   date in the publications list, for one), so each is held inside this view's rows */
+.podcasts-row .id-column {
   font-weight: normal;
 }
 
-.rss {
+.podcasts-row .rss {
   grid-area: rss;
 }
 
-.episodes {
+.podcasts-row .episodes {
   grid-area: episodes;
   padding-left: var(--gutter-space);
 }
 
-.created-column {
+.podcasts-row .created-column {
   grid-area: created;
   padding-left: var(--gutter-space);
 }
 
-.id-column b {
+.podcasts-row .id-column b {
   font-weight: bold;
   font-size: var(--font-size-base);
 }
 
-.delete {
+.podcasts-row .delete {
   grid-area: delete;
 }
 
-.podcast-title {
+.podcasts-row .podcast-title {
   grid-area: podcast-title;
 }
 

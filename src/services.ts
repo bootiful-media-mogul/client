@@ -747,6 +747,8 @@ export class Publication {
   plugin: string
   created: number
   published: number
+  /** when it was due; null for "as soon as the job queue got to it" */
+  scheduled: number | null
   url: string
   publishing: boolean = false
   state: string
@@ -759,9 +761,11 @@ export class Publication {
     published: number,
     url: string,
     state: string,
-    outcomes: Array<PublicationOutcome>
+    outcomes: Array<PublicationOutcome>,
+    scheduled: number | null = null
   ) {
     this.id = id
+    this.scheduled = scheduled
     this.url = url
     this.plugin = plugin
     this.created = created
@@ -1377,6 +1381,7 @@ const PUBLICATION_FIELDS = `
   plugin,
   created,
   published,
+  scheduled,
   url,
   state,
   outcomes {
@@ -1410,7 +1415,8 @@ export function toPublication(pub: any): Publication {
     pub.published,
     pub['url'] as string,
     pub['state'],
-    outcomes
+    outcomes,
+    pub.scheduled ?? null
   )
 }
 

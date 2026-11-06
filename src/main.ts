@@ -85,6 +85,13 @@ const translations = {
       }
     },
     publications: {
+      dates: {
+        created: 'Created',
+        scheduled: 'Scheduled',
+        published: 'Published',
+        // a publication nobody picked a time for: it went as soon as the queue got to it
+        now: 'Now'
+      },
       schedule: {
         schedule: 'Schedule',
         when: 'Publish at',
@@ -95,7 +102,7 @@ const translations = {
         'error-message': 'see error message',
         'no-error-message': '(no error message given)',
         keys: {
-          mock : 'Mock',
+          mock: 'Mock',
           wordpress: 'Wordpress',
           podcastEpisodeToBlogPost: 'Blog Post',
           blogPostMarkdownFile: 'Blog Post Markdown File',
