@@ -87,5 +87,8 @@ async function unpublish(publicationId: number) {
 onMounted(refresh)
 watch(limit, refresh)
 
+// started, so a new row (a scheduled one especially, which won't complete for days)
+// shows up as soon as it exists; completed, so its outcome does
+listenForCategory('publication-started-event', refresh)
 listenForCategory('publication-completed-event', refresh)
 </script>

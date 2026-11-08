@@ -672,13 +672,17 @@ async function publish(scheduled: Date | null): Promise<number> {
   const publicationContext: PublicationContext = getPublicationContextFunction()
   const clientContext = buildClientContext(draft.value, compositions.value)
   try {
-    return await publishFunction(
+    const publicationId = await publishFunction(
       publicationContext.type,
       publicationContext.publishableId,
       clientContext,
       pluginName,
       scheduled
     )
+    // a scheduled post is as done as it's going to be for days, so the composer starts
+    // over now. left filled in, it looks like the schedule never happened
+    if (scheduled) clearDraft()
+    return publicationId
   } finally {
     // a post for right now holds the panel until ayrshare says it's out. one for later
     // would hold it for days, so the panel comes back once it's been scheduled.

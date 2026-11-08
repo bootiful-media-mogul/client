@@ -115,4 +115,32 @@ describe('the buttons beneath a publication panel', () => {
     expect(calls[0]!.getTime()).toBe(later.getTime())
     expect(wrapper.find('.schedule-panel').exists()).toBe(false)
   })
+
+  it('say so once a publication is scheduled or published, so the panel can close', async () => {
+    const { wrapper, publishButton, scheduleButton } = mountWith()
+    await publishButton().trigger('click')
+    await flushPromises()
+    expect(wrapper.emitted('published')).toHaveLength(1)
+
+    await scheduleButton().trigger('click')
+    const confirm = wrapper.findAll('.schedule-panel button').find((b) => b.text() === 'Schedule')!
+    await confirm.trigger('click')
+    await flushPromises()
+    expect(wrapper.emitted('published')).toHaveLength(2)
+  })
+
+  it('keep quiet when publishing fails, so the panel stays open', async () => {
+    const { wrapper, publishButton } = mountWith({
+      publish: async () => {
+        throw new Error('nope')
+      }
+    })
+    const errors: Array<unknown> = []
+    wrapper.vm.$.appContext.config.errorHandler = (e) => {
+      errors.push(e)
+    }
+    await publishButton().trigger('click')
+    await flushPromises()
+    expect(wrapper.emitted('published')).toBeUndefined()
+  })
 })

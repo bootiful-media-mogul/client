@@ -32,7 +32,11 @@
           {{ t('publications.plugins.' + slot.plugin + '.description') }}
         </div>
         <component :is="slot.panel" />
-        <PublicationActionsComponent v-if="slot.action" :action="slot.action" />
+        <PublicationActionsComponent
+          v-if="slot.action"
+          :action="slot.action"
+          @published="closePanels"
+        />
       </div>
     </div>
   </div>
@@ -250,6 +254,15 @@ function showPanelForSlot(slot: PanelSlot) {
     })
   }
   isAnyPanelSelected.value = childSlots.value.filter((cs) => cs.selected).length > 0
+}
+
+// once something's been published or scheduled the panel has done its job, and closing
+// it is the sign that it worked: the new row is in the list beneath
+function closePanels() {
+  childSlots.value.forEach((s) => {
+    s.selected = false
+  })
+  isAnyPanelSelected.value = false
 }
 
 function registerPublicationPanel(slotPair: PanelSlot) {

@@ -293,4 +293,23 @@ describe('the Ayrshare composer', () => {
     expect(open.attributes('aria-controls')).toBe(editor.attributes('id'))
     expect(checkbox(host, 'bluesky').attributes('aria-label')).toBe('bluesky label')
   })
+
+  it('starts over once a post is scheduled, but keeps the text for a post going out now', async () => {
+    const { host, registered, published } = await mountPanel()
+    await pick(host, 'bluesky')
+    await host.find('textarea').setValue('see you next week')
+
+    await registered.action.publish(new Date(Date.now() + 86_400_000))
+    await flushPromises()
+    expect(published).toHaveLength(1)
+    expect((host.find('textarea').element as HTMLTextAreaElement).value).toBe('')
+    expect(rowButtons(host).map((b: any) => b.find('.name').text())).toEqual(['Everywhere'])
+
+    // right now, it's held until ayrshare says it went out
+    await pick(host, 'bluesky')
+    await host.find('textarea').setValue('right now')
+    await registered.action.publish(null)
+    await flushPromises()
+    expect((host.find('textarea').element as HTMLTextAreaElement).value).toBe('right now')
+  })
 })

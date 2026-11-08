@@ -69,6 +69,9 @@ import { appliedTheme } from '@/theme'
  */
 const props = defineProps<{ action: PanelAction }>()
 
+/** the press went through: the publication exists, whether it's out yet or scheduled */
+const emit = defineEmits<{ published: [] }>()
+
 const { t } = useI18n()
 
 const container = ref<HTMLElement | null>(null)
@@ -116,6 +119,7 @@ async function run(when: Date | null) {
   try {
     await props.action.publish(when)
     if (when) cancel()
+    emit('published')
   } finally {
     busy.value = false
   }
