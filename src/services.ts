@@ -1323,6 +1323,7 @@ export class Ayrshare {
             platform 
             composition {
               id 
+              attachments { id }
             }  
            }  
        }

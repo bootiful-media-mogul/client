@@ -58,8 +58,21 @@ const menu = [
 
 const main = ref<HTMLElement>()
 
+// main takes focus when the view changes and from the skip link, so it needs a tabindex
+// then, but only then. left on, it makes main the focus target for any click on something
+// inside it that doesn't take focus itself, and in Safari that's every button: clicking
+// one focuses main instead, and focusing main scrolls the page up to the top of it.
+// so the tabindex goes on just before main is focused, and comes off when focus leaves.
+function focusMainElement(options?: FocusOptions) {
+  const element = main.value
+  if (!element) return
+  element.setAttribute('tabindex', '-1')
+  element.addEventListener('blur', () => element.removeAttribute('tabindex'), { once: true })
+  element.focus(options)
+}
+
 function focusMain() {
-  main.value?.focus()
+  focusMainElement()
 }
 
 // a single page app never reloads, so a screen reader hears nothing when the view
@@ -76,7 +89,7 @@ const removeAfterEach = router.afterEach(async (to, from, failure) => {
   document.title = titleFor(to.meta.title)
   if (from.matched.length && to.path !== from.path) {
     await nextTick()
-    main.value?.focus({ preventScroll: true })
+    focusMainElement({ preventScroll: true })
   }
 })
 onUnmounted(removeAfterEach)
@@ -362,7 +375,7 @@ onMounted(async () => {
           <template #header><BrandMark /></template>
           <!-- Main content tab -->
           <Tab :label="t('app.tabs.main')">
-            <main id="main-content" ref="main" class="view" tabindex="-1">
+            <main id="main-content" ref="main" class="view">
               <router-view :key="route.fullPath"></router-view>
             </main>
           </Tab>

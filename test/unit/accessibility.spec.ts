@@ -22,6 +22,7 @@ import Tab from '../../src/layout/Tab.vue'
 import PanelComponent from '../../src/layout/PanelComponent.vue'
 import NotificationBoxComponent from '../../src/notifications/NotificationBoxComponent.vue'
 import Select from '../../src/ui/Select.vue'
+import Dropdown from '../../src/ui/Dropdown.vue'
 import Icon from '../../src/ui/Icon.vue'
 import InputWrapperMenu from '../../src/ui/input/InputWrapperMenu.vue'
 import WritingAssistantButton from '../../src/ui/writing/WritingAssistantButton.vue'
@@ -362,5 +363,34 @@ describe('WritingAssistantButton', () => {
       mount(WritingAssistantButton, { props: { label: 'Rewrite', expanded: true } })
     )
     expect(toggle.attributes('aria-expanded')).toBe('true')
+  })
+})
+
+describe('Dropdown', () => {
+  it('is a button that says whether its panel is open, with no violations either way', async () => {
+    const wrapper = attach(
+      mount(
+        {
+          render: () =>
+            h(Dropdown, null, {
+              trigger: () => 'Choose platforms',
+              default: () =>
+                h('fieldset', [
+                  h('legend', 'Platforms'),
+                  h('label', [h('input', { type: 'checkbox' }), ' Bluesky'])
+                ])
+            })
+        },
+        { attachTo: document.body }
+      )
+    )
+    const button = wrapper.find('button')
+    expect(button.attributes('aria-expanded')).toBe('false')
+    expect(await violations(wrapper.element)).toEqual([])
+
+    await button.trigger('click')
+    expect(button.attributes('aria-expanded')).toBe('true')
+    expect(document.getElementById(button.attributes('aria-controls')!)).not.toBeNull()
+    expect(await violations(wrapper.element)).toEqual([])
   })
 })

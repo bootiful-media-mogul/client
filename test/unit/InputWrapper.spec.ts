@@ -12,6 +12,8 @@ const i18n = createI18n({
     en: {
       'components.inputWrapper.empty': '(empty)',
       'components.inputWrapper.character-count': '{count} character(s)',
+      'components.inputWrapper.previous-tool': 'Previous tool',
+      'components.inputWrapper.next-tool': 'Next tool',
       'inputWrapperMenu.default-content': 'Tools'
     }
   }

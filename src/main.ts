@@ -15,6 +15,7 @@ import { createI18n } from 'vue-i18n'
 import { createPinia } from 'pinia'
 
 import App from './App.vue'
+import { AYRSHARE_PLATFORM_LIMITS } from './publications/ayrshare'
 import router from './index'
 import { Calendar, DatePicker, setupCalendar } from 'v-calendar'
 // import { setupCalendar } from 'v-calendar'
@@ -25,27 +26,58 @@ function formatNumberEnglish(value: number): string {
   return new Intl.NumberFormat('en-US').format(value)
 }
 
-// every Ayrshare plugin publishes to the same platforms, so they all share these labels
-const ayrsharePlatforms = {
-  gmb: {
-    label: 'Google Business Profile',
-    maxCharactersAllowed: formatNumberEnglish(1500)
-  },
-  facebook: { label: 'Facebook', maxCharactersAllowed: formatNumberEnglish(63206) },
-  linkedin: { label: 'LinkedIn', maxCharactersAllowed: formatNumberEnglish(3000) },
-  instagram: { label: 'Instagram', maxCharactersAllowed: formatNumberEnglish(2200) },
-  telegram: { label: 'Telegram', maxCharactersAllowed: formatNumberEnglish(4096) },
-  snapchat: { label: 'Snapchat', maxCharactersAllowed: formatNumberEnglish(80) },
-  pinterest: { label: 'Pinterest', maxCharactersAllowed: formatNumberEnglish(500) },
-  threads: { label: 'Threads', maxCharactersAllowed: formatNumberEnglish(25000) },
-  youtube: { label: 'YouTube', maxCharactersAllowed: formatNumberEnglish(5000) },
-  reddit: { label: 'Reddit', maxCharactersAllowed: formatNumberEnglish(40000) },
-  bluesky: { label: 'Bluesky', maxCharactersAllowed: formatNumberEnglish(300) },
-  tiktok: { label: 'TikTok', maxCharactersAllowed: formatNumberEnglish(2200) },
-  twitter: {
-    label: 'X (formerly known as Twitter)',
-    maxCharactersAllowed: formatNumberEnglish(280)
-  }
+// every Ayrshare plugin publishes to the same platforms, so they all share these labels.
+// `shortLabel` names the platform's tab in the composer, where the full label won't fit.
+const ayrshareLabels: Record<string, { label: string; shortLabel: string }> = {
+  gmb: { label: 'Google Business Profile', shortLabel: 'Google Business' },
+  facebook: { label: 'Facebook', shortLabel: 'Facebook' },
+  linkedin: { label: 'LinkedIn', shortLabel: 'LinkedIn' },
+  instagram: { label: 'Instagram', shortLabel: 'Instagram' },
+  telegram: { label: 'Telegram', shortLabel: 'Telegram' },
+  snapchat: { label: 'Snapchat', shortLabel: 'Snapchat' },
+  pinterest: { label: 'Pinterest', shortLabel: 'Pinterest' },
+  threads: { label: 'Threads', shortLabel: 'Threads' },
+  youtube: { label: 'YouTube', shortLabel: 'YouTube' },
+  reddit: { label: 'Reddit', shortLabel: 'Reddit' },
+  bluesky: { label: 'Bluesky', shortLabel: 'Bluesky' },
+  tiktok: { label: 'TikTok', shortLabel: 'TikTok' },
+  twitter: { label: 'X (formerly known as Twitter)', shortLabel: 'X' }
+}
+
+const ayrsharePlatforms = Object.fromEntries(
+  Object.entries(ayrshareLabels).map(([code, labels]) => [
+    code,
+    { ...labels, maxCharactersAllowed: formatNumberEnglish(AYRSHARE_PLATFORM_LIMITS[code]) }
+  ])
+)
+
+// the composer every Ayrshare plugin's panel shares: one text for every selected platform,
+// with a tab per platform for giving it text of its own
+const ayrshareComposer = {
+  list: 'Where the post goes',
+  platforms: 'Post to',
+  choose: 'Choose platforms',
+  change: 'Change platforms',
+  shared: 'Everywhere',
+  sharedStatus: 'Text for the {n} selected platform | Text for all {n} selected platforms',
+  sharedLabel: 'Text for every selected platform',
+  platformLabel: 'Text for {platform}',
+  usedBy: 'Goes to {platforms}.',
+  usedByNone: 'Every selected platform has text of its own.',
+  pickPlatforms: 'Choose the platforms to post to.',
+  media: "Images go on each platform's own row, since each platform gets its own media.",
+  inherited: 'Using the text from {shared}. Edit it here to give {platform} its own.',
+  customized: '{platform} has its own text.',
+  useShared: 'Use the text from {shared}',
+  limit: '{num} characters or less.',
+  limitShort: '{num} max',
+  over: '{num} characters over the limit for {platform}.',
+  overShort: 'over the limit',
+  rowShared: 'Text from {shared}',
+  rowOwn: 'Own text',
+  rowOver: '{num} over the limit',
+  rowEmpty: 'Empty',
+  attachments: '{n} attachment | {n} attachments'
 }
 
 // i18n
@@ -158,7 +190,7 @@ const translations = {
           ayrshareKey: 'Ayrshare API Key',
           charactersOrLess: '{num} characters or less',
           platforms: ayrsharePlatforms,
-          'combo-post': 'use the same copy for all enabled platforms'
+          composer: ayrshareComposer
         },
         podcastEpisodeAyrshare: {
           description:
@@ -169,7 +201,7 @@ const translations = {
           ayrshareKey: 'Ayrshare API Key',
           charactersOrLess: '{num} characters or less',
           platforms: ayrsharePlatforms,
-          'combo-post': 'use the same copy for all enabled platforms'
+          composer: ayrshareComposer
         },
         mogulAyrshare: {
           description:
@@ -180,7 +212,7 @@ const translations = {
           ayrshareKey: 'Ayrshare API Key',
           charactersOrLess: '{num} characters or less',
           platforms: ayrsharePlatforms,
-          'combo-post': 'use the same copy for all enabled platforms'
+          composer: ayrshareComposer
         },
         blogPost: {
           description: 'Publish the episode as a blog post'
