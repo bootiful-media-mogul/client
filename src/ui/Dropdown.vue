@@ -9,6 +9,11 @@
   `v-model:open` is there for a parent that needs to know or set whether it's open; leave
   it off and the dropdown keeps track itself.
 
+  `align="end"` lines the panel up with the button's right edge instead of its left, for a
+  dropdown at the right of the window. `direction="up"` opens it above the button, for one
+  at the bottom. `plain` leaves off the button's pure-button look, so a parent can draw the
+  trigger as something else (an avatar, say).
+
   mind where it goes: a container with `overflow: hidden` (a publication panel, say) cuts
   the panel off, so the panel is capped in height and scrolls, and the space under the
   button should be at least that tall.
@@ -18,7 +23,7 @@
     <button
       ref="trigger"
       type="button"
-      class="pure-button dropdown-trigger"
+      :class="['dropdown-trigger', { 'pure-button': !plain }]"
       :aria-expanded="open"
       :aria-controls="panelId"
       :disabled="disabled"
@@ -27,7 +32,11 @@
       <slot name="trigger"></slot>
       <span class="dropdown-caret" aria-hidden="true">▾</span>
     </button>
-    <div v-if="open" :id="panelId" class="dropdown-panel">
+    <div
+      v-if="open"
+      :id="panelId"
+      :class="['dropdown-panel', `dropdown-panel-${align}`, `dropdown-panel-${direction}`]"
+    >
       <slot></slot>
     </div>
   </div>
@@ -36,7 +45,15 @@
 <script lang="ts" setup>
 import { onUnmounted, ref, useId, watch } from 'vue'
 
-const props = withDefaults(defineProps<{ disabled?: boolean }>(), { disabled: false })
+const props = withDefaults(
+  defineProps<{
+    disabled?: boolean
+    align?: 'start' | 'end'
+    direction?: 'down' | 'up'
+    plain?: boolean
+  }>(),
+  { disabled: false, align: 'start', direction: 'down', plain: false }
+)
 
 const open = defineModel<boolean>('open', { default: false })
 
@@ -106,10 +123,7 @@ onUnmounted(stopListening)
    panel sits above that or a field after the dropdown draws through it */
 .dropdown-panel {
   position: absolute;
-  top: 100%;
-  left: 0;
   z-index: 30;
-  margin-top: var(--gutter-space-third);
   width: max-content;
   min-width: 100%;
   max-width: min(24em, 90vw);
@@ -120,5 +134,23 @@ onUnmounted(stopListening)
   border-radius: var(--radius);
   box-shadow: var(--box-shadow);
   padding: var(--gutter-space-third);
+}
+
+.dropdown-panel-down {
+  top: 100%;
+  margin-top: var(--gutter-space-third);
+}
+
+.dropdown-panel-up {
+  bottom: 100%;
+  margin-bottom: var(--gutter-space-third);
+}
+
+.dropdown-panel-start {
+  left: 0;
+}
+
+.dropdown-panel-end {
+  right: 0;
 }
 </style>

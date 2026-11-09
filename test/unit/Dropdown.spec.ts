@@ -115,4 +115,22 @@ describe('Dropdown', () => {
     expect(panel().exists()).toBe(false)
     expect(trigger().attributes('disabled')).toBeDefined()
   })
+
+  it('drops down from the start edge, as a pure button, by default', async () => {
+    const { trigger, panel } = mountDropdown()
+    await trigger().trigger('click')
+    expect(trigger().classes()).toContain('pure-button')
+    expect(panel().classes()).toEqual(
+      expect.arrayContaining(['dropdown-panel-start', 'dropdown-panel-down'])
+    )
+  })
+
+  it('can open upward from the end edge, from a plain trigger', async () => {
+    const { trigger, panel } = mountDropdown({ align: 'end', direction: 'up', plain: true })
+    await trigger().trigger('click')
+    expect(trigger().classes()).not.toContain('pure-button')
+    expect(panel().classes()).toEqual(
+      expect.arrayContaining(['dropdown-panel-end', 'dropdown-panel-up'])
+    )
+  })
 })

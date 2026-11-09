@@ -42,7 +42,7 @@
   --icon-size: 2.5em;
   --icon-column-width: calc(var(--gutter-space) + var(--icon-width) + var(--icon-width));
   --row-height: 2em;
-  --global-toolbar-height: calc(var(--gutter-space) * 10);
+  --global-toolbar-height: calc(var(--gutter-space) * 4);
   --box-shadow: 0 calc(var(--gutter-space) * 1) 40px rgba(0, 0, 0, 0.5);
 }
 

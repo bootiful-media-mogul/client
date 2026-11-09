@@ -93,7 +93,10 @@ const translations = {
       'optional-value': '(this is optional)'
     },
 
-    hello: 'Hi, {mogul}',
+    account: {
+      // the account menu's button, which only shows initials
+      label: 'Account: {name}'
+    },
     brand: { name: 'mogul', product: 'studio' },
     notes: {
       buttons: {
@@ -287,7 +290,28 @@ const translations = {
         },
         prompt: '{count} result(s) for your search "{term}"'
       },
-      prompt: 'Enter a search term and press enter'
+      // the button in the top bar that opens the palette, and the palette itself
+      open: 'Search',
+      shortcut: 'Shortcut: {keys}',
+      palette: {
+        label: 'Search',
+        placeholder: 'Search episodes, posts, notes, or jump to…',
+        everything: 'Search everything for “{term}”',
+        'go-to': 'Go to',
+        results: 'Results',
+        searching: 'Searching…',
+        nothing: 'Nothing found for “{term}”',
+        move: 'move',
+        choose: 'open',
+        close: 'close',
+        types: {
+          episode: 'Episode',
+          segment: 'Segment',
+          post: 'Post',
+          note: 'Note',
+          mogul: 'Mogul'
+        }
+      }
     },
 
     // notifications
