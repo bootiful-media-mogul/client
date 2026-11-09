@@ -62,7 +62,8 @@ watch(
     const text = await markupFor(url)
     if (url === src.value) {
       markup.value = text
-        .replace(/\bid="([\w-]+)"/g, `id="$1${suffix}"`)
+        // vite writes the svgs it inlines as data uris with single quotes
+        .replace(/\bid=(["'])([\w-]+)\1/g, `id="$2${suffix}"`)
         .replace(/url\(#([\w-]+)\)/g, `url(#$1${suffix})`)
     }
   },

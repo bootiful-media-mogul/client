@@ -38,6 +38,23 @@ describe('Icon', () => {
     expect(first.attributes('aria-label')).toBe('a disc')
   })
 
+  it('gives its own ids to an svg that vite inlined with single quotes', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(disc.replace(/"/g, "'")))
+    )
+    const first = mountIcon({ icon: '/quoted.svg', iconHover: '/quoted.svg' })
+    const second = mountIcon({ icon: '/quoted.svg', iconHover: '/quoted.svg' })
+    await flushPromises()
+
+    const ids = [first, second].map((icon) => {
+      const id = icon.find('mask').attributes('id')
+      expect(icon.find('circle').attributes('mask')).toBe(`url(#${id})`)
+      return id
+    })
+    expect(ids[0]).not.toBe(ids[1])
+  })
+
   it('names when the white highlight shows', async () => {
     vi.stubGlobal(
       'fetch',
