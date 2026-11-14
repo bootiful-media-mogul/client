@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <!-- the ayrshare mark in its own red, on nothing: the tile behind it is the background -->
+  <g stroke="#D22426" stroke-width="8" stroke-linecap="round" transform="translate(50 50) scale(.82) translate(-50 -50)">
+    <circle cx="50" cy="26" r="10"/>
+    <circle cx="24" cy="73" r="10"/>
+    <circle cx="76" cy="73" r="10"/>
+    <path d="M44.6 40.2 32.4 59.8M55.4 40.2l12.2 19.6"/>
+  </g>
+</svg>

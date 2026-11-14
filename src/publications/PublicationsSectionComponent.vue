@@ -69,8 +69,10 @@
   display: flex;
 }
 
+/* hovering shows what a click does: the tile turns the panel's color, as a selected one
+   is. not the raised white, which vanished on a white card such as the home calendar's */
 .toolbar-icon:hover {
-  background-color: var(--raised-color);
+  background-color: var(--publication-panel-bg-color);
 }
 
 .toolbar-icon-selected {
