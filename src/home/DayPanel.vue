@@ -1,91 +1,63 @@
 <template>
-  <Teleport to="body">
-    <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events, vuejs-accessibility/no-static-element-interactions -- a mouse shortcut for the close button and escape -->
-    <div class="day-scrim" @click="emit('close')" />
-    <!-- eslint-disable-next-line vuejs-accessibility/no-static-element-interactions -- escape closes the dialog from anywhere inside it -->
-    <aside
-      ref="panel"
-      :aria-label="title"
-      aria-modal="true"
-      class="day-panel panel"
-      role="dialog"
-      @keydown.esc="emit('close')"
-    >
-      <div class="panel-menu">
-        <div class="panel-menu-title">{{ title }}</div>
-        <div class="panel-menu-buttons">
-          <button
-            ref="closeButton"
-            :aria-label="t('labels.close')"
-            class="panel-toggle day-panel-close"
-            type="button"
-            @click="emit('close')"
+  <div class="day-page">
+    <h1>{{ title }}</h1>
+    <!-- publishing about this day: the same tabbed bar of plugins as under an episode -->
+    <div class="form-section">
+      <div class="form-section-title">
+        {{ isToday ? t('home.day.publish') : t('home.day.schedule') }}
+      </div>
+      <p v-if="isPast" class="day-past">{{ t('home.day.past') }}</p>
+      <template v-else>
+        <label v-if="!isToday" class="day-time">
+          {{ t('home.day.time') }}
+          <input v-model="time" required type="time" />
+        </label>
+        <PublicationsSectionComponent
+          v-if="status"
+          :key="status.id"
+          :disabled="false"
+          :publishable="status.id + ''"
+          :scheduled="scheduled"
+          :show-existing-publications="false"
+          type="mogulStatus"
+        >
+          <Ayrshare />
+        </PublicationsSectionComponent>
+      </template>
+    </div>
+
+    <!-- everything that went out, or is due to, on this day, a block per publishable -->
+    <div class="form-section">
+      <div class="form-section-title">{{ t('home.day.publications') }}</div>
+      <p v-if="!entries.length" class="day-past">{{ t('home.day.nothing') }}</p>
+      <div v-for="e in entries" :key="e.key" class="day-entry">
+        <div class="day-entry-head">
+          <span class="day-entry-type">{{ typeLabel(e) }}</span>
+          <span class="day-entry-title">{{ e.publishable?.title ?? '' }}</span>
+          <RouterLink
+            v-if="linkable(e)"
+            :to="{
+              name: 'entity',
+              params: { type: e.publishable!.type, id: e.publishable!.id }
+            }"
+            class="day-entry-open"
           >
-            ✕
-          </button>
+            {{ t('home.day.open') }}
+          </RouterLink>
         </div>
+        <PublicationsListComponent
+          :icons="PLUGIN_ICONS"
+          :publications="e.publications"
+          unpublishable
+          @unpublish="(id: number) => emit('unpublish', id)"
+        />
       </div>
-
-      <div class="panel-content panel-content-visible">
-        <!-- publishing about this day: the same tabbed bar of plugins as under an episode -->
-        <div class="form-section">
-          <div class="form-section-title">
-            {{ isToday ? t('home.day.publish') : t('home.day.schedule') }}
-          </div>
-          <p v-if="isPast" class="day-past">{{ t('home.day.past') }}</p>
-          <template v-else>
-            <label v-if="!isToday" class="day-time">
-              {{ t('home.day.time') }}
-              <input v-model="time" required type="time" />
-            </label>
-            <PublicationsSectionComponent
-              v-if="status"
-              :key="status.id"
-              :disabled="false"
-              :publishable="status.id + ''"
-              :scheduled="scheduled"
-              :show-existing-publications="false"
-              type="mogulStatus"
-            >
-              <Ayrshare />
-            </PublicationsSectionComponent>
-          </template>
-        </div>
-
-        <!-- everything that went out, or is due to, on this day, a block per publishable -->
-        <div class="form-section">
-          <div class="form-section-title">{{ t('home.day.publications') }}</div>
-          <p v-if="!entries.length" class="day-past">{{ t('home.day.nothing') }}</p>
-          <div v-for="e in entries" :key="e.key" class="day-entry">
-            <div class="day-entry-head">
-              <span class="day-entry-type">{{ typeLabel(e) }}</span>
-              <span class="day-entry-title">{{ e.publishable?.title ?? '' }}</span>
-              <RouterLink
-                v-if="linkable(e)"
-                :to="{
-                  name: 'entity',
-                  params: { type: e.publishable!.type, id: e.publishable!.id }
-                }"
-                class="day-entry-open"
-              >
-                {{ t('home.day.open') }}
-              </RouterLink>
-            </div>
-            <PublicationsListComponent
-              :icons="PLUGIN_ICONS"
-              :publications="e.publications"
-              unpublishable
-              @unpublish="(id: number) => emit('unpublish', id)"
-            />
-          </div>
-        </div>
-      </div>
-    </aside>
-  </Teleport>
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { mogul } from '@/services'
 import type { MogulStatus } from '@/mogul'
@@ -103,13 +75,10 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  close: []
   unpublish: [publicationId: number]
 }>()
 
 const { t, te } = useI18n()
-
-const closeButton = ref<HTMLElement>()
 
 const title = computed(() =>
   props.day.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' })
@@ -150,11 +119,7 @@ watch(
   }
 )
 
-onMounted(async () => {
-  await nextTick()
-  closeButton.value?.focus()
-  await loadStatus()
-})
+onMounted(loadStatus)
 
 function typeLabel(e: CalendarEntry): string {
   const type = e.publishable?.type
@@ -169,54 +134,14 @@ const linkable = (e: CalendarEntry) =>
 </script>
 
 <style scoped>
-.day-scrim {
-  position: fixed;
-  inset: 0;
-  z-index: 1100;
-  background-color: rgb(0 0 0 / 30%);
+/* a page, but a narrow one: the composer reads best at about this width */
+.day-page {
+  max-width: 60rem;
+  margin: 0 auto;
 }
 
-/* the sidebar's panel, sliding in over the page from the right */
-.day-panel.panel {
-  position: fixed;
-  top: var(--gutter-space);
-  right: 0;
-  bottom: var(--gutter-space);
-  z-index: 1101;
-  width: min(52rem, 100vw);
-  margin: 0;
-  border-radius: var(--radius) 0 0 var(--radius);
-  display: flex;
-  flex-direction: column;
-  animation: day-panel-in 200ms ease-out;
-}
-
-@keyframes day-panel-in {
-  from {
-    transform: translateX(105%);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .day-panel.panel {
-    animation: none;
-  }
-}
-
-.day-panel .panel-menu {
-  grid-template-columns: auto min-content;
-  align-items: center;
-}
-
-.day-panel .panel-content {
-  overflow-y: auto;
-  flex: 1;
-}
-
-.day-panel-close {
-  color: var(--chrome-ink-color);
-  font-size: var(--font-size-lg);
-  line-height: 1;
+.day-page h1 {
+  margin-top: 0;
 }
 
 .day-past {
