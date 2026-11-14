@@ -17,9 +17,13 @@
         :disabled="!action.enabled() || busy || scheduling"
         class="pure-button pure-button-primary publish-button"
         type="button"
-        @click.prevent="run(null)"
+        @click.prevent="run(scheduledFor)"
       >
-        {{ action.label() || t('publications.plugins.publish') }}
+        {{
+          scheduledFor
+            ? t('publications.schedule.for', { when: dateTimeToString(scheduledFor.getTime()) })
+            : action.label() || t('publications.plugins.publish')
+        }}
       </button>
     </div>
     <div
@@ -60,6 +64,7 @@ import { computed, nextTick, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { PanelAction } from '@/publications/input'
 import { appliedTheme } from '@/theme'
+import { dateTimeToString } from '@/dates'
 
 /**
  * the buttons beneath every publication panel: publish now, or pick a time and publish
@@ -67,7 +72,17 @@ import { appliedTheme } from '@/theme'
  * what pressing it does; how the buttons look, and the scheduling, are the same for
  * every plugin.
  */
-const props = defineProps<{ action: PanelAction }>()
+const props = withDefaults(
+  defineProps<{
+    action: PanelAction
+    /**
+     * when the main button sends the publication, if not now. the home page's calendar
+     * sets it from the day that was picked, and then the main button schedules.
+     */
+    scheduledFor?: Date | null
+  }>(),
+  { scheduledFor: null }
+)
 
 /** the press went through: the publication exists, whether it's out yet or scheduled */
 const emit = defineEmits<{ published: [] }>()

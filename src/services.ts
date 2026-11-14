@@ -1,4 +1,4 @@
-import Mogul, { MogulStatus } from '@/mogul'
+import Mogul from '@/mogul'
 import mitt from 'mitt'
 import { Client, type CombinedError, errorExchange, fetchExchange } from '@urql/core'
 import { graphqlJson } from '@/graphql'
@@ -742,6 +742,18 @@ export class PodcastEpisodeSegment {
   }
 }
 
+/**
+ * what a publication is about, named well enough to list beside publications about other
+ * kinds of things. title is null when the thing has since been deleted.
+ */
+export class PublishableReference {
+  constructor(
+    readonly type: string,
+    readonly id: number,
+    readonly title: string | null
+  ) {}
+}
+
 export class Publication {
   id: number
   plugin: string
@@ -753,6 +765,8 @@ export class Publication {
   publishing: boolean = false
   state: string
   outcomes: Array<PublicationOutcome>
+  /** only asked for where publications of different things are shown together */
+  publishable: PublishableReference | null
 
   constructor(
     id: number,
@@ -762,9 +776,11 @@ export class Publication {
     url: string,
     state: string,
     outcomes: Array<PublicationOutcome>,
-    scheduled: number | null = null
+    scheduled: number | null = null,
+    publishable: PublishableReference | null = null
   ) {
     this.id = id
+    this.publishable = publishable
     this.scheduled = scheduled
     this.url = url
     this.plugin = plugin
@@ -1417,57 +1433,15 @@ export function toPublication(pub: any): Publication {
     pub['url'] as string,
     pub['state'],
     outcomes,
-    pub.scheduled ?? null
-  )
-}
-
-/**
- * one of the mogul's days, together with everything published on it.
- */
-export class MogulStatusPublications {
-  readonly status: MogulStatus
-  readonly publications: Array<Publication>
-
-  constructor(status: MogulStatus, publications: Array<Publication>) {
-    this.status = status
-    this.publications = publications
-  }
-}
-
-export class MogulStatuses {
-  private readonly client: Client
-
-  constructor(client: Client) {
-    this.client = client
-  }
-
-  /**
-   * the most recent days the mogul did something, newest first, each with its own
-   * publications. the nesting is free: the server batch-loads every day's publications
-   * in one query and their outcomes in one more, so asking for thirty days costs the
-   * same number of round trips as asking for one.
-   */
-  async recent(limit: number): Promise<Array<MogulStatusPublications>> {
-    const q = `
-        query ( $limit: Int ) {
-           mogulStatuses( limit: $limit ) {
-              id,
-              mogulId,
-              date,
-              publications { ${PUBLICATION_FIELDS} }
-           }
-       }
-     `
-    const result = await this.client.query(q, { limit: limit })
-    const days = (result.data['mogulStatuses'] as Array<any>) || []
-    return days.map(
-      (day: any) =>
-        new MogulStatusPublications(
-          new MogulStatus(day['id'] as number, day['mogulId'] as number, day['date'] as string),
-          ((day['publications'] as Array<any>) || []).map(toPublication)
+    pub.scheduled ?? null,
+    pub.publishable
+      ? new PublishableReference(
+          pub.publishable.type as string,
+          pub.publishable.id as number,
+          (pub.publishable.title as string) ?? null
         )
-    )
-  }
+      : null
+  )
 }
 
 export class ServerTime {
@@ -1555,6 +1529,27 @@ export class Publications {
     })
     const pubs = await result.data['publicationsForPublishable'] //as Array<Map<string,object>>
     return (pubs as Array<any>).map(toPublication)
+  }
+
+  /**
+   * every publication, about anything, that went out or is due to go out in [from, to),
+   * each with what it was about. the server resolves those a kind at a time, so a month of
+   * publications costs a handful of queries, not one per publication.
+   */
+  async between(from: Date, to: Date): Promise<Array<Publication>> {
+    const q = `
+        query ( $from: DateTime, $to: DateTime ) {
+           publicationsBetween( from: $from, to: $to ) {
+             ${PUBLICATION_FIELDS}
+             publishable { type, id, title }
+           }
+       }
+     `
+    const result = await this.client.query(q, {
+      from: from.toISOString(),
+      to: to.toISOString()
+    })
+    return ((result.data['publicationsBetween'] as Array<any>) || []).map(toPublication)
   }
 
   async unpublish(publicationId: number): Promise<boolean> {
@@ -2282,7 +2277,6 @@ export const ai = new Ai(graphqlClient)
 export const notifications = new Notifications(graphqlClient)
 export const mogul = new Mogul(graphqlClient)
 export const diagnostics = new Diagnostics(graphqlClient)
-export const mogulStatuses = new MogulStatuses(graphqlClient)
 export const podcasts = new Podcasts(graphqlClient)
 export const managedFiles = new ManagedFiles(graphqlClient)
 export const settings = new Settings(graphqlClient)

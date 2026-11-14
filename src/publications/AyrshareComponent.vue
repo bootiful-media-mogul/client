@@ -260,12 +260,15 @@
 }
 </style>
 <template>
+  <!-- not schedulable from its own panel for now: scheduling a post is done by picking
+       the day on the home page's calendar -->
   <PublicationPanelComponent
     :enabled="publishable"
     :icon="icon"
     :icon-hover="icon"
     :plugin="pluginName"
     :publish="publish"
+    :schedulable="false"
   >
     <template v-slot:panel>
       <div class="ayrshare-composer">

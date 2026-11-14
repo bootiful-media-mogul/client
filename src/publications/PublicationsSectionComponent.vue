@@ -35,6 +35,7 @@
         <PublicationActionsComponent
           v-if="slot.action"
           :action="slot.action"
+          :scheduled-for="scheduled"
           @published="closePanels"
         />
       </div>
@@ -138,8 +139,13 @@ const props = withDefaults(
      * the home page renders them per-day -- so they aren't shown twice.
      */
     showExistingPublications?: boolean
+    /**
+     * when the panels' publish buttons send a publication. null, the default, is now;
+     * the home page's calendar passes the day that was picked.
+     */
+    scheduled?: Date | null
   }>(),
-  { showExistingPublications: true }
+  { showExistingPublications: true, scheduled: null }
 )
 
 const existingPublications = ref<Array<Publication>>([])

@@ -16,7 +16,8 @@ const i18n = createI18n({
           schedule: 'Schedule',
           when: 'Publish at',
           confirm: 'Schedule',
-          cancel: 'Cancel'
+          cancel: 'Cancel',
+          for: 'Schedule for {when}'
         }
       }
     }
@@ -37,7 +38,7 @@ const VDatePicker = defineComponent({
   }
 })
 
-function mountWith(overrides: Partial<PanelAction> = {}) {
+function mountWith(overrides: Partial<PanelAction> = {}, scheduledFor: Date | null = null) {
   const calls: Array<Date | null> = []
   const action: PanelAction = {
     label: () => undefined,
@@ -49,7 +50,7 @@ function mountWith(overrides: Partial<PanelAction> = {}) {
     ...overrides
   }
   const wrapper = mount(PublicationActionsComponent, {
-    props: { action },
+    props: { action, scheduledFor },
     global: { plugins: [i18n], components: { VDatePicker } }
   })
   const publishButton = () => wrapper.find('.publication-buttons button:not(.schedule-button)')
@@ -64,6 +65,16 @@ describe('the buttons beneath a publication panel', () => {
     await publishButton().trigger('click')
     await flushPromises()
     expect(calls).toEqual([null])
+  })
+
+  // the home page's calendar has already said when, so the main button schedules for then
+  it('schedule for the moment they are given, rather than publishing now', async () => {
+    const when = new Date(2099, 5, 15, 9, 0)
+    const { calls, publishButton } = mountWith({ label: () => 'Create blog post' }, when)
+    expect(publishButton().text()).toMatch(/^Schedule for 06\/15\/99/)
+    await publishButton().trigger('click')
+    await flushPromises()
+    expect(calls).toEqual([when])
   })
 
   it('use the label and the enabled state the panel gives them', () => {
