@@ -1,9 +1,5 @@
 <style>
-.search-input-panel input {
-  width: max(400px, 100%);
-}
-
-/* hidden by default; JS will add .is-open */
+/* hidden by default; .is-open shows it */
 .expanding-panel {
   position: fixed;
   top: 0;
@@ -24,11 +20,20 @@
   pointer-events: auto;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .expanding-panel.is-open {
+    animation: none;
+    transform: none;
+    opacity: 1;
+  }
+}
+
 /* the actual raised background that fades in */
 .expanding-panel__bg {
   min-height: 100vh;
   /* start transparent at the top-right, go to the raised color */
   background: var(--raised-color);
+  color: var(--ink-color);
   padding: 24px;
   box-sizing: border-box;
 }
@@ -49,13 +54,16 @@
   }
 }
 
-/* optional: close button inside */
-.panel-close {
+/* the close button stays at the top right as the page scrolls under it */
+.expanding-panel__bar {
   position: sticky;
   top: 0;
-  right: 0;
-  display: inline-block;
-  margin-left: auto;
+  z-index: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.panel-close {
   background: var(--panel-bg-color);
   color: var(--ink-color);
   border: none;
@@ -65,49 +73,81 @@
 }
 </style>
 <template>
-  <div ref="openPanelElement">
-    <slot :open="openPanelFunction"> {{ t('popup.default-content') }} </slot>
-  </div>
+  <slot :open="openPanelFunction"> {{ t('popup.default-content') }} </slot>
 
-  <div class="expanding-panel" ref="expandingPanel" aria-hidden="true">
-    <div class="expanding-panel__bg">
-      <button class="panel-close" ref="closePanel">{{ t('popup.close') }}</button>
-      <div>
-        <!-- the search forms -->
-
-        <!-- the search forms -->
+  <!-- in the body, not here: the app's layout is a size container, and a size container is
+       the containing block for anything fixed inside it, so the page would only cover it -->
+  <Teleport to="body">
+    <!-- eslint-disable-next-line vuejs-accessibility/no-static-element-interactions -- escape closes it from anywhere inside -->
+    <div
+      ref="expandingPanel"
+      :aria-hidden="!isOpen"
+      :aria-label="label"
+      :class="{ 'is-open': isOpen }"
+      :inert="!isOpen"
+      aria-modal="true"
+      class="expanding-panel"
+      role="dialog"
+      @keydown.esc="closePanelFunction"
+    >
+      <div class="expanding-panel__bg">
+        <div class="expanding-panel__bar">
+          <button ref="closePanel" class="panel-close" type="button" @click="closePanelFunction">
+            {{ t('popup.close') }}
+          </button>
+        </div>
+        <slot v-if="isOpen" name="panel" :close="closePanelFunction" />
       </div>
     </div>
-  </div>
+  </Teleport>
 </template>
 <script setup lang="ts">
 /*
-  todo could we extract out the component machinery behind this for some thing more reusable?
-       wouldn't that be more fun than actually building a feature? yes. yes it would.
+  a page that grows out of the top right corner over everything else. the default slot is
+  what opens it, and gets an `open` function; the `panel` slot is the page, and gets a
+  `close`. or drive it from outside with v-model:open.
  */
 
-import { onMounted, ref } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 
-const openPanelElement = ref<HTMLElement>()
+const props = withDefaults(defineProps<{ open?: boolean; label?: string }>(), {
+  open: false,
+  label: undefined
+})
+const emit = defineEmits<{ 'update:open': [open: boolean] }>()
+
 const expandingPanel = ref<HTMLElement>()
 const closePanel = ref<HTMLElement>()
+const isOpen = ref<boolean>(props.open)
 
-onMounted(() => {
-  closePanel!!.value!!.addEventListener('click', closePanelFunction)
+// whatever had the focus before it opened gets it back when it closes
+let opener: HTMLElement | null = null
+
+watch(
+  () => props.open,
+  (open) => (open ? openPanelFunction() : closePanelFunction())
+)
+
+watch(isOpen, async (open) => {
+  emit('update:open', open)
+  if (open) {
+    opener = document.activeElement as HTMLElement | null
+    await nextTick()
+    closePanel.value?.focus()
+  } else {
+    opener?.focus()
+    opener = null
+  }
 })
 
 function openPanelFunction() {
-  const element = expandingPanel!!.value!!
-  element.classList.add('is-open')
-  element.setAttribute('aria-hidden', 'false')
+  isOpen.value = true
 }
 
 function closePanelFunction() {
-  const element = expandingPanel!!.value!!
-  element.classList.remove('is-open')
-  element.setAttribute('aria-hidden', 'true')
+  isOpen.value = false
 }
 </script>

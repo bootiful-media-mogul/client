@@ -58,6 +58,21 @@ export default class Mogul {
     return new MogulStatus(status.id as number, status.mogulId as number, status.date)
   }
 
+  /**
+   * the status for a day, created if there isn't one yet, so a day can be published about
+   * before anything has happened on it. date is yyyy-mm-dd.
+   */
+  async statusForDate(date: string): Promise<MogulStatus> {
+    const query = `
+            query ( $date: String ) { 
+             mogulStatusForDate( date: $date ) { id, mogulId, date } 
+            } 
+    `
+    const result = await this.client.query(query, { date: date })
+    const status = result.data['mogulStatusForDate']
+    return new MogulStatus(status.id as number, status.mogulId as number, status.date)
+  }
+
   async me(): Promise<string> {
     const query = `
             query { 
