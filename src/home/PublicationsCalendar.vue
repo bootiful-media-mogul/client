@@ -33,7 +33,7 @@
           >
             ‹
           </button>
-          <button class="pure-button" type="button" @click="emit('update:anchor', startOfDay(now))">
+          <button class="pure-button" type="button" @click="goToday">
             {{ t('home.calendar.today') }}
           </button>
           <button
@@ -48,129 +48,155 @@
       </div>
     </div>
 
-    <!-- a week: a column a day, a card a publishable -->
-    <div v-if="view === 'week'" class="week">
-      <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events, vuejs-accessibility/no-static-element-interactions -- a mouse shortcut for the day number, which is the button -->
-      <section
-        v-for="d in days"
-        :key="dayKey(d)"
-        :aria-label="d.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' })"
-        :class="[dayClass(d), { 'is-selected': isSelected(d) }]"
-        class="week-day"
-        @click="emit('select', d)"
+    <!-- one white, rounded card, as tall in a week as in the tallest month. it holds the
+         grid, or, with a day open, that day in place of the grid -->
+    <div class="calendar-surface">
+      <!-- eslint-disable-next-line vuejs-accessibility/no-static-element-interactions -- escape goes back to the grid from anywhere inside -->
+      <div
+        v-if="open"
+        :aria-label="openLabel"
+        class="calendar-day"
+        role="region"
+        @keydown.esc="close"
       >
-        <header class="day-head">
-          <span class="day-name">{{ d.toLocaleDateString([], { weekday: 'short' }) }}</span>
-          <button class="day-number" type="button" @click.stop="emit('select', d)">
-            {{ d.getDate() }}
+        <div class="calendar-day-bar">
+          <button ref="backButton" class="pure-button calendar-back" type="button" @click="close">
+            ‹ {{ t('home.calendar.back.' + view) }}
           </button>
-        </header>
-        <div class="day-entries">
-          <div v-if="!entriesFor(d).length" class="day-empty">
-            {{
-              startOfDay(d) < startOfDay(now)
-                ? t('home.calendar.nothing-went-out')
-                : t('home.calendar.nothing-scheduled')
-            }}
-          </div>
-          <button
-            v-for="e in entriesFor(d)"
-            :key="e.key"
-            :class="entryClass(e)"
-            class="entry"
-            type="button"
-            @click.stop="emit('select', d)"
+        </div>
+        <slot name="day" />
+      </div>
+
+      <!-- shown, not rebuilt, so the day that opened the editor is still there to get the
+           focus back when it closes -->
+      <div v-show="!open" class="calendar-grid">
+        <!-- a week: a column a day, a card a publishable -->
+        <div v-if="view === 'week'" class="week">
+          <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events, vuejs-accessibility/no-static-element-interactions -- a mouse shortcut for the day number, which is the button -->
+          <section
+            v-for="d in days"
+            :key="dayKey(d)"
+            :aria-label="
+              d.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' })
+            "
+            :class="[dayClass(d), { 'is-selected': isSelected(d) }]"
+            class="week-day"
+            @click="emit('select', d)"
           >
-            <span class="entry-meta">
-              <Icon
-                v-if="typeIcon(e)"
-                :icon="typeIcon(e)!"
-                :icon-hover="typeIcon(e)!"
-                alt=""
-                class="entry-type-icon"
-              />
-              <span>{{ typeLabel(e) }}</span>
-              <span class="entry-time">{{ time(e.when) }}</span>
-            </span>
-            <span class="entry-title">{{ titleOf(e) }}</span>
-            <span class="entry-plugins">
-              <span
-                v-for="p in e.publications"
-                :key="p.id"
-                :class="'plugin-badge-' + statusOf(p, now)"
-                :title="pluginTitle(p.plugin)"
-                class="plugin-badge"
+            <header class="day-head">
+              <span class="day-name">{{ d.toLocaleDateString([], { weekday: 'short' }) }}</span>
+              <button class="day-number" type="button" @click.stop="emit('select', d)">
+                {{ d.getDate() }}
+              </button>
+            </header>
+            <div class="day-entries">
+              <div v-if="!entriesFor(d).length" class="day-empty">
+                {{
+                  startOfDay(d) < startOfDay(now)
+                    ? t('home.calendar.nothing-went-out')
+                    : t('home.calendar.nothing-scheduled')
+                }}
+              </div>
+              <button
+                v-for="e in entriesFor(d)"
+                :key="e.key"
+                :class="entryClass(e)"
+                class="entry"
+                type="button"
+                @click.stop="emit('select', d)"
               >
-                <span :class="{ 'plugin-tile-image': !!iconFor(p.plugin) }" class="plugin-tile">
-                  <img v-if="iconFor(p.plugin)" :src="iconFor(p.plugin)" alt="" />
-                  <span v-else class="plugin-tile-mono">{{
-                    pluginTitle(p.plugin).slice(0, 2)
-                  }}</span>
+                <span class="entry-meta">
+                  <Icon
+                    v-if="typeIcon(e)"
+                    :icon="typeIcon(e)!"
+                    :icon-hover="typeIcon(e)!"
+                    alt=""
+                    class="entry-type-icon"
+                  />
+                  <span>{{ typeLabel(e) }}</span>
+                  <span class="entry-time">{{ time(e.when) }}</span>
                 </span>
-                <span
-                  v-if="hasFailure(statusOf(p, now))"
-                  class="plugin-badge-mark plugin-badge-failed"
-                  aria-hidden="true"
+                <span class="entry-title">{{ titleOf(e) }}</span>
+                <span class="entry-plugins">
+                  <span
+                    v-for="p in e.publications"
+                    :key="p.id"
+                    :class="'plugin-badge-' + statusOf(p, now)"
+                    :title="pluginTitle(p.plugin)"
+                    class="plugin-badge"
+                  >
+                    <span :class="{ 'plugin-tile-image': !!iconFor(p.plugin) }" class="plugin-tile">
+                      <img v-if="iconFor(p.plugin)" :src="iconFor(p.plugin)" alt="" />
+                      <span v-else class="plugin-tile-mono">{{
+                        pluginTitle(p.plugin).slice(0, 2)
+                      }}</span>
+                    </span>
+                    <span
+                      v-if="hasFailure(statusOf(p, now))"
+                      class="plugin-badge-mark plugin-badge-failed"
+                      aria-hidden="true"
+                      >!</span
+                    >
+                    <span v-else-if="statusOf(p, now) === 'publishing'" class="plugin-badge-mark"
+                      >🕒</span
+                    >
+                  </span>
+                </span>
+              </button>
+            </div>
+          </section>
+        </div>
+
+        <!-- a month: a cell a day, a line a publishable -->
+        <template v-else>
+          <div class="month-head">
+            <div v-for="d in days.slice(0, 7)" :key="d.getDay()" class="day-name">
+              {{ d.toLocaleDateString([], { weekday: 'short' }) }}
+            </div>
+          </div>
+          <div class="month">
+            <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events, vuejs-accessibility/no-static-element-interactions -- a mouse shortcut for the day number, which is the button -->
+            <div
+              v-for="d in days"
+              :key="dayKey(d)"
+              :class="[
+                dayClass(d),
+                { 'is-outside': d.getMonth() !== anchor.getMonth(), 'is-selected': isSelected(d) }
+              ]"
+              class="month-day"
+              @click="emit('select', d)"
+            >
+              <button class="day-number" type="button" @click.stop="emit('select', d)">
+                {{ d.getDate() }}
+              </button>
+              <button
+                v-for="e in entriesFor(d).slice(0, MONTH_LINES)"
+                :key="e.key"
+                :class="entryClass(e)"
+                :title="titleOf(e)"
+                class="month-entry"
+                type="button"
+                @click.stop="emit('select', d)"
+              >
+                <span class="entry-time">{{ shortTime(e.when) }}</span>
+                <span class="entry-title">{{ titleOf(e) }}</span>
+                <span v-if="entryFlags(e, now).failed" class="month-entry-mark" aria-hidden="true"
                   >!</span
                 >
-                <span v-else-if="statusOf(p, now) === 'publishing'" class="plugin-badge-mark"
-                  >🕒</span
-                >
+              </button>
+              <span v-if="entriesFor(d).length > MONTH_LINES" class="month-more">
+                {{ t('home.calendar.more', { n: entriesFor(d).length - MONTH_LINES }) }}
               </span>
-            </span>
-          </button>
-        </div>
-      </section>
+            </div>
+          </div>
+        </template>
+      </div>
     </div>
-
-    <!-- a month: a cell a day, a line a publishable -->
-    <template v-else>
-      <div class="month-head">
-        <div v-for="d in days.slice(0, 7)" :key="d.getDay()" class="day-name">
-          {{ d.toLocaleDateString([], { weekday: 'short' }) }}
-        </div>
-      </div>
-      <div class="month">
-        <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events, vuejs-accessibility/no-static-element-interactions -- a mouse shortcut for the day number, which is the button -->
-        <div
-          v-for="d in days"
-          :key="dayKey(d)"
-          :class="[
-            dayClass(d),
-            { 'is-outside': d.getMonth() !== anchor.getMonth(), 'is-selected': isSelected(d) }
-          ]"
-          class="month-day"
-          @click="emit('select', d)"
-        >
-          <button class="day-number" type="button" @click.stop="emit('select', d)">
-            {{ d.getDate() }}
-          </button>
-          <button
-            v-for="e in entriesFor(d).slice(0, MONTH_LINES)"
-            :key="e.key"
-            :class="entryClass(e)"
-            :title="titleOf(e)"
-            class="month-entry"
-            type="button"
-            @click.stop="emit('select', d)"
-          >
-            <span class="entry-time">{{ shortTime(e.when) }}</span>
-            <span class="entry-title">{{ titleOf(e) }}</span>
-            <span v-if="entryFlags(e, now).failed" class="month-entry-mark" aria-hidden="true"
-              >!</span
-            >
-          </button>
-          <span v-if="entriesFor(d).length > MONTH_LINES" class="month-more">
-            {{ t('home.calendar.more', { n: entriesFor(d).length - MONTH_LINES }) }}
-          </span>
-        </div>
-      </div>
-    </template>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { Publication } from '@/services'
 import Icon from '@/ui/Icon.vue'
@@ -199,12 +225,15 @@ const props = defineProps<{
   anchor: Date
   selected: Date | null
   now: Date
+  /** the selected day is open: its editor stands in for the grid */
+  open?: boolean
 }>()
 
 const emit = defineEmits<{
   'update:view': [view: CalendarView]
   'update:anchor': [anchor: Date]
   select: [day: Date]
+  close: []
 }>()
 
 const { t, te } = useI18n()
@@ -306,11 +335,46 @@ const summary = computed(() => {
   return parts.length ? parts : [{ text: t('home.calendar.summary.none'), failed: false }]
 })
 
+const openLabel = computed(
+  () => props.selected?.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' })
+)
+
+// going somewhere else on the calendar means going back to the grid first
+function close() {
+  if (props.open) emit('close')
+}
+
 function move(direction: number) {
+  close()
   emit('update:anchor', step(props.view, props.anchor, direction))
 }
 
+function goToday() {
+  close()
+  emit('update:anchor', startOfDay(props.now))
+}
+
+// into the day: the focus goes to the way back out. out of it: back to what opened it
+const backButton = ref<HTMLElement>()
+let opener: HTMLElement | null = null
+
+watch(
+  () => props.open,
+  async (open) => {
+    if (open) {
+      opener = document.activeElement as HTMLElement | null
+      await nextTick()
+      backButton.value?.focus()
+    } else {
+      await nextTick()
+      opener?.focus()
+      opener = null
+    }
+  }
+)
+
 function setView(v: CalendarView) {
+  close()
   // back to today's week when today is in the month being looked at
   const today = startOfDay(props.now)
   if (
@@ -377,6 +441,45 @@ function setView(v: CalendarView) {
   padding-inline: 0.8em;
 }
 
+/* ------------------------------------------------------------------ the card */
+.calendar {
+  /* a month row, and the weekday names over a month. the card is as tall as the tallest
+     month (six rows), whatever it's showing, so nothing jumps between week, month and day */
+  --calendar-row: 7rem;
+  --calendar-head: 2rem;
+}
+
+.calendar-surface {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(var(--calendar-head) + 6 * var(--calendar-row));
+  border: 1px solid var(--rule-color);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background-color: var(--raised-color);
+}
+
+.calendar-grid {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* a day, standing in for the grid */
+.calendar-day {
+  flex: 1;
+  padding: var(--gutter-space);
+}
+
+.calendar-day-bar {
+  display: flex;
+  padding-bottom: var(--gutter-space-half);
+}
+
+.calendar-back {
+  margin: 0;
+}
+
 /* ------------------------------------------------------------------ days, shared */
 .day-name {
   font-family: var(--font-mono);
@@ -425,12 +528,9 @@ function setView(v: CalendarView) {
 
 /* ------------------------------------------------------------------ week */
 .week {
+  flex: 1;
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  border: 1px solid var(--rule-color);
-  border-radius: var(--radius);
-  overflow: hidden;
-  min-height: 28rem;
 }
 
 .week-day {
@@ -624,14 +724,21 @@ function setView(v: CalendarView) {
   grid-template-columns: repeat(7, minmax(0, 1fr));
 }
 
-.month-head .day-name {
-  padding: 0 var(--gutter-space-half) var(--gutter-space-third);
+.month-head {
+  height: var(--calendar-head);
+  border-bottom: 1px solid var(--rule-color);
 }
 
+.month-head .day-name {
+  display: flex;
+  align-items: center;
+  padding: 0 var(--gutter-space-half);
+}
+
+/* a five-row month stretches its rows to fill the card a six-row one does */
 .month {
-  border: 1px solid var(--rule-color);
-  border-radius: var(--radius);
-  overflow: hidden;
+  flex: 1;
+  grid-auto-rows: minmax(var(--calendar-row), 1fr);
 }
 
 .month-day {
@@ -639,7 +746,6 @@ function setView(v: CalendarView) {
   flex-direction: column;
   gap: 2px;
   min-width: 0;
-  min-height: 7rem;
   padding: var(--gutter-space-third);
   border-left: 1px solid var(--rule-color);
   border-top: 1px solid var(--rule-color);

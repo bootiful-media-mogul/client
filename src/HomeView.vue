@@ -3,16 +3,17 @@
 
   <div class="form-section">
     <div class="form-section-title">{{ t('home.publications') }}</div>
-    <PopupPage v-model:open="dayOpen" :label="selectedLabel">
-      <PublicationsCalendar
-        v-model:anchor="anchor"
-        v-model:view="view"
-        :now="now"
-        :publications="shown"
-        :selected="selected"
-        @select="select"
-      />
-      <template #panel>
+    <PublicationsCalendar
+      v-model:anchor="anchor"
+      v-model:view="view"
+      :now="now"
+      :open="dayOpen"
+      :publications="shown"
+      :selected="selected"
+      @close="dayOpen = false"
+      @select="select"
+    >
+      <template #day>
         <DayPanel
           v-if="selected"
           :day="selected"
@@ -21,16 +22,15 @@
           @unpublish="unpublish"
         />
       </template>
-    </PopupPage>
+    </PublicationsCalendar>
   </div>
 </template>
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { publications, type Publication } from '@/services'
 import PublicationsCalendar from '@/home/PublicationsCalendar.vue'
 import DayPanel from '@/home/DayPanel.vue'
-import PopupPage from '@/layout/PopupPage.vue'
 import { type CalendarView, startOfDay, visibleRange } from '@/home/calendar'
 import { useNotificationListeners } from '@/composables/useNotificationListeners'
 
@@ -42,9 +42,6 @@ const view = ref<CalendarView>('week')
 const anchor = ref<Date>(startOfDay(now.value))
 const selected = ref<Date | null>(null)
 const dayOpen = ref<boolean>(false)
-const selectedLabel = computed(
-  () => selected.value?.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' })
-)
 
 function select(day: Date) {
   selected.value = day

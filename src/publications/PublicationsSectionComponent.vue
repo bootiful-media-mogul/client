@@ -62,6 +62,8 @@
   /* the near-black of the top bar in every palette: the logos are drawn light, so a
      tile in the (light, in the dark palettes) ink would wash them out */
   background-color: var(--topbar-color);
+  /* the tile's rounding is the logo's too: art drawn to its edges must not paint over it */
+  overflow: hidden;
   /* not a line box: a png logo is an inline <img> and sat on the text baseline, which
      left the line's descender below it and made its tile taller than an svg icon's */
   display: flex;

@@ -1,7 +1,5 @@
 import { PanelSlotIcon } from '@/publications/input'
-import mogulAyrshareIcon from '@/assets/images/publications/mogul/publish-to-ayrshare.png'
-import podcastAyrshareIcon from '@/assets/images/publications/podcasts/publish-to-ayrshare.png'
-import blogAyrshareIcon from '@/assets/images/publications/blogs/publish-to-ayrshare.png'
+import ayrshareIcon from '@/assets/images/icons/ayrshare.svg'
 import podbeanIcon from '@/assets/images/publications/podcasts/publish-to-podbean.png'
 import mockIcon from '@/assets/images/publications/podcasts/mock.png'
 import wordpressIcon from '@/assets/images/publications/blogs/wordpress-og.png'
@@ -17,9 +15,9 @@ import blogIcon from '@/assets/images/icons/rss.svg'
  */
 export const PLUGIN_ICONS = new Map<string, PanelSlotIcon>(
   Object.entries({
-    mogulAyrshare: mogulAyrshareIcon,
-    podcastEpisodeAyrshare: podcastAyrshareIcon,
-    blogPostAyrshare: blogAyrshareIcon,
+    mogulAyrshare: ayrshareIcon,
+    podcastEpisodeAyrshare: ayrshareIcon,
+    blogPostAyrshare: ayrshareIcon,
     podbean: podbeanIcon,
     mockPodcastEpisode: mockIcon,
     wordpress: wordpressIcon,

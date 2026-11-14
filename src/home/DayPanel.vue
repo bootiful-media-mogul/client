@@ -1,6 +1,6 @@
 <template>
   <div class="day-page">
-    <h1>{{ title }}</h1>
+    <h2>{{ title }}</h2>
     <!-- publishing about this day: the same tabbed bar of plugins as under an episode -->
     <div class="form-section">
       <div class="form-section-title">
@@ -134,14 +134,14 @@ const linkable = (e: CalendarEntry) =>
 </script>
 
 <style scoped>
-/* a page, but a narrow one: the composer reads best at about this width */
+/* in the calendar's card, in place of its grid: the composer reads best at about this width */
 .day-page {
   max-width: 60rem;
-  margin: 0 auto;
 }
 
-.day-page h1 {
-  margin-top: 0;
+.day-page h2 {
+  margin: 0;
+  font-size: var(--font-size-lg);
 }
 
 .day-past {
