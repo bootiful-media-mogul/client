@@ -1,7 +1,12 @@
 <script setup lang="ts">
-defineProps<{
+import { computed } from 'vue'
+import { cssUrl } from '@/ui/css'
+
+const props = defineProps<{
   watermarkImage: string
 }>()
+
+const mask = computed(() => cssUrl(props.watermarkImage))
 </script>
 
 <template>
@@ -11,8 +16,8 @@ defineProps<{
   <div
     class="watermark-badge"
     :style="{
-      maskImage: `url(${watermarkImage})`,
-      WebkitMaskImage: `url(${watermarkImage})`
+      maskImage: mask,
+      WebkitMaskImage: mask
     }"
   />
 </template>
