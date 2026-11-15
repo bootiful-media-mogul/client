@@ -106,6 +106,8 @@ const translations = {
       entity: { title: 'Notes for {entityName}' },
       done: 'Done',
       filters: { 'show-done': 'Show Finished notes' },
+      fields: { title: 'Title', url: 'URL' },
+      errors: { url: 'The URL has to start with http:// or https://' },
       new: { prompt: "{entityName}'s Notes" }
     },
     blogs: {

@@ -2098,13 +2098,25 @@ export class Note {
   readonly type: string
   readonly created: string
   readonly done?: string | null
+  readonly url?: string | null
+  readonly title?: string | null
 
-  constructor(id: number, note: string, type: string, created: string, done?: string | null) {
+  constructor(
+    id: number,
+    note: string,
+    type: string,
+    created: string,
+    done?: string | null,
+    url?: string | null,
+    title?: string | null
+  ) {
     this.id = id
     this.note = note
     this.type = type
     this.created = created
     this.done = done
+    this.url = url
+    this.title = title
   }
 }
 
@@ -2127,15 +2139,22 @@ export class Notes {
     return await result.data['deleteNote']
   }
 
-  async updateNote(id: number, note: string): Promise<boolean> {
+  async updateNote(
+    id: number,
+    note: string,
+    title: string | null,
+    url: string | null
+  ): Promise<boolean> {
     const mutation = ` 
-      mutation UpdateNote( $id:Int,$note:String  ){  
-        updateNote(id:$id, note:$note)
+      mutation UpdateNote( $id:Int, $note:String, $title:String, $url:String ){  
+        updateNote(id:$id, note:$note, title:$title, url:$url)
       }
     `
     const result = await this.client.mutation(mutation, {
       note: note,
-      id: id
+      id: id,
+      title: title,
+      url: url
     })
     return await result.data['updateNote']
   }
@@ -2153,16 +2172,24 @@ export class Notes {
     return await result.data['setNoteDone']
   }
 
-  async createNote(type: string, id: number, note: string): Promise<boolean> {
+  async createNote(
+    type: string,
+    id: number,
+    note: string,
+    title: string | null,
+    url: string | null
+  ): Promise<boolean> {
     const mutation = ` 
-      mutation CreateNote( $type : String, $id : Int , $note : String){  
-        createNote( type : $type, id : $id, note : $note)
+      mutation CreateNote( $type : String, $id : Int , $note : String, $title : String, $url : String){  
+        createNote( type : $type, id : $id, note : $note, title : $title, url : $url)
       }
     `
     const result = await this.client.mutation(mutation, {
       note: note,
       id: id,
-      type: type
+      type: type,
+      title: title,
+      url: url
     })
     return await result.data['createNote']
   }
@@ -2181,6 +2208,8 @@ export class Notes {
           id 
           note 
           type
+          url
+          title
         }
       }  
     `,

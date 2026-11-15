@@ -31,12 +31,18 @@ const props = defineProps<{
   created: string | number
   done: string | null
   type: string
+  url?: string | null
+  title?: string | null
 }>()
 </script>
 
 <template>
   <div class="note" :class="{ done: done !== null }">
     <div class="created-column">{{ dateTimeToString(created) }}</div>
+    <div v-if="title" class="note-title">{{ title }}</div>
+    <a v-if="url" class="note-url" :href="url" target="_blank" rel="noopener noreferrer">{{
+      url
+    }}</a>
     <div class="note-text">
       {{ note }}
     </div>
@@ -74,6 +80,8 @@ const props = defineProps<{
   display: grid;
   grid-template-areas:
     ' created '
+    ' note-title '
+    ' note-url '
     ' note-text '
     ' buttons ';
 
@@ -82,6 +90,16 @@ const props = defineProps<{
     padding-bottom: calc(var(--gutter-space) / 2);
     font-size: var(--font-size-sm);
     text-align: right;
+  }
+  .note-title {
+    grid-area: note-title;
+    font-weight: bold;
+    padding-bottom: var(--gutter-space-half);
+  }
+  .note-url {
+    grid-area: note-url;
+    overflow-wrap: anywhere;
+    padding-bottom: var(--gutter-space-half);
   }
   .note-text {
     hyphens: auto;

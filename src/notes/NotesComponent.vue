@@ -17,18 +17,33 @@ class UiNote {
   readonly type: string
   readonly created: string
   readonly done: string | null
-  constructor(id: number, note: string, type: string, created: string, done?: string | null) {
+  readonly url: string | null
+  readonly title: string | null
+  constructor(
+    id: number,
+    note: string,
+    type: string,
+    created: string,
+    done?: string | null,
+    url?: string | null,
+    title?: string | null
+  ) {
     this.id = id
     this.note = note
     this.type = type
     this.created = created
     this.done = done ?? null
+    this.url = url ?? null
+    this.title = title ?? null
   }
 }
 const mogulName = ref<string>('')
 const defaultId = -1
 const mogulId = ref<number>(-1)
 const noteText = ref<string>('')
+const noteTitle = ref<string>('')
+const noteUrl = ref<string>('')
+const urlError = ref<boolean>(false)
 const mogulNotes = ref<Array<UiNote>>([])
 const entityNotes = ref<Array<UiNote>>([])
 const noteId = ref<number>(defaultId)
@@ -44,7 +59,9 @@ function resultsToUiNotes(items: Array<Note>): Array<UiNote> {
   if (items && items.length > 0) {
     const arr: Array<UiNote> = []
     for (const item of items) {
-      arr.push(new UiNote(item.id, item.note, item.type, item.created, item.done))
+      arr.push(
+        new UiNote(item.id, item.note, item.type, item.created, item.done, item.url, item.title)
+      )
     }
     return arr
   }
@@ -53,17 +70,44 @@ function resultsToUiNotes(items: Array<Note>): Array<UiNote> {
 
 async function loadIntoEditor(note: UiNote) {
   noteText.value = note.note
+  noteTitle.value = note.title ?? ''
+  noteUrl.value = note.url ?? ''
+  urlError.value = false
   noteId.value = note.id
   noteTarget.value = note.type === 'mogul' ? 'mogul' : 'entity'
   showComposer.value = true
 }
 
+// the api only takes absolute http(s) urls, since a note's url is shown as a link
+function isWebUrl(url: string): boolean {
+  try {
+    const protocol = new URL(url).protocol
+    return protocol === 'http:' || protocol === 'https:'
+  } catch {
+    return false
+  }
+}
+
+function blankToNull(value: string): string | null {
+  const trimmed = value.trim()
+  return trimmed === '' ? null : trimmed
+}
+
+// a note can be just a title or just a url, as the clipper makes them
+function hasContent(): boolean {
+  return [noteText.value, noteTitle.value, noteUrl.value].some((v) => v.trim() !== '')
+}
+
 async function saveEntityNote(notableId: number, type: string) {
+  const title = blankToNull(noteTitle.value)
+  const url = blankToNull(noteUrl.value)
+  urlError.value = url !== null && !isWebUrl(url)
+  if (urlError.value) return
   if (noteId.value > 0) {
-    await notes.updateNote(noteId.value, noteText.value)
+    await notes.updateNote(noteId.value, noteText.value, title, url)
   } //
   else {
-    await notes.createNote(type, notableId, noteText.value)
+    await notes.createNote(type, notableId, noteText.value, title, url)
   }
   await reload()
   await clear()
@@ -80,6 +124,9 @@ async function expandIfNotesAvailable(): Promise<void> {
 
 async function clear() {
   noteText.value = ''
+  noteTitle.value = ''
+  noteUrl.value = ''
+  urlError.value = false
   noteId.value = defaultId
   showComposer.value = false
 }
@@ -138,6 +185,23 @@ onMounted(async () => {
       <!-- Composition panel - hidden by default -->
       <div v-if="showComposer" class="note-composition">
         <div class="pure-control-group">
+          <label for="note-title">{{ t('notes.fields.title') }}</label>
+          <input id="note-title" v-model="noteTitle" type="text" />
+        </div>
+        <div class="pure-control-group">
+          <label for="note-url">{{ t('notes.fields.url') }}</label>
+          <input
+            id="note-url"
+            v-model="noteUrl"
+            type="url"
+            :aria-invalid="urlError"
+            aria-describedby="note-url-error"
+          />
+          <p v-if="urlError" id="note-url-error" class="note-url-error" role="alert">
+            {{ t('notes.errors.url') }}
+          </p>
+        </div>
+        <div class="pure-control-group">
           <label for="note">
             {{
               t('notes.new.prompt', {
@@ -147,7 +211,7 @@ onMounted(async () => {
           </label>
 
           <InputWrapper v-model="noteText">
-            <textarea id="note" v-model="noteText" required rows="10" />
+            <textarea id="note" v-model="noteText" rows="10" />
             <InputTools v-model="noteText" />
           </InputWrapper>
         </div>
@@ -161,7 +225,7 @@ onMounted(async () => {
                   ? saveEntityNote(notableId, type)
                   : saveEntityNote(mogulId, 'mogul')
               "
-              :disabled="noteText.length === 0"
+              :disabled="!hasContent()"
             >
               {{ t('notes.buttons.save') }}
             </button>
@@ -169,7 +233,7 @@ onMounted(async () => {
           <span class="cancel">
             <button
               :class="'pure-button '"
-              :disabled="noteText.length === 0"
+              :disabled="!hasContent()"
               type="submit"
               @click.prevent="clear"
             >
@@ -201,6 +265,8 @@ onMounted(async () => {
             :id="note.id"
             :note="note.note"
             :type="note.type"
+            :url="note.url"
+            :title="note.title"
             @deleted="reload"
             @done-changed="reload"
             @update="loadIntoEditor(note)"
@@ -230,6 +296,8 @@ onMounted(async () => {
             :id="note.id"
             :note="note.note"
             :type="note.type"
+            :url="note.url"
+            :title="note.title"
             @deleted="reload"
             @done-changed="reload"
             @update="loadIntoEditor(note)"
@@ -258,6 +326,12 @@ onMounted(async () => {
   gap: var(--gutter-space-half);
   padding-bottom: var(--gutter-space-half);
   font-size: var(--font-size-sm);
+}
+
+.note-url-error {
+  color: var(--danger-color);
+  font-size: var(--font-size-sm);
+  margin: var(--gutter-space-third) 0 0 0;
 }
 
 .note-composition {
