@@ -242,37 +242,10 @@ onMounted(async () => {
           </span>
         </div>
       </div>
-      <!-- Always show mogul notes section -->
-      <div class="existing-notes">
-        <label class="notes-filter">
-          <input v-model="showDoneNotes" type="checkbox" @change="reload" />
-          <span>{{ t('notes.filters.show-done') }}</span>
-        </label>
-        <div class="panel-menu-subtitle notes-section section-header">
-          <span>{{ t('notes.system-wide.title') }}</span>
-          <Icon
-            :alt="t('icons.new-note')"
-            highlight="hover"
-            :icon-hover="plusIcon"
-            :icon="plusIcon"
-            @click="showComposerFor('mogul')"
-          />
-        </div>
-        <div class="note" v-for="note in mogulNotes" :key="note.id">
-          <NoteEditor
-            :created="note.created"
-            :done="note.done"
-            :id="note.id"
-            :note="note.note"
-            :type="note.type"
-            :url="note.url"
-            :title="note.title"
-            @deleted="reload"
-            @done-changed="reload"
-            @update="loadIntoEditor(note)"
-          />
-        </div>
-      </div>
+      <label class="notes-filter">
+        <input v-model="showDoneNotes" type="checkbox" @change="reload" />
+        <span>{{ t('notes.filters.show-done') }}</span>
+      </label>
 
       <!-- Show entity-specific notes section when on entity page -->
       <div class="entity-notes" v-if="entityLoaded">
@@ -290,6 +263,34 @@ onMounted(async () => {
           />
         </div>
         <div class="note" v-for="note in entityNotes" :key="note.id">
+          <NoteEditor
+            :created="note.created"
+            :done="note.done"
+            :id="note.id"
+            :note="note.note"
+            :type="note.type"
+            :url="note.url"
+            :title="note.title"
+            @deleted="reload"
+            @done-changed="reload"
+            @update="loadIntoEditor(note)"
+          />
+        </div>
+      </div>
+
+      <!-- Always show mogul (global) notes section, after any entity-specific notes -->
+      <div class="existing-notes">
+        <div class="panel-menu-subtitle notes-section section-header">
+          <span>{{ t('notes.system-wide.title') }}</span>
+          <Icon
+            :alt="t('icons.new-note')"
+            highlight="hover"
+            :icon-hover="plusIcon"
+            :icon="plusIcon"
+            @click="showComposerFor('mogul')"
+          />
+        </div>
+        <div class="note" v-for="note in mogulNotes" :key="note.id">
           <NoteEditor
             :created="note.created"
             :done="note.done"
