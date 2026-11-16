@@ -378,6 +378,7 @@ const translations = {
     'jobs.name.helloWorldJob': '"Hello World!"',
     'jobs.name.failingJob': 'Fail',
     'jobs.name.notesIndexerJob': 'Notes Indexer',
+    'jobs.name.searchIndexJob': 'Rebuild Search Index',
     'jobs.name.podcastIndexerJob': 'Podcast Indexer',
     'jobs.required': '(required)',
     'jobs.name.importMarkdownPostsJob': 'Import Markdown Posts',
