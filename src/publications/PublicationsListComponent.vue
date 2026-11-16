@@ -22,13 +22,13 @@
             />
           </div>
         </div>
-        <div class="created-column">
+        <div class="created-column" :data-label="t('publications.dates.created')">
           {{ dateTimeToString(publication.created) }}
         </div>
-        <div class="scheduled-column">
+        <div class="scheduled-column" :data-label="t('publications.dates.scheduled')">
           {{ dateTimeToString(publication.scheduled) ?? t('publications.dates.now') }}
         </div>
-        <div class="published-column">
+        <div class="published-column" :data-label="t('publications.dates.published')">
           {{ dateTimeToString(publication.published) }}
         </div>
         <div class="delete-column">
@@ -117,6 +117,11 @@
   --outcome-indent: var(--gutter-space);
   --outcome-gap: var(--gutter-space-half);
   margin-top: var(--gutter-space);
+  /* lays out by its own width, not the screen's, so it fits wherever it's put: the
+     narrow layout at the bottom of this file kicks in on a phone, and in a narrow
+     column on a wide screen. it also means the table can never push what it's in
+     wider than the screen, which is what it used to do on a phone */
+  container: publications / inline-size;
 }
 
 /* the header and the publication rows lay out on the one grid, so a heading sits over
@@ -272,6 +277,46 @@
   text-overflow: ellipsis;
   font-style: italic;
   opacity: 0.75;
+}
+
+/*
+ * too narrow for three dates side by side (each is an 11em column): the icons keep
+ * their row, and each date gets a line of its own, named by its label, since the header
+ * above the columns is gone. the outcomes under them give up their indent and some of
+ * the label column, and the preview takes what's left.
+ */
+@container publications (max-width: 560px) {
+  .publications .publications-header {
+    display: none;
+  }
+
+  .publications .publications-row {
+    grid-template-areas:
+      ' plugin delete url . '
+      ' created created created created '
+      ' scheduled scheduled scheduled scheduled '
+      ' published published published published ';
+    grid-template-columns: var(--icon-column) var(--icon-column) var(--icon-column) minmax(0, 1fr);
+    column-gap: var(--outcome-gap);
+    row-gap: var(--gutter-space-third);
+  }
+
+  .publications .publications-row .created-column {
+    margin-top: var(--gutter-space-half);
+  }
+
+  .publications .publications-row [data-label]::before {
+    content: attr(data-label);
+    display: inline-block;
+    min-width: 6.5em;
+    color: var(--muted-color);
+    font-size: var(--font-size-xs);
+  }
+
+  .publications .publications-outcome {
+    --key-column: 9em;
+    margin-left: 0;
+  }
 }
 </style>
 

@@ -844,6 +844,42 @@ function setView(v: CalendarView) {
   padding-left: var(--gutter-space-third);
 }
 
+/*
+ * a phone gives each day of a month about 60px, too little for even a time. there, an
+ * entry is a slim bar, the way phone calendars draw a month: its colors and borders still
+ * say upcoming, failed, or withdrawn, and tapping the day opens it with all the details.
+ * the text stays for screen readers, out of sight.
+ */
+@container app (max-width: 599.98px) {
+  .month-entry {
+    height: 6px;
+    padding: 0;
+    border-radius: 3px;
+    background-color: var(--accent-color);
+  }
+
+  .month-entry.is-upcoming {
+    background-color: transparent;
+  }
+
+  .month-entry.is-failed {
+    background-color: var(--danger-color);
+  }
+
+  .month-entry > span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .month-day {
+    gap: 3px;
+  }
+}
+
 @container app (max-width: 899.98px) {
   .week {
     grid-template-columns: minmax(0, 1fr);
