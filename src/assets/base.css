@@ -571,7 +571,10 @@ textarea {
     'footer'
     'buffer';
   grid-template-rows: auto 1fr auto auto;
-  grid-template-columns: 1fr;
+  /* minmax(0, ...), not a bare 1fr: 1fr can't shrink below its content, so one wide
+     thing (a button that won't wrap) widened the whole page past the screen and the
+     right side was clipped off */
+  grid-template-columns: minmax(0, 1fr);
   grid-row-gap: 0;
 }
 

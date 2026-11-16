@@ -143,8 +143,9 @@ function pickPalette(palette: DarkPalette) {
 
 .palettes {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+  grid-template-columns: 1fr;
   gap: var(--gutter-space);
+  max-width: 28rem;
 }
 
 /* each card names its palette with data-theme, so everything inside reads that palette's

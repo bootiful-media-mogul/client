@@ -26,19 +26,22 @@
           <div v-else class="pure-control-group">
             <label :for="textAreaElementId(settingsPage.category, setting.name)">
               {{ label(settingsPage.category, setting.name) }}
+            </label>
+            <div class="secret-field">
+              <input
+                :id="textAreaElementId(settingsPage.category, setting.name)"
+                v-model="setting.value"
+                autocomplete="off"
+                :required="setting.required && !setting.valid"
+                class="secret"
+                :class="{ 'secret-revealable': setting.type !== 'TEXT' }"
+                :type="setting.type === 'TEXT' ? 'text' : 'password'"
+              />
               <PrivatePasswordInputComponent
                 v-if="setting.type !== 'TEXT'"
-                :prompt="t('podcasts.episodes.episode.description.ai-prompt')"
+                :for="textAreaElementId(settingsPage.category, setting.name)"
               />
-            </label>
-            <input
-              :id="textAreaElementId(settingsPage.category, setting.name)"
-              v-model="setting.value"
-              autocomplete="off"
-              :required="setting.required && !setting.valid"
-              class="secret"
-              :type="setting.type === 'TEXT' ? 'text' : 'password'"
-            />
+            </div>
             <span class="pure-form-message-inline">
               <span v-if="setting.required && !setting.valid">{{
                 t('labels.required-value')
@@ -157,12 +160,28 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.secret-field {
+  position: relative;
+}
+
 .secret {
   width: 100%;
+}
+
+/* room at the right end for the show-password eye */
+.secret.secret-revealable {
+  padding-right: calc(24px + var(--gutter-space));
 }
 
 /* standard stuff */
 .pure-controls .pure-button {
   margin-top: calc(0.5 * var(--gutter-space));
+}
+
+/* pure keeps a button on one line, and "save configuration changes for <plugin>" is
+   wider than a phone: unwrapped, it pushed the whole page past the screen's edge */
+.pure-controls .pure-button {
+  white-space: normal;
+  max-width: 100%;
 }
 </style>
