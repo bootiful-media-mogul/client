@@ -608,9 +608,33 @@ function holdEditorHeight() {
 }
 
 // the panel has always asked again whether the plugin is ready when a platform is ticked
-watch(selected, async () => {
+watch(selected, async (value) => {
+  saveSelectedPlatforms(value)
   pluginReady.value = await isPluginReady()
 })
+
+// the ticked platforms are remembered in the browser, per plugin, and ticked again the
+// next time the composer is initialized
+const selectedStorageKey = `ayrshare-selected-platforms-${pluginName}`
+
+function saveSelectedPlatforms(platforms: Array<string>) {
+  try {
+    localStorage.setItem(selectedStorageKey, JSON.stringify(platforms))
+  } catch {
+    // storage may be unavailable; remembering is a convenience
+  }
+}
+
+function restoreSelectedPlatforms() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(selectedStorageKey) ?? '[]')
+    if (!Array.isArray(stored)) return
+    const known = compositions.value.map((c) => c.platform)
+    selected.value = stored.filter((p) => typeof p === 'string' && known.includes(p))
+  } catch {
+    // unreadable state is as good as none
+  }
+}
 
 function setShared(value: string) {
   text.shared = value
@@ -736,6 +760,7 @@ async function refresh(): Promise<void> {
 
 onMounted(async () => {
   await refresh()
+  restoreSelectedPlatforms()
   pluginReady.value = await isPluginReady()
 })
 
