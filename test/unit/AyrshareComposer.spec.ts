@@ -1,7 +1,7 @@
 import { flushPromises, mount } from '@vue/test-utils'
 import { defineComponent, h, nextTick } from 'vue'
 import { createI18n } from 'vue-i18n'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   type AyrshareDraft,
   buildClientContext,
@@ -20,11 +20,18 @@ const compositions = ['bluesky', 'linkedin', 'twitter'].map((platform, i) => ({
   }
 }))
 
+const listeners = new Map<string, () => Promise<void>>()
+
 // the panel's only conversations with the api are reading the drafts' compositions and
 // subscribing to notifications; the rest is the real thing
 vi.mock('@/services', () => ({
   ayrshare: { publicationCompositions: vi.fn(async () => compositions) },
-  notifications: { listenForCategory: () => () => {} }
+  notifications: {
+    listenForCategory: (category: string, listener: () => Promise<void>) => {
+      listeners.set(category, listener)
+      return () => listeners.delete(category)
+    }
+  }
 }))
 
 const AyrshareComponent = (await import('../../src/publications/AyrshareComponent.vue')).default
@@ -167,6 +174,11 @@ async function mountPanel() {
 }
 
 describe('the Ayrshare composer', () => {
+  beforeEach(() => {
+    localStorage.removeItem('ayrshare-selected-platforms-testAyrshare')
+    listeners.clear()
+  })
+
   // the rows: Everywhere first, then a row per platform with its checkbox and its button
   const rowButtons = (host: any) => host.findAll('.row-button')
   const rowFor = (host: any, name: string) =>
@@ -294,22 +306,67 @@ describe('the Ayrshare composer', () => {
     expect(checkbox(host, 'bluesky').attributes('aria-label')).toBe('bluesky label')
   })
 
-  it('starts over once a post is scheduled, but keeps the text for a post going out now', async () => {
-    const { host, registered, published } = await mountPanel()
-    await pick(host, 'bluesky')
-    await host.find('textarea').setValue('see you next week')
+  it('keeps platforms selected across scheduled and completed posts', async () => {
+    const first = await mountPanel()
+    await pick(first.host, 'bluesky')
+    await pick(first.host, 'twitter')
+    await first.host.find('textarea').setValue('see you next week')
+    await rowFor(first.host, 'twitter').trigger('click')
+    await first.host.find('textarea').setValue('twitter override')
 
-    await registered.action.publish(new Date(Date.now() + 86_400_000))
+    await first.registered.action.publish(new Date(Date.now() + 86_400_000))
     await flushPromises()
-    expect(published).toHaveLength(1)
-    expect((host.find('textarea').element as HTMLTextAreaElement).value).toBe('')
-    expect(rowButtons(host).map((b: any) => b.find('.name').text())).toEqual(['Everywhere'])
+    expect(first.published).toHaveLength(1)
+    expect((first.host.find('textarea').element as HTMLTextAreaElement).value).toBe('')
+    expect(rowButtons(first.host).map((b: any) => b.find('.name').text())).toEqual([
+      'Everywhere',
+      'bluesky',
+      'twitter'
+    ])
+    await rowFor(first.host, 'twitter').trigger('click')
+    expect((first.host.find('textarea').element as HTMLTextAreaElement).value).toBe('')
+    expect(first.host.find('textarea').classes()).toContain('inherited')
+    first.host.unmount()
+    first.wrapper.unmount()
+
+    const second = await mountPanel()
+    expect(rowButtons(second.host).map((b: any) => b.find('.name').text())).toEqual([
+      'Everywhere',
+      'bluesky',
+      'twitter'
+    ])
+    expect(second.registered.action.enabled()).toBe(false)
 
     // right now, it's held until ayrshare says it went out
-    await pick(host, 'bluesky')
-    await host.find('textarea').setValue('right now')
-    await registered.action.publish(null)
+    await second.host.find('textarea').setValue('right now')
+    await second.registered.action.publish(null)
     await flushPromises()
-    expect((host.find('textarea').element as HTMLTextAreaElement).value).toBe('right now')
+    expect((second.host.find('textarea').element as HTMLTextAreaElement).value).toBe('right now')
+    expect(second.published[0]).toEqual({
+      bluesky: 'right now',
+      blueskyCompositionId: 100,
+      twitter: 'right now',
+      twitterCompositionId: 102
+    })
+    await listeners.get('ayrshare-publication-completion-event')!()
+    await flushPromises()
+    expect((second.host.find('textarea').element as HTMLTextAreaElement).value).toBe('')
+    expect(rowButtons(second.host).map((b: any) => b.find('.name').text())).toEqual([
+      'Everywhere',
+      'bluesky',
+      'twitter'
+    ])
+    second.host.unmount()
+    second.wrapper.unmount()
+
+    const third = await mountPanel()
+    expect(rowButtons(third.host).map((b: any) => b.find('.name').text())).toEqual([
+      'Everywhere',
+      'bluesky',
+      'twitter'
+    ])
+    expect(third.registered.action.enabled()).toBe(false)
+    third.host.unmount()
+    third.wrapper.unmount()
   })
 })

@@ -681,7 +681,6 @@ const editorId = `ayrshare-composer-${pluginName}`
 const rowId = (row: string) => `${editorId}-row-${row === SHARED ? 'shared' : row}`
 
 function clearDraft() {
-  selected.value = []
   text.shared = ''
   text.overrides = {}
   open.value = SHARED
