@@ -33,11 +33,11 @@ const initials = computed(() => {
   const user = me.value
   if (!user) return ''
   const fromName = `${user.givenName?.[0] ?? ''}${user.familyName?.[0] ?? ''}`
-  return (fromName || user.email[0] || '').toUpperCase()
+  return (fromName || user.email?.[0] || '').toUpperCase()
 })
 const fullName = computed(() =>
   me.value
-    ? `${me.value.givenName ?? ''} ${me.value.familyName ?? ''}`.trim() || me.value.email
+    ? `${me.value.givenName ?? ''} ${me.value.familyName ?? ''}`.trim() || me.value.email || ''
     : ''
 )
 
@@ -100,7 +100,8 @@ onMounted(async () => await resume())
 
 onMounted(async () => {
   const res = await mogul.user()
-  if (res && res.email) {
+  // signed in is having a mogul, not having an email: a GitHub login often has none
+  if (res && res.id) {
     me.value = res
     // here rather than in a view: this runs once per session whatever page you land
     // on, and it reuses the user we just fetched. anything that resolves "today"
@@ -556,7 +557,7 @@ onMounted(async () => {
                 >
                 <div class="account-who">
                   <span class="account-name">{{ fullName }}</span>
-                  <span class="account-email">{{ me.email }}</span>
+                  <span v-if="me.email" class="account-email">{{ me.email }}</span>
                 </div>
                 <ul class="account-links">
                   <li v-for="item in otherSections" :key="item.key">

@@ -90,9 +90,11 @@ export default class Mogul {
 
 export class User {
   name: string
-  email: string
+  // not every login has these: a GitHub login often comes with no email, and with only a
+  // name, so no family name
+  email: string | null
   givenName: string
-  familyName: string
+  familyName: string | null
   id: number
   // IANA zone id, or null until the mogul has told us where they are
   timeZone: string | null
@@ -103,9 +105,9 @@ export class User {
   constructor(
     id: number,
     name: string,
-    email: string,
+    email: string | null,
     givenName: string,
-    familyName: string,
+    familyName: string | null,
     timeZone: string | null = null
   ) {
     this.name = name
@@ -114,7 +116,8 @@ export class User {
     this.givenName = givenName
     this.familyName = familyName
     this.timeZone = timeZone
-    this.displayName = this.givenName + ' ' + this.familyName + ' (' + this.email + ')'
+    const fullName = [this.givenName, this.familyName].filter((part) => part).join(' ')
+    this.displayName = this.email ? `${fullName} (${this.email})` : fullName
   }
 }
 
